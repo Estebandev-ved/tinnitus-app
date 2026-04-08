@@ -1,0 +1,342 @@
+.community-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.community-modal {
+    background: var(--background);
+    width: 100%;
+    max-width: 500px;
+    height: 90vh;
+    border-radius: 24px 24px 0 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.community-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.community-header h3 {
+    color: var(--text-main);
+}
+
+.community-categories {
+    display: flex;
+    gap: 8px;
+    padding: 12px 24px;
+    overflow-x: auto;
+}
+
+.cat-btn {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.cat-btn.active {
+    background: rgba(0, 122, 255, 0.1);
+    border-color: #007AFF;
+    color: #007AFF;
+}
+
+.community-posts {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.community-empty {
+    text-align: center;
+    color: var(--text-muted);
+    margin-top: 40px;
+}
+
+.post-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--card-shadow);
+}
+
+.post-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.post-author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.post-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #007AFF;
+}
+
+.post-time {
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+.post-cat {
+    font-size: 18px;
+}
+
+.post-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-main);
+    margin: 0 0 12px;
+}
+
+.post-actions {
+    display: flex;
+    gap: 16px;
+}
+
+.post-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: color 0.2s;
+}
+
+.post-action-btn.liked {
+    color: #FF3B30;
+}
+
+.post-replies {
+    margin-top: 12px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+}
+
+.reply-item {
+    padding: 8px 0;
+    font-size: 13px;
+    color: var(--text-main);
+}
+
+.reply-item strong {
+    color: #007AFF;
+    margin-right: 6px;
+}
+
+.reply-item p {
+    margin: 4px 0 0;
+}
+
+.reply-input-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.reply-input-row input {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--surface);
+    color: var(--text-main);
+    font-size: 13px;
+    outline: none;
+}
+
+.reply-input-row button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+}
+
+/* Compose FAB */
+.compose-fab {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #007AFF;
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
+    transition: transform 0.2s;
+}
+
+.compose-fab:active {
+    transform: scale(0.92);
+}
+
+/* Compose Sheet */
+.compose-sheet {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    border-radius: 24px 24px 0 0;
+    padding: 24px;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.compose-sheet h4 {
+    color: var(--text-main);
+    margin: 0 0 16px;
+}
+
+.compose-cats {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.compose-sheet textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--surface);
+    color: var(--text-main);
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    resize: none;
+    outline: none;
+    margin-bottom: 16px;
+}
+
+.compose-sheet textarea:focus {
+    border-color: #007AFF;
+}
+
+.compose-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Leaderboard Styles */
+.leaderboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.leader-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--surface);
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.leader-item .rank {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-muted);
+    width: 32px;
+    text-align: center;
+}
+
+.leader-item.top-1 {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: rgba(255, 215, 0, 0.3);
+}
+
+.leader-item.top-1 .rank {
+    color: #FFD700;
+}
+
+.leader-item.top-2 {
+    background: rgba(192, 192, 192, 0.05);
+}
+
+.leader-item.top-3 {
+    background: rgba(205, 127, 50, 0.05);
+}
+
+.leader-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.leader-info strong {
+    color: var(--text-main);
+    font-size: 16px;
+}
+
+.leader-info span {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.leader-item.current-user {
+    margin-top: 16px;
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.leader-item.current-user .rank,
+.leader-item.current-user .leader-info strong,
+.leader-item.current-user .leader-info span {
+    color: white;
+}

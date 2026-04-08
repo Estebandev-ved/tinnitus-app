@@ -1,0 +1,627 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap');
+
+:root {
+  /* Color Palette - Deep Navy (matches illustration aesthetic) */
+  --primary: #0A84FF;
+  --primary-light: rgba(10, 132, 255, 0.12);
+  --primary-dark: #0066CC;
+  --accent: #5AC8FA;
+  --background: #0B1426;
+  --surface: #111D32;
+  --text-main: #E8EDF4;
+  --text-secondary: #8899B0;
+  --text-muted: #5A6D85;
+  --white: #FFFFFF;
+  --error: #FF453A;
+  --success: #30D158;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Shadows & Glassmorphism */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --glass: rgba(11, 20, 38, 0.85);
+  --glass-border: rgba(10, 132, 255, 0.1);
+
+  /* Card */
+  --card-bg: rgba(17, 29, 50, 0.8);
+  --card-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
+  --border-color: rgba(10, 132, 255, 0.1);
+
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--text-main);
+  background-color: var(--background);
+}
+
+/* Dark Mode Override (deeper black) */
+.dark-mode {
+  --primary-light: rgba(10, 132, 255, 0.15);
+  --background: #050A12;
+  --surface: #0A1020;
+  --text-main: #E6EDF3;
+  --text-secondary: #8B949E;
+  --text-muted: #6E7681;
+  --white: #0A1020;
+  --card-bg: rgba(10, 16, 32, 0.9);
+  --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --glass: rgba(5, 10, 18, 0.95);
+  --glass-border: rgba(10, 132, 255, 0.08);
+  --border-color: rgba(10, 132, 255, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: radial-gradient(circle at 10% 20%, var(--primary-light) 0%, var(--background) 90%);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+h1,
+h2,
+h3 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  margin: 0;
+}
+
+#root {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-md);
+  background-color: var(--background);
+  transition: background-color 0.3s ease;
+}
+
+/* Base Components */
+.btn {
+  padding: 14px 24px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--white);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+  background-color: var(--primary-dark);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--primary);
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: var(--spacing-lg);
+  box-shadow: var(--card-shadow);
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+/* Premium Glassmorphism */
+.glass {
+  background: var(--glass) !important;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--glass-border);
+}
+
+/* ───── Animations ───── */
+
+/* Fade In Up — default entry animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Staggered entry animation for children */
+.stagger-children>* {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.stagger-children>*:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.stagger-children>*:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.stagger-children>*:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.stagger-children>*:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+.stagger-children>*:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.stagger-children>*:nth-child(6) {
+  animation-delay: 0.3s;
+}
+
+.stagger-children>*:nth-child(7) {
+  animation-delay: 0.35s;
+}
+
+.stagger-children>*:nth-child(8) {
+  animation-delay: 0.4s;
+}
+
+/* Scale tap/press effect */
+.press-effect {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+
+.press-effect:active {
+  transform: scale(0.96) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Subtle hover lift */
+.hover-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ───── Icon Glow ───── */
+.icon-glow {
+  filter: drop-shadow(0 0 6px rgba(10, 132, 255, 0.4));
+}
+
+.icon-glow-success {
+  filter: drop-shadow(0 0 6px rgba(48, 209, 88, 0.4));
+}
+
+.icon-glow-warning {
+  filter: drop-shadow(0 0 6px rgba(255, 214, 10, 0.4));
+}
+
+/* ───── Gradient Border ───── */
+.gradient-border {
+  position: relative;
+  border: none !important;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(10, 132, 255, 0.4), rgba(90, 200, 250, 0.2), rgba(10, 132, 255, 0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Animated gradient border */
+@keyframes borderRotate {
+  0% {
+    --border-angle: 0deg;
+  }
+
+  100% {
+    --border-angle: 360deg;
+  }
+}
+
+.gradient-border-animated::before {
+  background: conic-gradient(from var(--border-angle, 0deg), rgba(10, 132, 255, 0.5), rgba(90, 200, 250, 0.3), rgba(10, 132, 255, 0.1), rgba(90, 200, 250, 0.3), rgba(10, 132, 255, 0.5));
+  animation: borderRotate 4s linear infinite;
+}
+
+/* ───── Skeleton Shimmer ───── */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface) 25%, rgba(10, 132, 255, 0.06) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ───── Floating Particles ───── */
+@keyframes particleFloat {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+
+  25% {
+    transform: translate(10px, -20px) scale(1.1);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: translate(-5px, -40px) scale(0.9);
+    opacity: 0.4;
+  }
+
+  75% {
+    transform: translate(15px, -25px) scale(1.05);
+    opacity: 0.5;
+  }
+}
+
+.particles-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(10, 132, 255, 0.5);
+  animation: particleFloat 8s ease-in-out infinite;
+}
+
+.particle:nth-child(1) {
+  left: 10%;
+  top: 30%;
+  animation-delay: 0s;
+  animation-duration: 7s;
+}
+
+.particle:nth-child(2) {
+  left: 25%;
+  top: 60%;
+  animation-delay: 1s;
+  animation-duration: 9s;
+  width: 2px;
+  height: 2px;
+}
+
+.particle:nth-child(3) {
+  left: 50%;
+  top: 20%;
+  animation-delay: 2s;
+  animation-duration: 11s;
+  background: rgba(90, 200, 250, 0.4);
+}
+
+.particle:nth-child(4) {
+  left: 70%;
+  top: 50%;
+  animation-delay: 3s;
+  animation-duration: 8s;
+  width: 4px;
+  height: 4px;
+}
+
+.particle:nth-child(5) {
+  left: 85%;
+  top: 35%;
+  animation-delay: 1.5s;
+  animation-duration: 10s;
+  background: rgba(90, 200, 250, 0.3);
+}
+
+.particle:nth-child(6) {
+  left: 40%;
+  top: 75%;
+  animation-delay: 4s;
+  animation-duration: 12s;
+  width: 2px;
+  height: 2px;
+}
+
+.particle:nth-child(7) {
+  left: 60%;
+  top: 10%;
+  animation-delay: 2.5s;
+  animation-duration: 9s;
+}
+
+.particle:nth-child(8) {
+  left: 15%;
+  top: 80%;
+  animation-delay: 5s;
+  animation-duration: 13s;
+  background: rgba(10, 132, 255, 0.3);
+}
+
+/* ───── Audio Visualizer Bars ───── */
+@keyframes audioBar {
+
+  0%,
+  100% {
+    height: 20%;
+  }
+
+  25% {
+    height: 60%;
+  }
+
+  50% {
+    height: 90%;
+  }
+
+  75% {
+    height: 40%;
+  }
+}
+
+.audio-visualizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 32px;
+}
+
+.audio-bar {
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to top, var(--primary), var(--accent));
+  animation: audioBar 1.2s ease-in-out infinite;
+}
+
+.audio-bar:nth-child(1) {
+  animation-delay: 0s;
+  height: 40%;
+}
+
+.audio-bar:nth-child(2) {
+  animation-delay: 0.15s;
+  height: 70%;
+}
+
+.audio-bar:nth-child(3) {
+  animation-delay: 0.3s;
+  height: 50%;
+}
+
+.audio-bar:nth-child(4) {
+  animation-delay: 0.45s;
+  height: 80%;
+}
+
+.audio-bar:nth-child(5) {
+  animation-delay: 0.1s;
+  height: 30%;
+}
+
+.audio-bar:nth-child(6) {
+  animation-delay: 0.25s;
+  height: 60%;
+}
+
+.audio-bar:nth-child(7) {
+  animation-delay: 0.4s;
+  height: 45%;
+}
+
+/* ───── Animated Progress Ring ───── */
+.progress-ring {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.progress-ring svg {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+  fill: none;
+  stroke: var(--surface);
+  stroke-width: 6;
+}
+
+.progress-ring-fill {
+  fill: none;
+  stroke: url(#progressGradient);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease;
+}
+
+.progress-ring-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--text-main);
+}
+
+/* ───── Animated Background Gradient ───── */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animated-bg {
+  background: linear-gradient(135deg, #0B1426 0%, #0D1A30 25%, #0F1E38 50%, #0B1426 75%, #091220 100%);
+  background-size: 300% 300%;
+  animation: gradientShift 15s ease infinite;
+}
+
+/* ───── Custom Scrollbar ───── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(10, 132, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(10, 132, 255, 0.4);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(10, 132, 255, 0.2) transparent;
+}
+
+/* ───── Typography Refinements ───── */
+.text-gradient {
+  background: linear-gradient(135deg, #0A84FF, #5AC8FA);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-xs {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.text-sm {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.text-lg {
+  font-size: 20px;
+  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+}
+
+.text-xl {
+  font-size: 28px;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Feature Screen Illustrations */
+.feature-illustration {
+  display: block;
+  margin: 0 auto;
+  max-width: 160px;
+  max-height: 140px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 20px rgba(10, 132, 255, 0.25));
+  opacity: 0.9;
+  animation: illustrationFloat 4s ease-in-out infinite;
+}
+
+@keyframes illustrationFloat {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* AI Chat Header Avatar */
+.chat-avatar-illustration {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(10, 132, 255, 0.3);
+  box-shadow: 0 0 12px rgba(10, 132, 255, 0.2);
+}

@@ -1,0 +1,222 @@
+.login-container {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+}
+
+.login-card {
+    background: rgba(17, 29, 50, 0.85);
+    padding: 32px 24px;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(10, 132, 255, 0.1);
+}
+
+.login-card.expanded {
+    max-width: 420px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.logo-circle {
+    width: 64px;
+    height: 64px;
+    background: rgba(10, 132, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    box-shadow: 0 4px 12px rgba(10, 132, 255, 0.2);
+}
+
+.login-illustration {
+    width: 140px;
+    height: auto;
+    margin: 0 auto 16px;
+    display: block;
+    border-radius: 16px;
+    filter: drop-shadow(0 6px 20px rgba(0, 122, 255, 0.2));
+}
+
+.login-header h2 {
+    font-size: 24px;
+    color: #E8EDF4;
+    margin-bottom: 8px;
+}
+
+.login-header p {
+    color: #8899B0;
+    font-size: 15px;
+    margin: 0;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.input-group {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #5A6D85;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 16px 14px 48px;
+    border: 1px solid rgba(10, 132, 255, 0.15);
+    border-radius: 12px;
+    font-size: 16px;
+    background: rgba(11, 20, 38, 0.6);
+    color: #E8EDF4;
+    transition: all 0.2s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #0A84FF;
+    background: rgba(11, 20, 38, 0.9);
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.15);
+}
+
+.full-width {
+    width: 100%;
+    margin-top: 8px;
+    height: 50px;
+}
+
+.auth-switch {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.auth-switch p {
+    color: #8899B0;
+    font-size: 14px;
+}
+
+.link-btn {
+    background: none;
+    border: none;
+    color: #007AFF;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0 4px;
+}
+
+.link-btn:hover {
+    text-decoration: underline;
+}
+
+.mock-credentials {
+    margin-top: 32px;
+    background: rgba(11, 20, 38, 0.6);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    color: #8899B0;
+    text-align: center;
+}
+
+.mock-credentials code {
+    display: block;
+    font-family: monospace;
+    margin-top: 4px;
+    color: #333;
+}
+
+.error-alert {
+    background: rgba(255, 69, 58, 0.15);
+    color: #FF453A;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 69, 58, 0.2);
+}
+
+/* Google & Divider */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 16px 0;
+    color: #aaa;
+    font-size: 12px;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(10, 132, 255, 0.1);
+}
+
+.divider span {
+    padding: 0 10px;
+}
+
+.google-btn {
+    background: rgba(11, 20, 38, 0.6);
+    color: #E8EDF4;
+    border: 1px solid rgba(10, 132, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 50px;
+    width: 100%;
+    margin-top: 0;
+}
+
+.google-btn:hover {
+    background: rgba(10, 132, 255, 0.1);
+}
+
+/* Dark Mode */
+.dark-mode .login-card {
+    background: rgba(10, 16, 32, 0.9);
+    border-color: rgba(10, 132, 255, 0.08);
+}
+
+.dark-mode .login-header h2 {
+    color: #E6EDF3;
+}
+
+.dark-mode .input-group input {
+    background: rgba(5, 10, 18, 0.8);
+    border-color: rgba(10, 132, 255, 0.1);
+    color: #E6EDF3;
+}
+
+.dark-mode .input-group input:focus {
+    background: rgba(5, 10, 18, 0.95);
+    border-color: #0A84FF;
+}
+
+.dark-mode .google-btn {
+    background: rgba(5, 10, 18, 0.8);
+    border-color: rgba(10, 132, 255, 0.08);
+    color: #E6EDF3;
+}

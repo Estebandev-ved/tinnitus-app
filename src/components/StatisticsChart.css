@@ -1,0 +1,71 @@
+.chart-container {
+    background: rgba(17, 29, 50, 0.8);
+    border-radius: 16px;
+    padding: 16px;
+    margin: 16px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.chart-container h4 {
+    margin: 0 0 16px 0;
+    font-size: 1rem;
+    color: #E8EDF4;
+}
+
+.chart-wrapper {
+    width: 100%;
+}
+
+.empty-chart-state {
+    padding: 30px;
+    text-align: center;
+    color: #5A6D85;
+    font-size: 0.9rem;
+    background: rgba(11, 20, 38, 0.6);
+    border-radius: 12px;
+}
+
+.custom-tooltip {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(10, 132, 255, 0.15);
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 0.8rem;
+}
+
+.tooltip-date {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #E8EDF4;
+    text-transform: capitalize;
+}
+
+.chart-legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 12px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    color: #8899B0;
+}
+
+.legend-item .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.legend-item .dot.tinnitus {
+    background-color: #FF3B30;
+}
+
+.legend-item .dot.stress {
+    background-color: #FF9500;
+}

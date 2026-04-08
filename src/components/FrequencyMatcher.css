@@ -1,0 +1,308 @@
+.matcher-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--background, #0B1426);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-header {
+    padding: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    color: var(--text-main);
+}
+
+/* Wizard Steps Indicator */
+.wizard-steps {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 var(--spacing-lg) var(--spacing-md);
+}
+
+.step-dot {
+    width: 30%;
+    height: 4px;
+    background: var(--surface);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.step-dot.active {
+    background: var(--primary);
+}
+
+.matcher-content {
+    flex: 1;
+    padding: var(--spacing-md) var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 24px;
+    overflow-y: auto;
+}
+
+/* Step 1: Ear Selection */
+.ear-selection-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.ears-container {
+    display: flex;
+    gap: 24px;
+    margin-top: 24px;
+    width: 100%;
+    justify-content: center;
+}
+
+.ear-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px 0;
+    width: 120px;
+    background: var(--surface);
+    border: 2px solid transparent;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+}
+
+.ear-box:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-sm);
+}
+
+.ear-box.active {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.ear-box span {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.active-ghost {
+    background: var(--primary-light) !important;
+    color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+/* Step 2: Sound Types */
+.sound-types-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    width: 100%;
+    margin-top: 16px;
+}
+
+.type-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--surface);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.type-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.type-card.selected {
+    background: var(--primary-light);
+    border-color: var(--primary);
+}
+
+.type-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(17, 29, 50, 0.8);
+    border-radius: 12px;
+    color: var(--primary);
+}
+
+.type-card.selected .type-icon {
+    color: white;
+    background: var(--primary);
+}
+
+.type-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.type-info h4 {
+    margin: 0;
+    color: var(--text-main);
+    font-size: 16px;
+}
+
+.type-info p {
+    margin: 4px 0 0;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+
+/* Step 2 & 3: Visualizer and Sliders */
+.visualizer {
+    width: 120px;
+    height: 120px;
+    background: var(--primary-light);
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.visualizer.active .wave {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--primary);
+    border-radius: 50%;
+    animation: ripple 2s infinite;
+}
+
+.visualizer.active .wave:nth-child(2) {
+    animation-delay: 0.6s;
+}
+
+.visualizer.active .wave:nth-child(3) {
+    animation-delay: 1.2s;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+}
+
+.frequency-display {
+    text-align: center;
+}
+
+.freq-value {
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--primary);
+    font-family: 'Outfit';
+}
+
+.freq-unit {
+    font-size: 20px;
+    color: var(--text-muted);
+    margin-left: 8px;
+}
+
+.instruction {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+    max-width: 280px;
+    margin: 0;
+}
+
+.freq-slider {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--surface);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 20px 0;
+}
+
+.freq-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 4px solid white;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Volume Step specific */
+.volume-labels {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    color: var(--text-secondary);
+    font-size: 12px;
+    margin-top: -12px;
+}
+
+.play-toggle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: none;
+    padding: 24px 32px;
+    border-radius: 20px;
+    color: var(--primary);
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 160px;
+    margin-top: 10px;
+}
+
+.play-toggle.playing {
+    background: var(--primary);
+    color: white;
+}
+
+.page-footer {
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.full-width {
+    width: 100%;
+}

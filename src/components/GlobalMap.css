@@ -1,0 +1,151 @@
+.global-map-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+}
+
+/* Stats Pills */
+.map-stats {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(17, 29, 50, 0.8);
+    border: 1px solid rgba(10, 132, 255, 0.15);
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #E8EDF4;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.stat-pill.glow {
+    border-color: rgba(10, 132, 255, 0.3);
+    box-shadow: 0 0 16px rgba(10, 132, 255, 0.15);
+}
+
+.stat-pill strong {
+    color: #0A84FF;
+}
+
+/* Map Container */
+.map-wrapper {
+    width: 100%;
+    max-width: 600px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: linear-gradient(145deg, #0D1A30 0%, #0A1426 50%, #0E1E38 100%);
+    border: 1px solid rgba(10, 132, 255, 0.12);
+    box-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(10, 132, 255, 0.08);
+    position: relative;
+    padding: 12px 8px;
+}
+
+.map-glow-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at 50% 40%, rgba(10, 132, 255, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.map-wrapper svg {
+    position: relative;
+    z-index: 0;
+}
+
+/* Marker Labels */
+.marker-label {
+    font-family: "Inter", sans-serif;
+    font-size: 7.5px;
+    fill: #8899B0;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    paint-order: stroke;
+    stroke: rgba(11, 20, 38, 0.9);
+    stroke-width: 3px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Ping Animation */
+.ping-anim {
+    animation: ping 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+    transform-origin: center;
+}
+
+@keyframes ping {
+    0% {
+        transform: scale(1);
+        opacity: 0.25;
+    }
+
+    75%,
+    100% {
+        transform: scale(3.5);
+        opacity: 0;
+    }
+}
+
+/* Legend */
+.map-legend {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #5A6D85;
+}
+
+.legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #333;
+}
+
+.legend-dot.active {
+    background: #0A84FF;
+    box-shadow: 0 0 8px rgba(10, 132, 255, 0.5);
+}
+
+/* Footer */
+.map-footer {
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #5A6D85;
+    padding: 0 16px;
+    margin-top: 4px;
+}
+
+.map-footer p {
+    margin: 0;
+    background: rgba(17, 29, 50, 0.5);
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(10, 132, 255, 0.06);
+}

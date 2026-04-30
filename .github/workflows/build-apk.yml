@@ -43,8 +43,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses || true
 
       - name: Decode keystore
         run: |
@@ -63,7 +63,7 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease
+          ./gradlew assembleRelease --stacktrace --info
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4

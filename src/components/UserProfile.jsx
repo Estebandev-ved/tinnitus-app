@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, User, Phone, Calendar, Mail, Camera, LogOut, FileText, ChevronRight } from 'lucide-react';
+import { X, User, Phone, Calendar, Mail, Camera, LogOut, FileText, ChevronRight, Shield } from 'lucide-react';
+import PrivacyPolicy from './PrivacyPolicy';
 import { useAuth } from '../contexts/AuthContext';
 import { FirestoreService } from '../services/firestoreService';
 import { storage } from '../firebase';
@@ -10,6 +11,7 @@ import './UserProfile.css';
 const UserProfile = ({ onClose, onOpenDoctorReport, onOpenMedical }) => {
     const { currentUser, logout } = useAuth();
     const [loading, setLoading] = useState(true);
+    const [showPrivacy, setShowPrivacy] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [saving, setSaving] = useState(false);
 
@@ -107,6 +109,7 @@ const UserProfile = ({ onClose, onOpenDoctorReport, onOpenMedical }) => {
     };
 
     return (
+        <>
         <div className="profile-overlay animate-fade">
             <div className="profile-modal">
                 <header className="profile-header">
@@ -205,6 +208,14 @@ const UserProfile = ({ onClose, onOpenDoctorReport, onOpenMedical }) => {
                             <ChevronRight size={20} color="#ccc" />
                         </button>
 
+                        <button className="action-row" onClick={() => setShowPrivacy(true)}>
+                            <div className="row-left">
+                                <div className="icon-bg" style={{ background: '#e8f4fd' }}><Shield size={20} color="#007AFF" /></div>
+                                <span>Política de Privacidad</span>
+                            </div>
+                            <ChevronRight size={20} color="#ccc" />
+                        </button>
+
                         <button className="action-row logout" onClick={handleLogout}>
                             <div className="row-left">
                                 <div className="icon-bg red"><LogOut size={20} color="#FF3B30" /></div>
@@ -215,6 +226,8 @@ const UserProfile = ({ onClose, onOpenDoctorReport, onOpenMedical }) => {
                 </div>
             </div>
         </div>
+        {showPrivacy && <PrivacyPolicy onClose={() => setShowPrivacy(false)} />}
+        </>
     );
 };
 

@@ -579,3 +579,38 @@
 .nav-item.active svg {
   filter: drop-shadow(0 0 8px rgba(10, 132, 255, 0.5));
 }
+/* ====== IMMERSIVE IMAGES (Uga Uga Premium) ====== */
+.splash-illustration, 
+.disclaimer-illustration,
+.onboarding-illustration {
+  /* Efecto flotante para que parezca vivo */
+  animation: float-immersive 6s ease-in-out infinite;
+  
+  /* Sombra que brilla con el color de la app (en vez de sombra negra fea) */
+  filter: drop-shadow(0 0 25px rgba(88, 86, 214, 0.4)) drop-shadow(0 10px 10px rgba(0,0,0,0.5));
+  
+  /* Que se mezcle mejor si tiene bordes raros */
+  object-fit: contain;
+  max-width: 100%;
+  
+  /* Transición suave al pasar el mouse */
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.splash-illustration:hover, 
+.disclaimer-illustration:hover {
+  filter: drop-shadow(0 0 35px rgba(0, 122, 255, 0.6)) drop-shadow(0 15px 15px rgba(0,0,0,0.6));
+  transform: scale(1.02);
+}
+
+@keyframes float-immersive {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+/* Animación global para botón de rescate y otros elementos */
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 59, 48, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); }
+}

@@ -1,0 +1,12 @@
+{
+  "keywords": {
+    "frustration": ["harto", "no aguanto", "desesperado", "llorar", "fuerte", "loco"],
+    "calm": ["mejor", "tranquilo", "bajó", "bien", "dormí"],
+    "anxiety": ["miedo", "nunca", "ansiedad", "dormir no puedo", "pánico"]
+  },
+  "actions": {
+    "frustration": "suggest_breathing",
+    "anxiety": "suggest_spatial_audio",
+    "calm": "praise_progress"
+  }
+}

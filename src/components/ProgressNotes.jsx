@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Calendar, Mic, Plus } from 'lucide-react';
+import { X, Plus, Sparkles, Tag, Activity, ArrowRight } from 'lucide-react';
 import { FirestoreService } from '../services/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
 import './ProgressNotes.css';
-import progressNotesIllustration from '../assets/illustrations/progress_notes.png';
 
 const MOODS = [
-    { emoji: '😊', label: 'Bien', value: 'good' },
-    { emoji: '😐', label: 'Normal', value: 'neutral' },
-    { emoji: '😔', label: 'Mal', value: 'bad' },
-    { emoji: '😣', label: 'Ansioso', value: 'anxious' },
-    { emoji: '😤', label: 'Irritado', value: 'irritated' },
+    { emoji: '😊', label: 'Bien', value: 'good', color: '#34C759' },
+    { emoji: '😐', label: 'Normal', value: 'neutral', color: '#FF9500' },
+    { emoji: '😔', label: 'Mal', value: 'bad', color: '#FF3B30' },
+    { emoji: '😣', label: 'Ansioso', value: 'anxious', color: '#5856D6' },
+    { emoji: '😤', label: 'Irritado', value: 'irritated', color: '#FF2D55' },
 ];
 
-const ProgressNotes = ({ onClose }) => {
+const ProgressNotes = ({ onClose, openTherapy }) => {
     const { currentUser } = useAuth();
     const [notes, setNotes] = useState([]);
     const [newNote, setNewNote] = useState('');
     const [selectedMood, setSelectedMood] = useState('neutral');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [view, setView] = useState('list'); // 'list' or 'create'
+    const [view, setView] = useState('list'); // 'list' | 'create' | 'ai-analysis'
+    const [aiInsight, setAiInsight] = useState(null);
 
     useEffect(() => {
         loadNotes();
@@ -30,7 +30,7 @@ const ProgressNotes = ({ onClose }) => {
         if (!currentUser) return;
         try {
             const data = await FirestoreService.getProgressNotes(currentUser.uid, 20);
-            setNotes(data);
+            setNotes(data || []);
         } catch (e) {
             console.error('Error loading notes:', e);
         } finally {
@@ -38,116 +38,183 @@ const ProgressNotes = ({ onClose }) => {
         }
     };
 
-    const handleSave = async () => {
+    const handleSaveAndAnalyze = async () => {
         if (!newNote.trim()) return;
-        setSaving(true);
-        try {
-            await FirestoreService.saveProgressNote(currentUser.uid, {
-                text: newNote,
-                mood: selectedMood,
-                timestamp: new Date().toISOString()
-            });
-            setNewNote('');
-            setSelectedMood('neutral');
-            setView('list');
-            loadNotes();
-        } catch (e) {
-            console.error('Error saving note:', e);
-            alert('Error al guardar la nota');
-        } finally {
-            setSaving(false);
-        }
+        setView('ai-analysis');
+        
+        // Simular análisis IA
+        setTimeout(async () => {
+            const lowerText = newNote.toLowerCase();
+            let tags = [];
+            let suggestion = null;
+            let therapyAction = null;
+
+            if (lowerText.includes('dormir') || lowerText.includes('noche') || lowerText.includes('insomnio')) {
+                tags.push('Problemas de Sueño');
+                suggestion = 'Parece que el tinnitus está afectando tu sueño. El ruido marrón ayuda a enmascarar los pitidos en el silencio nocturno.';
+                therapyAction = 'sound_brown';
+            } else if (lowerText.includes('estrés') || lowerText.includes('trabajo') || lowerText.includes('ansiedad')) {
+                tags.push('Pico de Estrés');
+                suggestion = 'El estrés contrae los músculos del cuello agravando el tinnitus. Una respiración profunda bajará tu frecuencia cardíaca ahora mismo.';
+                therapyAction = 'breathing';
+            } else {
+                tags.push('Registro Diario');
+                suggestion = 'Gracias por llevar tu registro. Mantener un diario ayuda a la habituación neurológica.';
+            }
+
+            const analysisResult = { tags, suggestion, therapyAction };
+            setAiInsight(analysisResult);
+
+            try {
+                await FirestoreService.saveProgressNote(currentUser.uid, {
+                    text: newNote,
+                    mood: selectedMood,
+                    timestamp: new Date().toISOString(),
+                    aiAnalysis: analysisResult
+                });
+                loadNotes();
+            } catch (e) {
+                console.error('Error saving note:', e);
+            }
+        }, 2000);
     };
 
-    const getMoodEmoji = (value) => {
-        return MOODS.find(m => m.value === value)?.emoji || '📝';
+    const finishCreation = () => {
+        setNewNote('');
+        setSelectedMood('neutral');
+        setAiInsight(null);
+        setView('list');
     };
+
+    const executeTherapy = (action) => {
+        onClose();
+        if (openTherapy) openTherapy(action);
+    };
+
+    const getMoodData = (value) => MOODS.find(m => m.value === value) || MOODS[1];
 
     return (
-        <div className="notes-overlay animate-fade">
-            <div className="notes-modal">
+        <div className="notes-full-wrapper animate-fade">
+            <div className="notes-full-container">
                 <header className="notes-header">
-                    <h3>Notas de Progreso</h3>
-                    <button className="close-btn" onClick={onClose}>
-                        <X size={24} />
-                    </button>
+                    <h2>Diario de Observación IA</h2>
+                    <button className="notes-close-btn" onClick={onClose}><X size={20} /></button>
                 </header>
 
-                <img src={progressNotesIllustration} alt="" className="feature-illustration" />
-
                 <div className="notes-content">
-                    {view === 'list' ? (
+                    {view === 'list' && (
                         <>
-                            <div className="create-fab" onClick={() => setView('create')}>
-                                <Plus size={24} /> Nueva Nota
+                            <div className="notes-list-header">
+                                <p>Registra cómo te sientes. La IA analizará patrones para sugerirte la mejor terapia.</p>
+                                <button className="premium-btn new-note-btn" onClick={() => setView('create')}>
+                                    <Plus size={18} /> Escribir Nota
+                                </button>
                             </div>
 
                             {loading ? (
-                                <p className="loading-text">Cargando notas...</p>
+                                <div className="loading-state"><Activity className="spinner" size={30} /></div>
                             ) : notes.length === 0 ? (
-                                <div className="empty-state">
-                                    <p>No tienes notas registradas aún.</p>
-                                    <button className="btn btn-primary" onClick={() => setView('create')}>
-                                        Crear mi primera nota
-                                    </button>
+                                <div className="empty-notes glass-card">
+                                    <Sparkles size={32} color="#5856D6" style={{ marginBottom: 10 }} />
+                                    <p>Tu mente está en blanco. Escribe tu primera observación.</p>
                                 </div>
                             ) : (
-                                <div className="notes-list">
-                                    {notes.map(note => (
-                                        <div key={note.id} className="note-card">
-                                            <div className="note-header">
-                                                <span className="note-mood">{getMoodEmoji(note.mood)}</span>
-                                                <span className="note-date">
-                                                    {new Date(note.timestamp || note.date).toLocaleDateString('es-ES', {
-                                                        weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
-                                                    })}
-                                                </span>
+                                <div className="notes-grid">
+                                    {notes.map(note => {
+                                        const moodData = getMoodData(note.mood);
+                                        return (
+                                            <div key={note.id} className="glass-card note-item">
+                                                <div className="note-item-header">
+                                                    <span className="mood-badge" style={{ background: `${moodData.color}20`, color: moodData.color }}>
+                                                        {moodData.emoji} {moodData.label}
+                                                    </span>
+                                                    <span className="note-date">
+                                                        {new Date(note.timestamp || note.date).toLocaleDateString('es-ES', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                    </span>
+                                                </div>
+                                                <p className="note-body">{note.text}</p>
+                                                
+                                                {note.aiAnalysis && note.aiAnalysis.tags && (
+                                                    <div className="note-tags">
+                                                        {note.aiAnalysis.tags.map((tag, i) => (
+                                                            <span key={i} className="ai-tag"><Tag size={12}/> {tag}</span>
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
-                                            <p className="note-text">{note.text}</p>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             )}
                         </>
-                    ) : (
-                        <div className="create-view animate-fade">
-                            <label className="input-label">¿Cómo te sientes en este momento?</label>
-                            <div className="mood-selector">
+                    )}
+
+                    {view === 'create' && (
+                        <div className="glass-card create-note-card animate-fade">
+                            <h3>¿Cómo te afecta el zumbido hoy?</h3>
+                            
+                            <div className="mood-selection-row">
                                 {MOODS.map(mood => (
                                     <button
                                         key={mood.value}
-                                        className={`mood-btn ${selectedMood === mood.value ? 'active' : ''}`}
+                                        className={`mood-icon-btn ${selectedMood === mood.value ? 'selected' : ''}`}
                                         onClick={() => setSelectedMood(mood.value)}
+                                        style={{ '--mood-color': mood.color }}
                                     >
-                                        <span className="mood-emoji">{mood.emoji}</span>
-                                        <span className="mood-label">{mood.label}</span>
+                                        <span className="m-emoji">{mood.emoji}</span>
+                                        <span className="m-label">{mood.label}</span>
                                     </button>
                                 ))}
                             </div>
 
-                            <label className="input-label">Escribe tus pensamientos...</label>
                             <textarea
-                                className="note-input"
-                                placeholder="Hoy me sentí mejor después de la meditación..."
+                                className="premium-textarea"
+                                placeholder="Describe tus síntomas, nivel de estrés, o qué estabas haciendo cuando el ruido empeoró..."
                                 value={newNote}
                                 onChange={(e) => setNewNote(e.target.value)}
                                 autoFocus
                             />
 
-                            <div className="action-buttons">
-                                <button className="btn btn-ghost" onClick={() => setView('list')}>
-                                    Cancelar
-                                </button>
-                                <button
-                                    className="btn btn-primary"
-                                    onClick={handleSave}
-                                    disabled={saving || !newNote.trim()}
-                                >
-                                    {saving ? 'Guardando...' : 'Guardar Nota'}
+                            <div className="create-actions">
+                                <button className="cancel-btn" onClick={() => setView('list')}>Cancelar</button>
+                                <button className="premium-btn generate-btn" onClick={handleSaveAndAnalyze} disabled={!newNote.trim()}>
+                                    <Sparkles size={18} /> Guardar y Analizar
                                 </button>
                             </div>
                         </div>
                     )}
+
+                    {view === 'ai-analysis' && (
+                        <div className="ai-analysis-view animate-fade">
+                            {!aiInsight ? (
+                                <div className="ai-processing glass-card">
+                                    <Activity className="spinner" size={40} color="#007AFF" />
+                                    <h3>Analizando Patrones</h3>
+                                    <p>Nuestra IA está evaluando tu nota para sugerir la mejor acción...</p>
+                                </div>
+                            ) : (
+                                <div className="ai-result glass-card">
+                                    <div className="ai-result-header">
+                                        <Sparkles size={28} color="#5856D6" />
+                                        <h3>Insight Generado</h3>
+                                    </div>
+                                    <div className="ai-suggestion-box">
+                                        <p>{aiInsight.suggestion}</p>
+                                    </div>
+                                    
+                                    <div className="ai-actions">
+                                        {aiInsight.therapyAction && (
+                                            <button className="premium-btn therapy-btn" onClick={() => executeTherapy(aiInsight.therapyAction)}>
+                                                Ir a Terapia Recomendada <ArrowRight size={18} />
+                                            </button>
+                                        )}
+                                        <button className="secondary-btn" onClick={finishCreation}>Volver a mis notas</button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                 </div>
             </div>
         </div>

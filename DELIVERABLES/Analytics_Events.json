@@ -1,0 +1,8 @@
+{
+  "events": [
+    "onboarding_start",
+    "onboarding_step_complete",
+    "onboarding_skip",
+    "onboarding_complete"
+  ]
+}

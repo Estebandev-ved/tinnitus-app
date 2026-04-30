@@ -130,8 +130,8 @@ const AIChat = ({ onClose, tinnitusFrequency }) => {
     // Azure Config State
     const [azureConfig, setAzureConfig] = useState({
         apiKey: '',
-        endpoint: 'https://esteb-mdiel2ip-swedencentral.cognitiveservices.azure.com/',
-        deployment: 'gpt-5.2-chat'
+        endpoint: import.meta.env.VITE_AZURE_ENDPOINT || '',
+        deployment: import.meta.env.VITE_AZURE_DEPLOYMENT || ''
     });
 
     // Therapy Session State
@@ -217,11 +217,10 @@ const AIChat = ({ onClose, tinnitusFrequency }) => {
         const savedConfig = localStorage.getItem('tinnitus_azure_config');
         if (savedConfig) {
             const parsed = JSON.parse(savedConfig);
-            // Only keep the API key, enforce correct endpoint/deployment
             const corrected = {
                 apiKey: parsed.apiKey || '',
-                endpoint: 'https://esteb-mdiel2ip-swedencentral.cognitiveservices.azure.com/',
-                deployment: 'gpt-5.2-chat'
+                endpoint: import.meta.env.VITE_AZURE_ENDPOINT || parsed.endpoint || '',
+                deployment: import.meta.env.VITE_AZURE_DEPLOYMENT || parsed.deployment || ''
             };
             localStorage.setItem('tinnitus_azure_config', JSON.stringify(corrected));
             setAzureConfig(corrected);

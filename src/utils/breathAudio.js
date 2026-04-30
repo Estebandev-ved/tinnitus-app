@@ -1,8 +1,8 @@
 // src/utils/breathAudio.js
-// Synthesized breathing sounds using Web Audio API
+// Synthesized realistic human breathing sounds using Web Audio API Noise shaping
 
 let audioCtx = null;
-let activeOsc = null;
+let activeSource = null;
 let activeGain = null;
 
 function getContext() {
@@ -16,12 +16,12 @@ function getContext() {
 }
 
 function stopCurrent() {
-    if (activeOsc) {
+    if (activeSource) {
         try {
-            activeOsc.stop();
-            activeOsc.disconnect();
+            activeSource.stop();
+            activeSource.disconnect();
         } catch (e) { /* already stopped */ }
-        activeOsc = null;
+        activeSource = null;
     }
     if (activeGain) {
         try { activeGain.disconnect(); } catch (e) { /* ok */ }
@@ -29,83 +29,75 @@ function stopCurrent() {
     }
 }
 
-/**
- * Play a smooth tonal cue for a breathing phase.
- * - Inhale: rising tone (soft wind-like, ascending)
- * - Hold:   gentle steady hum (calm sustained tone)
- * - Exhale: descending tone (releasing, going down)
- */
+// Function to create a short buffer of white noise
+function createNoiseBuffer(ctx, durationSecs) {
+    const bufferSize = ctx.sampleRate * durationSecs; 
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1; // white noise
+    }
+    return buffer;
+}
+
 export function playBreathPhase(phase, durationSeconds) {
     const ctx = getContext();
     stopCurrent();
 
-    const gain = ctx.createGain();
-    gain.connect(ctx.destination);
-    activeGain = gain;
-
     const now = ctx.currentTime;
     const dur = durationSeconds;
 
+    // Master gain for this breath part
+    const masterGain = ctx.createGain();
+    masterGain.connect(ctx.destination);
+    activeGain = masterGain;
+
+    // Filter to shape white noise into soft pinkish "breath" noise
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.connect(masterGain);
+
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = createNoiseBuffer(ctx, dur + 1); // generate noise slightly longer than needed
+    noiseSource.loop = false;
+    noiseSource.connect(filter);
+    activeSource = noiseSource;
+
     if (phase === 'inhale') {
-        // Soft rising tone — like breathing in
-        const osc = ctx.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(220, now);
-        osc.frequency.linearRampToValueAtTime(440, now + dur);
+        // Inhale sounds like a rising "Hshhh"
+        // Frequency rises
+        filter.frequency.setValueAtTime(400, now);
+        filter.frequency.linearRampToValueAtTime(1200, now + dur);
+        filter.Q.value = 0.5;
 
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.15, now + dur * 0.3);
-        gain.gain.setValueAtTime(0.15, now + dur * 0.7);
-        gain.gain.linearRampToValueAtTime(0.08, now + dur);
+        // Volume curve: slow start, peaks, slightly drops at end
+        masterGain.gain.setValueAtTime(0, now);
+        masterGain.gain.linearRampToValueAtTime(0.3, now + dur * 0.7);
+        masterGain.gain.linearRampToValueAtTime(0.1, now + dur);
 
-        osc.connect(gain);
-        osc.start(now);
-        osc.stop(now + dur);
-        activeOsc = osc;
+        noiseSource.start(now);
+        noiseSource.stop(now + dur);
 
     } else if (phase === 'hold') {
-        // Gentle steady hum — calm and sustained
-        const osc = ctx.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(330, now);
-
-        // Very subtle vibrato
-        const lfo = ctx.createOscillator();
-        lfo.frequency.setValueAtTime(2, now);
-        const lfoGain = ctx.createGain();
-        lfoGain.gain.setValueAtTime(3, now);
-        lfo.connect(lfoGain);
-        lfoGain.connect(osc.frequency);
-        lfo.start(now);
-
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.08, now + 0.5);
-        gain.gain.setValueAtTime(0.08, now + dur - 0.5);
-        gain.gain.linearRampToValueAtTime(0.04, now + dur);
-
-        osc.connect(gain);
-        osc.start(now);
-        osc.stop(now + dur);
-
-        // Store osc for cleanup
-        activeOsc = osc;
-        // LFO will stop with osc since they share the context lifetime
+        // Hold sounds almost silent, maybe just a very low subtle heartbeat or hum? 
+        // A human holding breath makes no wind sound. Let's make it completely silent.
+        masterGain.gain.setValueAtTime(0, now);
+        noiseSource.start(now);
+        noiseSource.stop(now + dur);
 
     } else if (phase === 'exhale') {
-        // Descending tone — like releasing breath
-        const osc = ctx.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(440, now);
-        osc.frequency.linearRampToValueAtTime(180, now + dur);
+        // Exhale sounds like a falling "Ffffhh"
+        filter.frequency.setValueAtTime(1000, now);
+        filter.frequency.linearRampToValueAtTime(300, now + dur);
+        filter.Q.value = 0.5;
 
-        gain.gain.setValueAtTime(0.12, now);
-        gain.gain.setValueAtTime(0.12, now + dur * 0.5);
-        gain.gain.linearRampToValueAtTime(0, now + dur);
+        // Volume curve: bursts out, then fades
+        masterGain.gain.setValueAtTime(0.1, now);
+        masterGain.gain.linearRampToValueAtTime(0.35, now + dur * 0.2);
+        masterGain.gain.linearRampToValueAtTime(0, now + dur);
 
-        osc.connect(gain);
-        osc.start(now);
-        osc.stop(now + dur);
-        activeOsc = osc;
+        noiseSource.start(now);
+        noiseSource.stop(now + dur);
     }
 }
 

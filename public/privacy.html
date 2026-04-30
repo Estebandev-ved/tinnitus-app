@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Política de Privacidad — TinnitOff</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --navy: #0A1628; --teal: #00C2B8; --gray: #8a9bbf; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--navy); color: #fff; line-height: 1.7; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; border-bottom: 1px solid rgba(0,194,184,0.12); }
+    .logo { font-size: 18px; font-weight: 800; text-decoration: none; color: #fff; }
+    .logo b { color: var(--teal); }
+    .back { color: var(--teal); text-decoration: none; font-size: 14px; }
+    .container { max-width: 720px; margin: 0 auto; padding: 60px 24px; }
+    h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+    .date { color: var(--gray); font-size: 14px; margin-bottom: 48px; }
+    h2 { font-size: 18px; font-weight: 700; margin: 36px 0 12px; color: var(--teal); }
+    p, li { font-size: 15px; color: #c8d4ea; }
+    ul { padding-left: 20px; margin-top: 8px; }
+    li { margin-bottom: 6px; }
+    strong { color: #fff; }
+    a { color: var(--teal); }
+    footer { text-align: center; padding: 40px 24px; font-size: 13px; color: var(--gray); border-top: 1px solid rgba(255,255,255,0.06); margin-top: 60px; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo" href="./landing.html">Tinnit<b>Off</b></a>
+    <a class="back" href="./landing.html">← Volver</a>
+  </div>
+  <div class="container">
+    <h1>Política de Privacidad</h1>
+    <p class="date">Última actualización: abril 2026</p>
+
+    <h2>1. Quiénes somos</h2>
+    <p>TinnitOff es una aplicación de apoyo terapéutico para personas con tinnitus (acúfenos). No somos un proveedor médico y nuestro servicio no sustituye la atención de un profesional de la salud.</p>
+
+    <h2>2. Datos que recopilamos</h2>
+    <ul>
+      <li><strong>Cuenta:</strong> nombre y email (mediante Firebase Auth / Google Sign-In).</li>
+      <li><strong>Datos de salud:</strong> niveles de tinnitus, estrés y sueño que introduces manualmente.</li>
+      <li><strong>Perfil médico:</strong> información opcional (medicamentos, doctor, audiometría).</li>
+      <li><strong>Grabaciones de voz:</strong> procesadas localmente en tu dispositivo; no se envían a nuestros servidores.</li>
+      <li><strong>Cámara:</strong> usada solo para el Monitor Facial; el video no se almacena ni se transmite.</li>
+      <li><strong>Diagnóstico técnico:</strong> errores anónimos para mejorar la estabilidad.</li>
+    </ul>
+
+    <h2>3. Cómo usamos tus datos</h2>
+    <ul>
+      <li>Personalizar terapias y recomendaciones de IA.</li>
+      <li>Mostrar tu historial de progreso y rachas.</li>
+      <li>Generar reportes PDF para tu médico (solo cuando tú lo solicitas).</li>
+      <li>Enviarte recordatorios de sesión (solo si los activas).</li>
+    </ul>
+
+    <h2>4. Con quién compartimos tus datos</h2>
+    <p><strong>No vendemos ni compartimos tus datos con terceros.</strong> Solo los usamos con:</p>
+    <ul>
+      <li><strong>Firebase (Google):</strong> almacenamiento seguro en la nube.</li>
+      <li><strong>Azure OpenAI (Microsoft):</strong> procesamiento del chat de IA. Solo se envía el texto del chat.</li>
+    </ul>
+
+    <h2>5. Tus derechos (GDPR / LGPD)</h2>
+    <ul>
+      <li>Acceder, corregir o eliminar tus datos en cualquier momento desde tu perfil.</li>
+      <li>Exportar tus datos (botón PDF en la pantalla principal).</li>
+      <li>Revocar consentimiento y eliminar tu cuenta contactándonos.</li>
+    </ul>
+
+    <h2>6. Seguridad</h2>
+    <p>Tus datos están protegidos con cifrado en tránsito (HTTPS/TLS) y en reposo (Firebase Security Rules). Solo tú puedes acceder a tu propia información.</p>
+
+    <h2>7. Menores</h2>
+    <p>Esta app no está dirigida a menores de 13 años. No recopilamos datos de menores conscientemente.</p>
+
+    <h2>8. Cambios a esta política</h2>
+    <p>Te notificaremos dentro de la app si hacemos cambios significativos. La fecha de actualización siempre estará visible en la parte superior.</p>
+
+    <h2>9. Contacto</h2>
+    <p>Para cualquier pregunta sobre privacidad escríbenos a: <a href="mailto:privacy@tinnitoff.app">privacy@tinnitoff.app</a></p>
+  </div>
+  <footer>© 2026 TinnitOff · <a href="./landing.html">Inicio</a></footer>
+</body>
+</html>

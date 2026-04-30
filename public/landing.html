@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TinnitOff — Terapia para acúfenos</title>
+  <meta name="description" content="TinnitOff es la primera app de terapia integral para tinnitus en Latinoamérica. IA, sonidos terapéuticos, seguimiento y comunidad." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="TinnitOff — Terapia para acúfenos" />
+  <meta property="og:description" content="Terapia sonora, IA y seguimiento para vivir mejor con tinnitus." />
+  <meta property="og:image" content="https://tinnitusoff-e61c4.web.app/og-image.png" />
+  <meta property="og:url" content="https://tinnitusoff-e61c4.web.app/landing.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0A1628;
+      --navy2: #0e1f3d;
+      --teal: #00C2B8;
+      --teal-light: #00e5d9;
+      --white: #ffffff;
+      --gray: #8a9bbf;
+      --card-bg: rgba(14, 31, 61, 0.7);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(10, 22, 40, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,194,184,0.12);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo svg { width: 32px; height: 32px; }
+    .nav-logo span { font-size: 20px; font-weight: 700; color: var(--white); }
+    .nav-logo span b { color: var(--teal); }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a { color: var(--gray); text-decoration: none; font-size: 15px; transition: color .2s; }
+    .nav-links a:hover { color: var(--teal); }
+    .nav-cta {
+      background: var(--teal); color: var(--navy);
+      padding: 10px 22px; border-radius: 50px; font-weight: 700;
+      text-decoration: none; font-size: 15px; transition: opacity .2s;
+    }
+    .nav-cta:hover { opacity: .85; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 120px 24px 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(0,194,184,0.12) 0%, transparent 70%);
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,194,184,0.12); border: 1px solid rgba(0,194,184,0.3);
+      color: var(--teal); padding: 6px 16px; border-radius: 50px;
+      font-size: 13px; font-weight: 600; margin-bottom: 28px; position: relative; z-index: 1;
+    }
+    .hero h1 {
+      font-size: clamp(40px, 7vw, 72px); font-weight: 800;
+      line-height: 1.1; margin-bottom: 24px; position: relative; z-index: 1;
+    }
+    .hero h1 span { color: var(--teal); }
+    .hero p {
+      font-size: clamp(16px, 2.5vw, 20px); color: var(--gray);
+      max-width: 560px; line-height: 1.7; margin-bottom: 48px; position: relative; z-index: 1;
+    }
+    .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; position: relative; z-index: 1; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--teal); color: var(--navy);
+      padding: 16px 32px; border-radius: 50px; font-weight: 700; font-size: 17px;
+      text-decoration: none; transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 0 32px rgba(0,194,184,0.35);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 48px rgba(0,194,184,0.5); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: transparent; color: var(--white);
+      padding: 16px 32px; border-radius: 50px; font-weight: 600; font-size: 17px;
+      text-decoration: none; border: 1.5px solid rgba(255,255,255,0.2);
+      transition: border-color .2s, color .2s;
+    }
+    .btn-secondary:hover { border-color: var(--teal); color: var(--teal); }
+
+    /* pulse ring around download btn */
+    .btn-primary.download { animation: pulse-glow 2.5s ease-in-out infinite; }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 32px rgba(0,194,184,0.35); }
+      50% { box-shadow: 0 0 60px rgba(0,194,184,0.65); }
+    }
+
+    .hero-note { margin-top: 20px; font-size: 12px; color: rgba(138,155,191,0.6); position: relative; z-index: 1; }
+
+    /* ── STATS ── */
+    .stats {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 40px;
+      padding: 60px 24px;
+      border-top: 1px solid rgba(0,194,184,0.1);
+      border-bottom: 1px solid rgba(0,194,184,0.1);
+    }
+    .stat-item { text-align: center; }
+    .stat-number { font-size: 42px; font-weight: 800; color: var(--teal); line-height: 1; }
+    .stat-label { font-size: 14px; color: var(--gray); margin-top: 4px; }
+
+    /* ── FEATURES ── */
+    .section { padding: 100px 24px; max-width: 1100px; margin: 0 auto; }
+    .section-tag { color: var(--teal); font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+    .section-title { font-size: clamp(28px, 5vw, 48px); font-weight: 800; line-height: 1.2; margin-bottom: 16px; }
+    .section-sub { font-size: 18px; color: var(--gray); max-width: 560px; line-height: 1.7; margin-bottom: 60px; }
+
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .feature-card {
+      background: var(--card-bg); border: 1px solid rgba(0,194,184,0.1);
+      border-radius: 20px; padding: 32px;
+      transition: border-color .3s, transform .3s;
+    }
+    .feature-card:hover { border-color: rgba(0,194,184,0.4); transform: translateY(-4px); }
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: rgba(0,194,184,0.12); display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px; font-size: 26px;
+    }
+    .feature-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+    .feature-card p { font-size: 15px; color: var(--gray); line-height: 1.7; }
+
+    /* ── HOW IT WORKS ── */
+    .steps { display: flex; flex-direction: column; gap: 0; position: relative; }
+    .steps::before {
+      content: ''; position: absolute; left: 24px; top: 24px; bottom: 24px; width: 2px;
+      background: linear-gradient(to bottom, var(--teal), transparent);
+    }
+    .step { display: flex; gap: 24px; padding: 0 0 48px 0; }
+    .step-num {
+      width: 50px; height: 50px; border-radius: 50%; background: var(--teal);
+      color: var(--navy); font-weight: 800; font-size: 18px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; z-index: 1;
+    }
+    .step-content { padding-top: 8px; }
+    .step-content h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .step-content p { font-size: 15px; color: var(--gray); line-height: 1.7; }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .testimonial-card {
+      background: var(--card-bg); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px; padding: 28px;
+    }
+    .stars { color: var(--teal); font-size: 18px; margin-bottom: 14px; }
+    .testimonial-card p { font-size: 15px; line-height: 1.7; color: #c8d4ea; font-style: italic; margin-bottom: 20px; }
+    .testimonial-author { display: flex; align-items: center; gap: 12px; }
+    .author-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), #0073ff);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: var(--navy);
+    }
+    .author-info span { display: block; }
+    .author-name { font-weight: 600; font-size: 14px; }
+    .author-role { font-size: 12px; color: var(--gray); }
+
+    /* ── DOWNLOAD ── */
+    .download-section {
+      background: linear-gradient(135deg, rgba(0,194,184,0.08) 0%, rgba(0,115,255,0.08) 100%);
+      border-top: 1px solid rgba(0,194,184,0.15);
+      border-bottom: 1px solid rgba(0,194,184,0.15);
+      padding: 100px 24px; text-align: center;
+    }
+    .download-section h2 { font-size: clamp(28px, 5vw, 48px); font-weight: 800; margin-bottom: 16px; }
+    .download-section p { font-size: 18px; color: var(--gray); margin-bottom: 48px; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .store-btns { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin-bottom: 20px; }
+    .store-btn {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.15);
+      color: var(--white); padding: 14px 28px; border-radius: 14px;
+      text-decoration: none; font-size: 16px; transition: background .2s, border-color .2s;
+    }
+    .store-btn:hover { background: rgba(0,194,184,0.12); border-color: var(--teal); }
+    .store-btn svg { width: 28px; height: 28px; }
+    .store-btn .store-label { text-align: left; }
+    .store-btn .store-name { font-weight: 700; display: block; }
+    .store-btn .store-sub { font-size: 12px; color: var(--gray); display: block; }
+    .coming-soon { font-size: 13px; color: rgba(138,155,191,0.6); margin-top: 8px; }
+
+    /* ── DISCLAIMER ── */
+    .disclaimer-bar {
+      background: rgba(255,149,0,0.08); border-top: 1px solid rgba(255,149,0,0.2);
+      padding: 20px 24px; text-align: center;
+      font-size: 13px; color: rgba(138,155,191,0.8); line-height: 1.6;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 60px 40px 40px;
+      display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      max-width: 1100px; margin: 0 auto;
+    }
+    .footer-brand .logo-text { font-size: 22px; font-weight: 800; }
+    .footer-brand .logo-text b { color: var(--teal); }
+    .footer-brand p { font-size: 14px; color: var(--gray); margin-top: 10px; max-width: 260px; line-height: 1.6; }
+    .footer-links h4 { font-size: 13px; font-weight: 700; color: var(--gray); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+    .footer-links a { display: block; color: #8a9bbf; text-decoration: none; font-size: 14px; margin-bottom: 10px; transition: color .2s; }
+    .footer-links a:hover { color: var(--teal); }
+    .footer-bottom {
+      text-align: center; padding: 24px; font-size: 13px; color: rgba(138,155,191,0.5);
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .hero { padding: 100px 20px 60px; }
+      .stats { gap: 28px; }
+      footer { padding: 40px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#0A1628"/>
+      <path d="M8 16 Q8 9 13 6" stroke="#00C2B8" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M6 16 Q6 8 12 4" stroke="#00C2B8" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".6"/>
+      <ellipse cx="18" cy="15" rx="5" ry="7" fill="none" stroke="white" stroke-width="2"/>
+      <ellipse cx="18" cy="17" rx="2.6" ry="3.6" fill="none" stroke="white" stroke-width="1.6"/>
+      <line x1="18" y1="20.6" x2="18" y2="23.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="18" cy="17" r="1.2" fill="#00C2B8"/>
+    </svg>
+    <span>Tinnit<b>Off</b></span>
+  </a>
+  <div class="nav-links">
+    <a href="#features">Funciones</a>
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#testimonios">Testimonios</a>
+    <a href="#descargar">Descargar</a>
+  </div>
+  <a class="nav-cta" href="#descargar">Descargar gratis</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-badge">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="7" fill="#00C2B8" opacity=".3"/><circle cx="7" cy="7" r="3.5" fill="#00C2B8"/></svg>
+    Primera app integral de tinnitus en Latam
+  </div>
+  <h1>Recupera tu<br/><span>silencio interior</span></h1>
+  <p>Terapia sonora basada en TCC, seguimiento inteligente y una IA que te acompaña en cada paso del tratamiento.</p>
+  <div class="hero-btns">
+    <a class="btn-primary download" href="#descargar">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Descargar para Android
+    </a>
+    <a class="btn-secondary" href="#features">
+      Ver funciones
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+  </div>
+  <p class="hero-note">Gratis · Sin suscripción · Android 5.1+</p>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item">
+    <div class="stat-number">15+</div>
+    <div class="stat-label">Funciones terapéuticas</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">12</div>
+    <div class="stat-label">Ambientes sonoros</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">6</div>
+    <div class="stat-label">Semanas de programa TCC</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">24/7</div>
+    <div class="stat-label">Asistente IA disponible</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <p class="section-tag">Funciones</p>
+  <h2 class="section-title">Todo lo que necesitas<br/>en una sola app</h2>
+  <p class="section-sub">Diseñada con base en evidencia clínica y tecnología de punta para el manejo del tinnitus.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🎵</div>
+      <h3>Sonidos terapéuticos</h3>
+      <p>Mezcla ruido blanco, lluvia, café y más de 12 ambientes. Ajusta frecuencias con el acufenómetro personalizado.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <h3>Asistente IA especializado</h3>
+      <p>Chat con IA entrenada en tinnitus: estrategias de manejo, psicoeducación y apoyo emocional disponible 24/7.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Seguimiento inteligente</h3>
+      <p>Registra intensidad, estrés y sueño diariamente. Detecta patrones y predice días difíciles antes de que lleguen.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🧘</div>
+      <h3>Sesiones guiadas TCC</h3>
+      <p>Programa de 6 semanas basado en Terapia Cognitivo-Conductual. Respiración, mindfulness y relajación muscular.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏆</div>
+      <h3>Sistema de logros</h3>
+      <p>Mantén rachas, desbloquea logros y side quests. El camino terapéutico se vuelve más llevadero con pequeñas victorias.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">👨‍⚕️</div>
+      <h3>Reporte para tu médico</h3>
+      <p>Exporta un PDF con tu historial de síntomas, audiometría y progreso para llevar a tu próxima consulta.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">👥</div>
+      <h3>Comunidad</h3>
+      <p>Conecta con otros usuarios, comparte experiencias y encuentra apoyo en personas que entienden lo que estás viviendo.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>100% privado</h3>
+      <p>Tus datos de salud son solo tuyos. Protegidos con cifrado y reglas de seguridad Firebase. Nunca los vendemos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="como-funciona" style="padding-top: 0;">
+  <p class="section-tag">Proceso</p>
+  <h2 class="section-title">Cómo funciona</h2>
+  <p class="section-sub">Un camino claro desde el primer día hasta la habituación.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Descarga e ingresa</h3>
+        <p>Crea tu cuenta en segundos con Google. Tus datos se sincronizan de forma segura en la nube.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Crea tu perfil sonoro</h3>
+        <p>El acufenómetro identifica la frecuencia exacta de tu tinnitus para personalizar los sonidos de enmascaramiento.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Sigue tu programa TCC</h3>
+        <p>6 semanas de sesiones guiadas con técnicas validadas clínicamente para reducir el impacto del tinnitus.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>Registra y analiza</h3>
+        <p>El tracker diario y el gemelo digital detectan patrones en tus síntomas y predigen días de mayor intensidad.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h3>Habituación progresiva</h3>
+        <p>Con el tiempo, el tinnitus pasa de ser una fuente de angustia a un ruido de fondo que puedes ignorar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section" id="testimonios" style="padding-top: 0;">
+  <p class="section-tag">Testimonios</p>
+  <h2 class="section-title">Lo que dicen nuestros usuarios</h2>
+  <p class="section-sub" style="margin-bottom: 40px;">Personas reales que han mejorado su calidad de vida.</p>
+
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p>"Después de 3 años con tinnitus, finalmente encontré algo que me ayuda a dormir. Los sonidos personalizados son un cambio total."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">M</div>
+        <div class="author-info">
+          <span class="author-name">María González</span>
+          <span class="author-role">Bogotá, Colombia · Usuario beta</span>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p>"El asistente IA entiende exactamente lo que siento. No es solo información genérica, responde a mi situación específica."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">C</div>
+        <div class="author-info">
+          <span class="author-name">Carlos Méndez</span>
+          <span class="author-role">Ciudad de México · Usuario beta</span>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p>"El reporte para mi médico fue increíble. Por primera vez pude mostrarle datos concretos de cómo varían mis síntomas."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">A</div>
+        <div class="author-info">
+          <span class="author-name">Ana Rodríguez</span>
+          <span class="author-role">Lima, Perú · Usuario beta</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section class="download-section" id="descargar">
+  <h2>Descarga TinnitOff hoy</h2>
+  <p>Gratis, sin anuncios y sin suscripción. Disponible ahora para Android.</p>
+
+  <div class="store-btns">
+    <!-- APK directo -->
+    <a class="store-btn" href="./downloads/tinnitoff.apk" download="TinnitOff.apk" id="apk-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+        <line x1="12" y1="18" x2="12" y2="18" stroke-width="2.5"/>
+      </svg>
+      <div class="store-label">
+        <span class="store-sub">Descarga directa</span>
+        <span class="store-name">APK para Android</span>
+      </div>
+    </a>
+
+    <!-- Play Store (próximamente) -->
+    <a class="store-btn" href="#" style="opacity:.5; cursor:default;">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5v-17c0-.83 1-.97 1.4-.44l15 8.5c.37.21.37.77 0 .98l-15 8.5c-.4.53-1.4.39-1.4-.54z" opacity=".3"/><path d="M3 3.5l10.55 10.5L3 20.5V3.5zm0 0" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      <div class="store-label">
+        <span class="store-sub">Próximamente</span>
+        <span class="store-name">Google Play</span>
+      </div>
+    </a>
+
+    <!-- App Store (próximamente) -->
+    <a class="store-btn" href="#" style="opacity:.5; cursor:default;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a5 5 0 0 1 5 5c0 2.76-2.24 5-5 5S7 9.76 7 7a5 5 0 0 1 5-5z"/><path d="M15.5 12.5c2.5 1.5 4 4 4 7H4.5c0-3 1.5-5.5 4-7"/></svg>
+      <div class="store-label">
+        <span class="store-sub">Próximamente</span>
+        <span class="store-name">App Store (iOS)</span>
+      </div>
+    </a>
+  </div>
+  <p class="coming-soon">Android 5.1+ · ~25 MB · Sin cuenta obligatoria para explorar</p>
+</section>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer-bar">
+  ⚠️ <strong>Aviso médico:</strong> TinnitOff es una herramienta de apoyo complementario. No reemplaza el diagnóstico ni el tratamiento de un profesional de la salud. Si presentas síntomas graves, consulta a un otorrinolaringólogo.
+</div>
+
+<!-- FOOTER -->
+<div style="background: rgba(0,0,0,0.2);">
+  <footer>
+    <div class="footer-brand">
+      <div class="logo-text">Tinnit<b>Off</b></div>
+      <p>La primera app integral de terapia para tinnitus desarrollada en Latinoamérica.</p>
+    </div>
+    <div class="footer-links">
+      <h4>App</h4>
+      <a href="#features">Funciones</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#descargar">Descargar</a>
+    </div>
+    <div class="footer-links">
+      <h4>Legal</h4>
+      <a href="./privacy.html">Política de Privacidad</a>
+      <a href="#" onclick="alert('Próximamente')">Términos de Uso</a>
+      <a href="mailto:privacy@tinnitoff.app">Contacto</a>
+    </div>
+  </footer>
+  <div class="footer-bottom">
+    © 2026 TinnitOff. Desarrollado con ❤️ en Latinoamérica.
+  </div>
+</div>
+
+<script>
+  // Track APK download
+  document.getElementById('apk-btn').addEventListener('click', function(e) {
+    const href = this.getAttribute('href');
+    if (href === './downloads/tinnitoff.apk') {
+      // Check if file exists before downloading
+      fetch('./downloads/tinnitoff.apk', { method: 'HEAD' })
+        .then(r => {
+          if (!r.ok) {
+            e.preventDefault();
+            alert('El APK estará disponible muy pronto. ¡Gracias por tu interés!');
+          }
+        })
+        .catch(() => {
+          e.preventDefault();
+          alert('El APK estará disponible muy pronto. ¡Gracias por tu interés!');
+        });
+    }
+  });
+
+  // Smooth nav highlight
+  const sections = document.querySelectorAll('section[id], div[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--teal)' : '';
+    });
+  });
+</script>
+</body>
+</html>

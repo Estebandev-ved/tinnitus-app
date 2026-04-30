@@ -1,0 +1,80 @@
+/* Base styles and variables */
+:root {
+  --bg: #FFFFFF;
+  --surface: #F4F5F7;
+  --text: #1A1A1C;
+  --text-sec: #6B7280;
+  --anim-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121212;
+    --surface: #1E1E20;
+    --text: #F9FAFB;
+    --text-sec: #9CA3AF;
+  }
+}
+
+body { background: var(--bg); color: var(--text); margin: 0; font-family: system-ui, sans-serif; }
+
+/* Dashboard Layout Grid (Max 2 levels nesting constraint) */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+/* Horizontal Scroll Container for Cards */
+.scroll-container {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+}
+.scroll-container::-webkit-scrollbar { display: none; }
+.scroll-container { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Staggered Animations */
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.anim-stagger-1 { animation: slideUpFade 0.4s var(--anim-ease) 0.1s both; }
+.anim-stagger-2 { animation: slideUpFade 0.4s var(--anim-ease) 0.2s both; }
+.anim-stagger-3 { animation: slideUpFade 0.4s var(--anim-ease) 0.3s both; }
+.anim-stagger-4 { animation: slideUpFade 0.4s var(--anim-ease) 0.4s both; }
+
+/* Touch Target Minimums 48x48 */
+.btn, .fab, .card-action {
+  min-width: 48px;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+/* FAB */
+.fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  background-color: #3B82F6;
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  z-index: 100;
+  transition: transform 0.2s;
+}
+.fab:active { transform: scale(0.95); }
+
+/* Draggable states */
+.draggable-item { cursor: grab; background: var(--surface); padding: 1rem; border-radius: 12px; }
+.draggable-item:active { cursor: grabbing; opacity: 0.8; }

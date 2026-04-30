@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Volume2, Calendar, MessageSquare, ChevronRight, BookOpen, Wind, Sliders, Lightbulb, Flame, TrendingDown, Moon, Sun, Bell, Download, Users, Globe, ScanFace, Headphones, Cpu } from 'lucide-react';
+import { Shield, Mic, Trophy, Heart, Brain, BookOpen, Volume2, Calendar, MessageSquare, ChevronRight, Wind, Sliders, Lightbulb, Flame, TrendingDown, Moon, Sun, Bell, Download, Users, Globe, ScanFace, Headphones, Cpu, AlertTriangle } from 'lucide-react';
+import { RescueMode } from './components/mechanics/RescueMode';
+import { SideQuestsWidget } from './components/SideQuestsWidget';
 import { FirestoreService } from './services/firestoreService';
 import { generateDoctorReport } from './utils/reportGenerator';
 import { useLanguage } from './contexts/LanguageContext';
@@ -7,17 +9,23 @@ import './App.css';
 
 // Illustration imports
 import splashIllustration from './assets/illustrations/corte2.png';
-import disclaimerIllustration from './assets/illustrations/c3.png';
 
 // Component Imports
 import FrequencyMatcher from './components/FrequencyMatcher';
+import VoiceDiary from "./components/VoiceDiary";
+import HomeWidget from "./components/HomeWidget";
+import Achievements from "./components/Achievements";
+import CaregiverMode from "./components/CaregiverMode";
+import CrisisPrediction from "./components/CrisisPrediction";
+import GuidedSessions from "./components/GuidedSessions";
 import DailyTracker from './components/DailyTracker';
 import AIChat from './components/AIChat';
 import SoundLibrary from './components/SoundLibrary';
 import Education from './components/Education';
 import BreathingGuide from './components/BreathingGuide';
 import CustomNoise from './components/CustomNoise';
-import Onboarding from './components/Onboarding';
+import Onboarding from './components/Onboarding'; // cache bust
+import MedicalDisclaimer from './components/MedicalDisclaimer';
 import MedicalProfile from './components/MedicalProfile';
 import Community from './components/Community';
 import Login from './components/Login';
@@ -25,7 +33,7 @@ import ProgressNotes from './components/ProgressNotes';
 import UserProfile from './components/UserProfile';
 import FacialMonitor from './components/FacialMonitor';
 import SpatialAudio from './components/SpatialAudio';
-import DigitalTwin from './components/DigitalTwin';
+import DigitalTwin from './components/EnhancedDigitalTwin';
 
 // CSS Imports (Side Effects)
 import './components/FrequencyMatcher.css';
@@ -44,6 +52,7 @@ import './components/UserProfile.css';
 import './components/FacialMonitor.css';
 import './components/SpatialAudio.css';
 import './components/DigitalTwin.css';
+
 
 const SplashScreen = ({ onFinish }) => {
   const { t, toggleLanguage, language } = useLanguage();
@@ -65,25 +74,6 @@ const SplashScreen = ({ onFinish }) => {
   );
 };
 
-const DisclaimerModal = ({ onAccept }) => (
-  <div className="onboarding-overlay">
-    <div className="modal card animate-fade">
-      <img src={disclaimerIllustration} alt="" className="disclaimer-illustration" />
-      <h2>Aviso Médico Legal</h2>
-      <p className="disclaimer-text">
-        TinnitOff es una herramienta de apoyo y habituación. El contenido proporcionado, incluyendo los consejos de la IA, <strong>no sustituye el diagnóstico o tratamiento de un profesional médico</strong>.
-      </p>
-      <ul className="disclaimer-bullets">
-        <li>Consulta siempre a tu otorrinolaringólogo.</li>
-        <li>No ignores el consejo médico profesional.</li>
-        <li>El uso de esta app es bajo tu responsabilidad.</li>
-      </ul>
-      <button className="btn btn-primary" onClick={onAccept}>
-        Acepto y Entiendo
-      </button>
-    </div>
-  </div>
-);
 
 const DAILY_TIPS = [
   ' Evita la cafeína después de las 3pm — puede intensificar el zumbido.',
@@ -114,6 +104,13 @@ function App() {
   const [showMedical, setShowMedical] = useState(false);
   const [showCommunity, setShowCommunity] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
+  const [showVoiceDiary, setShowVoiceDiary] = useState(false);
+  const [showAchievements, setShowAchievements] = useState(false);
+  const [showCaregiverMode, setShowCaregiverMode] = useState(false);
+  const [showCrisisPrediction, setShowCrisisPrediction] = useState(false);
+  const [showGuidedSessions, setShowGuidedSessions] = useState(false);
+  const [showRescueMode, setShowRescueMode] = useState(false);
+  const [achievementBanner, setAchievementBanner] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
   const [showFacialMonitor, setShowFacialMonitor] = useState(false);
   const [showSpatialAudio, setShowSpatialAudio] = useState(false);
@@ -271,6 +268,7 @@ function App() {
     setShowFacialMonitor(false);
     setShowSpatialAudio(false);
     setShowTwin(false);
+    setShowCaregiverMode(false);
   };
 
   const openFeature = (setter) => {
@@ -287,7 +285,7 @@ function App() {
     return (
       <div className="app-container">
         <SplashScreen onFinish={handleStart} />
-        {showDisclaimer && <DisclaimerModal onAccept={handleAcceptDisclaimer} />}
+        {showDisclaimer && <MedicalDisclaimer onAccept={handleAcceptDisclaimer} />}
       </div>
     );
   }
@@ -332,6 +330,9 @@ function App() {
           tinnitusFrequency={matchedFrequency}
         />
       )}
+      
+
+
       {showLibrary && (
         <SoundLibrary
           onClose={() => setShowLibrary(false)}
@@ -367,6 +368,13 @@ function App() {
       {showNotes && (
         <ProgressNotes
           onClose={() => setShowNotes(false)}
+          openTherapy={(action) => {
+            if (action === 'sound_brown') {
+              setShowCustomNoise(true);
+            } else if (action === 'breathing') {
+              setShowBreathing(true);
+            }
+          }}
         />
       )}
       {showProfile && (
@@ -460,7 +468,8 @@ function App() {
       })()}
 
       <main className="app-main">
-        {/* ... Admin Section ... */}
+        
+        {/* Admin Section */}
         {user?.role === 'admin' && (
           <section className="admin-banner highlight-card" style={{ background: '#333', color: 'white' }}>
             <div className="card-header">
@@ -501,6 +510,12 @@ function App() {
         </section>
 
         <section className="daily-actions">
+          {step === 'home' && (
+            <div style={{marginBottom: 20}}>
+              <HomeWidget />
+              <SideQuestsWidget />
+            </div>
+          )}
           <h3 className="text-gradient">Acciones Diarias</h3>
           <div className="actions-grid stagger-children">
             <div className="action-item card press-effect gradient-border" onClick={() => setShowTwin(true)}>
@@ -535,10 +550,7 @@ function App() {
               <Volume2 size={24} color="#FF2D55" className="icon-glow" />
               <span>{t('action_library')}</span>
             </div>
-            <div className="action-item card press-effect" onClick={() => setShowEducation(true)}>
-              <BookOpen size={24} color="#AF52DE" className="icon-glow" />
-              <span>{t('action_education')}</span>
-            </div>
+
             <div className="action-item card press-effect" onClick={() => setShowBreathing(true)}>
               <Wind size={24} color="#30B0C7" className="icon-glow" />
               <span>{t('action_breathing')}</span>
@@ -550,6 +562,26 @@ function App() {
             <div className="action-item card press-effect" onClick={() => setShowNotes(true)}>
               <MessageSquare size={24} color="#007AFF" className="icon-glow" />
               <span>{t('action_notes')}</span>
+            </div>
+            <div className="action-item card press-effect gradient-border" onClick={() => setShowVoiceDiary(true)}>
+              <Mic size={24} color="#FF2D55" className="icon-glow" />
+              <span>Diario de Voz</span>
+            </div>
+            <div className="action-item card press-effect gradient-border" onClick={() => setShowAchievements(true)}>
+              <Trophy size={24} color="#FFD700" className="icon-glow" />
+              <span>Mis Logros</span>
+            </div>
+            <div className="action-item card press-effect" onClick={() => setShowCaregiverMode(true)}>
+              <Heart size={24} color="#FF2D55" className="icon-glow" />
+              <span>Cuidador</span>
+            </div>
+            <div className="action-item card press-effect" onClick={() => setShowCrisisPrediction(true)}>
+              <Brain size={24} color="#5856D6" className="icon-glow" />
+              <span>Predicción ML</span>
+            </div>
+            <div className="action-item card press-effect" onClick={() => setShowGuidedSessions(true)}>
+              <BookOpen size={24} color="#34C759" className="icon-glow" />
+              <span>Programa 30D</span>
             </div>
           </div>
         </section>
@@ -638,6 +670,28 @@ function App() {
           </div>
         </section>
       </main>
+
+      {showVoiceDiary && <VoiceDiary onClose={() => setShowVoiceDiary(false)} />}
+      {showAchievements && <Achievements onClose={() => setShowAchievements(false)} />}
+      {showCaregiverMode && <CaregiverMode onClose={() => setShowCaregiverMode(false)} />}
+      {showCrisisPrediction && <CrisisPrediction onClose={() => setShowCrisisPrediction(false)} openBreathing={() => setShowBreathing(true)} openSpatialAudio={() => setShowSpatialAudio(true)} />}
+      {showGuidedSessions && <GuidedSessions onClose={() => setShowGuidedSessions(false)} openBreathing={() => setShowBreathing(true)} />}
+      {showRescueMode && <RescueMode onClose={() => setShowRescueMode(false)} />}
+      
+      {/* Botón Rojo SOS Global */}
+      <button 
+        onClick={() => setShowRescueMode(true)}
+        style={{
+          position: 'fixed', bottom: 80, right: 20, zIndex: 100, 
+          background: 'linear-gradient(135deg, #FF3B30 0%, #FF2D55 100%)', color: 'white', border: 'none', 
+          borderRadius: '50%', width: 56, height: 56, 
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 4px 15px rgba(255, 59, 48, 0.4)', cursor: 'pointer',
+          animation: 'pulse 2s infinite'
+        }}
+      >
+        <AlertTriangle size={24} />
+      </button>
 
       <nav className="bottom-nav">
         <div className="nav-item" onClick={() => setShowLibrary(true)}><Volume2 size={24} /></div>

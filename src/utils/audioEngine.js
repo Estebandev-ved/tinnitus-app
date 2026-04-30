@@ -128,18 +128,17 @@ export const AudioEngine = {
         return fadeInterval; // Return so it can be cancelled
     },
 
-    // Custom Noise Generator: play noise filtered to a specific frequency
-    playCustomNoise(frequency) {
+    // Custom Noise Generator: play noise filtered to a specific frequency with optional pulsation
+    playCustomNoise(frequency, modulationRate = 0) {
         this.init();
 
-        // Stop existing custom noise if playing
         if (this.activeSounds.has('custom')) {
             this.stop('custom');
         }
 
-        const gainNode = this.audioContext.createGain();
-        gainNode.gain.value = 0.5;
-        gainNode.connect(this.audioContext.destination);
+        const masterGainNode = this.audioContext.createGain();
+        masterGainNode.gain.value = 0.5;
+        masterGainNode.connect(this.audioContext.destination);
 
         const bufferSize = this.audioContext.sampleRate * 2;
         const buffer = this.audioContext.createBuffer(1, bufferSize, this.audioContext.sampleRate);
@@ -152,17 +151,41 @@ export const AudioEngine = {
         sourceNode.buffer = buffer;
         sourceNode.loop = true;
 
-        // Bandpass filter centered on target frequency
         const filter = this.audioContext.createBiquadFilter();
         filter.type = 'bandpass';
         filter.frequency.value = frequency;
-        filter.Q.value = 5; // Narrower band
+        filter.Q.value = 5;
 
         sourceNode.connect(filter);
-        filter.connect(gainNode);
-        sourceNode.start();
 
-        this.activeSounds.set('custom', { source: sourceNode, gainNode: gainNode });
+        if (modulationRate > 0) {
+            // Apply AM (Amplitude Modulation) for pulsation
+            const lfo = this.audioContext.createOscillator();
+            lfo.type = 'sine';
+            lfo.frequency.value = modulationRate; // e.g., 0.5 Hz to 2 Hz
+
+            const lfoGain = this.audioContext.createGain();
+            lfoGain.gain.value = 0.5; // Depth of modulation
+
+            // Auto-reduce base volume to allow LFO room
+            const baseGain = this.audioContext.createGain();
+            baseGain.gain.value = 0.5;
+
+            // LFO modifies baseGain
+            lfo.connect(lfoGain);
+            lfoGain.connect(baseGain.gain);
+
+            filter.connect(baseGain);
+            baseGain.connect(masterGainNode);
+
+            lfo.start();
+            this.activeSounds.set('custom', { source: sourceNode, gainNode: masterGainNode, lfo: lfo });
+        } else {
+            filter.connect(masterGainNode);
+            this.activeSounds.set('custom', { source: sourceNode, gainNode: masterGainNode });
+        }
+
+        sourceNode.start();
     }
 };
 

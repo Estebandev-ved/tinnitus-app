@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">TinnitOff</string>
+    <string name="title_activity_main">TinnitOff</string>
+    <string name="package_name">com.tinnitoff.app</string>
+    <string name="custom_url_scheme">com.tinnitoff.app</string>
+</resources>

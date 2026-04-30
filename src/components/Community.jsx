@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, Send, Heart, MessageCircle, User, Plus, Trophy, MessageSquare, Map as MapIcon } from 'lucide-react';
+import { X, Send, Heart, MessageCircle, User, Plus, Trophy, MessageSquare, Map as MapIcon, Globe2, Sparkles } from 'lucide-react';
 import { FirestoreService } from '../services/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
 import GlobalMap from './GlobalMap';
 import './Community.css';
-import communityIllustration from '../assets/illustrations/community.png';
 
 const CATEGORIES = [
     { key: 'all', label: 'Todos' },
@@ -31,7 +30,7 @@ const Community = ({ onClose }) => {
     const loadPosts = async () => {
         try {
             const data = await FirestoreService.getCommunityPosts();
-            setPosts(data);
+            setPosts(data || []);
         } catch (e) {
             console.error('Error loading posts:', e);
         } finally {
@@ -104,169 +103,179 @@ const Community = ({ onClose }) => {
     };
 
     return (
-        <div className="community-overlay animate-fade">
-            <div className="community-modal">
-                <header className="community-header">
-                    <h3>Comunidad</h3>
-                    <button className="close-btn" onClick={onClose}>
-                        <X size={24} />
+        <div className="comm-full-wrapper animate-fade">
+            <div className="comm-full-container">
+                <header className="comm-header">
+                    <h2><Globe2 size={24} color="#30B0C7"/> Red Global de TinnitOff</h2>
+                    <button className="comm-close-btn" onClick={onClose}>
+                        <X size={20} />
                     </button>
                 </header>
 
-                <img src={communityIllustration} alt="" className="feature-illustration" />
-
-                {/* Tabs */}
-                <div className="community-tabs" style={{ display: 'flex', gap: 8, padding: '0 24px', marginBottom: 16 }}>
-                    <button className={`cat-btn ${activeTab === 'forum' ? 'active' : ''}`} onClick={() => setActiveTab('forum')}><MessageSquare size={16} /> Foro</button>
-                    <button className={`cat-btn ${activeTab === 'map' ? 'active' : ''}`} onClick={() => setActiveTab('map')}><MapIcon size={16} /> Mapa Global</button>
-                    <button className={`cat-btn ${activeTab === 'leaders' ? 'active' : ''}`} onClick={() => setActiveTab('leaders')}><Trophy size={16} /> Líderes</button>
+                <div className="comm-tabs-nav">
+                    <button className={`comm-tab-btn ${activeTab === 'forum' ? 'active' : ''}`} onClick={() => setActiveTab('forum')}>
+                        <MessageSquare size={18} /> Foro de Apoyo
+                    </button>
+                    <button className={`comm-tab-btn ${activeTab === 'map' ? 'active' : ''}`} onClick={() => setActiveTab('map')}>
+                        <MapIcon size={18} /> Mapa Mundial
+                    </button>
+                    <button className={`comm-tab-btn ${activeTab === 'leaders' ? 'active' : ''}`} onClick={() => setActiveTab('leaders')}>
+                        <Trophy size={18} /> Líderes de Resiliencia
+                    </button>
                 </div>
 
-                {activeTab === 'forum' && (
-                    <>
-                        {/* Categories */}
-                        <div className="community-categories">
-                            {CATEGORIES.map(cat => (
-                                <button
-                                    key={cat.key}
-                                    className={`cat-btn ${activeCategory === cat.key ? 'active' : ''}`}
-                                    onClick={() => setActiveCategory(cat.key)}
-                                >
-                                    {cat.label}
-                                </button>
-                            ))}
-                        </div>
+                <div className="comm-content">
+                    {activeTab === 'forum' && (
+                        <>
+                            <div className="comm-categories">
+                                {CATEGORIES.map(cat => (
+                                    <button
+                                        key={cat.key}
+                                        className={`cat-pill ${activeCategory === cat.key ? 'active' : ''}`}
+                                        onClick={() => setActiveCategory(cat.key)}
+                                    >
+                                        {cat.label}
+                                    </button>
+                                ))}
+                            </div>
 
-                        {/* Posts */}
-                        <div className="community-posts">
-                            {loading ? (
-                                <p className="community-empty">Cargando...</p>
-                            ) : filteredPosts.length === 0 ? (
-                                <p className="community-empty">No hay posts aún. ¡Sé el primero!</p>
-                            ) : (
-                                filteredPosts.map(post => (
-                                    <div key={post.id} className="post-card">
-                                        <div className="post-top">
-                                            <div className="post-author">
-                                                <div className="post-avatar"><User size={16} /></div>
-                                                <span>{post.authorName || 'Anónimo'}</span>
-                                                <span className="post-time">{timeAgo(post.createdAt)}</span>
-                                            </div>
-                                            <span className="post-cat">{getCategoryEmoji(post.category)}</span>
-                                        </div>
-                                        <p className="post-text">{post.text}</p>
-                                        <div className="post-actions">
-                                            <button
-                                                className={`post-action-btn ${post.likedBy?.includes(currentUser?.uid) ? 'liked' : ''}`}
-                                                onClick={() => handleLike(post.id)}
-                                            >
-                                                <Heart size={16} fill={post.likedBy?.includes(currentUser?.uid) ? '#FF3B30' : 'none'} /> {post.likes || 0}
-                                            </button>
-                                            <button className="post-action-btn" onClick={() => setExpandedPost(expandedPost === post.id ? null : post.id)}>
-                                                <MessageCircle size={16} /> {post.replies?.length || 0}
-                                            </button>
-                                        </div>
-
-                                        {/* Replies */}
-                                        {expandedPost === post.id && (
-                                            <div className="post-replies animate-fade">
-                                                {(post.replies || []).map((reply, i) => (
-                                                    <div key={i} className="reply-item">
-                                                        <strong>{reply.authorName || 'Anónimo'}</strong>
-                                                        <p>{reply.text}</p>
-                                                    </div>
-                                                ))}
-                                                <div className="reply-input-row">
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Responder..."
-                                                        value={replyText}
-                                                        onChange={e => setReplyText(e.target.value)}
-                                                        onKeyDown={e => e.key === 'Enter' && handleReply(post.id)}
-                                                    />
-                                                    <button onClick={() => handleReply(post.id)}>
-                                                        <Send size={16} color="#007AFF" />
-                                                    </button>
+                            <div className="comm-posts-area">
+                                {loading ? (
+                                    <div className="comm-empty">Cargando...</div>
+                                ) : filteredPosts.length === 0 ? (
+                                    <div className="comm-empty">No hay posts en esta categoría. ¡Sé el primero!</div>
+                                ) : (
+                                    filteredPosts.map(post => (
+                                        <div key={post.id} className="comm-post-card glass-card">
+                                            <div className="post-header-top">
+                                                <div className="author-tag">
+                                                    <div className="author-avatar"><User size={14} /></div>
+                                                    <span>{post.authorName || 'Anónimo'}</span>
+                                                    <span className="time-stamp">• {timeAgo(post.createdAt)}</span>
                                                 </div>
+                                                <span className="cat-badge">{getCategoryEmoji(post.category)}</span>
                                             </div>
-                                        )}
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </>
-                )}
+                                            <p className="post-content-text">{post.text}</p>
+                                            
+                                            <div className="post-actions-row">
+                                                <button
+                                                    className={`action-btn-p ${post.likedBy?.includes(currentUser?.uid) ? 'liked' : ''}`}
+                                                    onClick={() => handleLike(post.id)}
+                                                >
+                                                    <Heart size={16} fill={post.likedBy?.includes(currentUser?.uid) ? '#FF2D55' : 'none'} color={post.likedBy?.includes(currentUser?.uid) ? '#FF2D55' : 'currentColor'}/> 
+                                                    {post.likes || 0}
+                                                </button>
+                                                <button className="action-btn-p" onClick={() => setExpandedPost(expandedPost === post.id ? null : post.id)}>
+                                                    <MessageCircle size={16} /> {post.replies?.length || 0} Comentarios
+                                                </button>
+                                            </div>
 
-                {activeTab === 'map' && <GlobalMap />}
+                                            {expandedPost === post.id && (
+                                                <div className="replies-section animate-fade">
+                                                    {(post.replies || []).map((reply, i) => (
+                                                        <div key={i} className="reply-bubble">
+                                                            <span className="reply-author">{reply.authorName || 'Anónimo'}</span>
+                                                            <p>{reply.text}</p>
+                                                        </div>
+                                                    ))}
+                                                    <div className="reply-input-wrapper">
+                                                        <input
+                                                            type="text"
+                                                            className="premium-input"
+                                                            placeholder="Escribe un comentario alentador..."
+                                                            value={replyText}
+                                                            onChange={e => setReplyText(e.target.value)}
+                                                            onKeyDown={e => e.key === 'Enter' && handleReply(post.id)}
+                                                        />
+                                                        <button className="send-reply-btn" onClick={() => handleReply(post.id)} disabled={!replyText.trim()}>
+                                                            <Send size={18} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))
+                                )}
+                            </div>
 
-                {activeTab === 'leaders' && (
-                    <div className="leaderboard-container">
-                        <div className="leader-item top-1">
-                            <div className="rank">1</div>
-                            <div className="leader-info">
-                                <strong>Alex (Reino Unido)</strong>
-                                <span>100 días consecutivos escuchando</span>
-                            </div>
-                            <Trophy color="#FFD700" size={24} />
-                        </div>
-                        <div className="leader-item top-2">
-                            <div className="rank">2</div>
-                            <div className="leader-info">
-                                <strong>Luis (España)</strong>
-                                <span>45 días consecutivos</span>
-                            </div>
-                            <Trophy color="#C0C0C0" size={24} />
-                        </div>
-                        <div className="leader-item top-3">
-                            <div className="rank">3</div>
-                            <div className="leader-info">
-                                <strong>Maria (Colombia)</strong>
-                                <span>23 días consecutivos</span>
-                            </div>
-                            <Trophy color="#CD7F32" size={24} />
-                        </div>
-                        <div className="leader-item current-user">
-                            <div className="rank">#248</div>
-                            <div className="leader-info">
-                                <strong>Tú</strong>
-                                <span>¡Sigue habituándote a diario!</span>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Compose FAB */}
-                {!showCompose && activeTab === 'forum' && (
-                    <button className="compose-fab" onClick={() => setShowCompose(true)}>
-                        <Plus size={24} />
-                    </button>
-                )}
-
-                {/* Compose Modal */}
-                {showCompose && (
-                    <div className="compose-sheet animate-fade">
-                        <h4>Nuevo Post</h4>
-                        <div className="compose-cats">
-                            {CATEGORIES.filter(c => c.key !== 'all').map(cat => (
-                                <button
-                                    key={cat.key}
-                                    className={`cat-btn ${newPost.category === cat.key ? 'active' : ''}`}
-                                    onClick={() => setNewPost(p => ({ ...p, category: cat.key }))}
-                                >
-                                    {cat.label}
+                            {!showCompose && (
+                                <button className="floating-compose-btn" onClick={() => setShowCompose(true)}>
+                                    <Plus size={24} /> Redactar Post
                                 </button>
-                            ))}
+                            )}
+                        </>
+                    )}
+
+                    {activeTab === 'map' && (
+                        <div className="map-view-container glass-card">
+                            <GlobalMap />
                         </div>
-                        <textarea
-                            placeholder="Comparte con la comunidad... (anónimo)"
-                            value={newPost.text}
-                            onChange={e => setNewPost(p => ({ ...p, text: e.target.value }))}
-                            rows={4}
-                        />
-                        <div className="compose-actions">
-                            <button className="btn btn-ghost" onClick={() => setShowCompose(false)}>Cancelar</button>
-                            <button className="btn btn-primary" onClick={handleCreatePost} disabled={!newPost.text.trim()}>
-                                Publicar <Send size={16} />
+                    )}
+
+                    {activeTab === 'leaders' && (
+                        <div className="leaders-view">
+                            <div className="leader-podium">
+                                <div className="podium-item second">
+                                    <Trophy color="#C0C0C0" size={32} />
+                                    <div className="user-initial">L</div>
+                                    <span className="l-name">Luis (ES)</span>
+                                    <span className="l-score">45 pts</span>
+                                </div>
+                                <div className="podium-item first">
+                                    <Trophy color="#FFD700" size={40} />
+                                    <div className="user-initial gold">A</div>
+                                    <span className="l-name">Alex (UK)</span>
+                                    <span className="l-score">100 pts</span>
+                                </div>
+                                <div className="podium-item third">
+                                    <Trophy color="#CD7F32" size={28} />
+                                    <div className="user-initial bronze">M</div>
+                                    <span className="l-name">Maria (CO)</span>
+                                    <span className="l-score">23 pts</span>
+                                </div>
+                            </div>
+
+                            <div className="personal-rank glass-card">
+                                <Sparkles size={20} color="#5856D6" />
+                                <div className="prank-info">
+                                    <span className="pr-rank">Tú estás en el puesto #248</span>
+                                    <span className="pr-sub">Registra tus observaciones a diario para escalar.</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {showCompose && activeTab === 'forum' && (
+                    <div className="compose-modal-overlay animate-fade">
+                        <div className="compose-card glass-card">
+                            <header className="c-header">
+                                <h3>Crear Publicación</h3>
+                                <button className="c-close" onClick={() => setShowCompose(false)}><X size={20}/></button>
+                            </header>
+                            
+                            <div className="c-cats">
+                                {CATEGORIES.filter(c => c.key !== 'all').map(cat => (
+                                    <button
+                                        key={cat.key}
+                                        className={`cat-pill ${newPost.category === cat.key ? 'active' : ''}`}
+                                        onClick={() => setNewPost(p => ({ ...p, category: cat.key }))}
+                                    >
+                                        {cat.label}
+                                    </button>
+                                ))}
+                            </div>
+                            
+                            <textarea
+                                className="premium-textarea"
+                                placeholder="Comparte cómo te sientes hoy, es totalmente anónimo..."
+                                value={newPost.text}
+                                onChange={e => setNewPost(p => ({ ...p, text: e.target.value }))}
+                                autoFocus
+                            />
+
+                            <button className="premium-btn full-width mt-10" onClick={handleCreatePost} disabled={!newPost.text.trim()}>
+                                Publicar en la Red <Send size={18} />
                             </button>
                         </div>
                     </div>

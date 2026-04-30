@@ -1,0 +1,18 @@
+{
+  "semantic": {
+    "low": "#34C759",
+    "medium": "#FF9500",
+    "high": "#FF3B30"
+  },
+  "metrics": {
+    "tinnitus": ["#FFE0E0", "#FFB3B3", "#FF6666", "#FF3B30"],
+    "sleep": ["#E0F0FF", "#B3D9FF", "#66B2FF", "#007AFF"],
+    "stress": ["#FFF5E0", "#FFDEB3", "#FFB266", "#FF9500"]
+  },
+  "ui": {
+    "tooltipBg": "#1C1C1E",
+    "tooltipText": "#FFFFFF",
+    "gridLines": "rgba(142, 142, 147, 0.2)",
+    "axes": "#8E8E93"
+  }
+}

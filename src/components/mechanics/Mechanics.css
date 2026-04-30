@@ -1,0 +1,30 @@
+/* Estilos tribales para los 5 minijuegos */
+.mechanic-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 20px; }
+.mechanic-title { font-size: 24px; color: #FFD700; margin-bottom: 10px; }
+.mechanic-desc { font-size: 16px; opacity: 0.8; margin-bottom: 30px; max-width: 400px; }
+
+/* Efecto Nevera */
+.nevera-card { background: #1E293B; padding: 40px; border-radius: 16px; font-size: 32px; font-weight: bold; margin-bottom: 30px; width: 100%; max-width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.nevera-btns { display: flex; gap: 20px; width: 100%; max-width: 400px; }
+.nevera-btns button { flex: 1; padding: 15px; font-size: 18px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
+.btn-ignorar { background: #34C759; color: white; }
+.btn-alerta { background: #FF3B30; color: white; }
+
+/* Mezclador */
+.slider-group { width: 100%; max-width: 400px; margin-bottom: 30px; text-align: left; }
+.slider-group label { display: block; margin-bottom: 10px; font-weight: bold; }
+.slider-group input[type=range] { width: 100%; accent-color: #5856D6; }
+
+/* Linterna */
+.linterna-board { position: relative; width: 100%; max-width: 400px; height: 400px; background: #000; border-radius: 16px; overflow: hidden; }
+.linterna-dot { position: absolute; width: 50px; height: 50px; background: radial-gradient(circle, #FFF 0%, rgba(255,255,255,0) 70%); border-radius: 50%; cursor: pointer; }
+
+/* Monstruo */
+.monstruo-board { position: relative; width: 100%; max-width: 400px; height: 300px; background: #111827; border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+.monstruo-text { position: absolute; left: 50%; transform: translateX(-50%); background: #FF3B30; padding: 10px 20px; border-radius: 20px; font-weight: bold; white-space: nowrap; transition: top 0.1s linear; }
+.refutacion-btns { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 400px; }
+.refutacion-btns button { padding: 12px; border-radius: 8px; border: 1px solid #5856D6; background: rgba(88,86,214,0.1); color: white; cursor: pointer; }
+
+/* Periferica */
+.radar-btn { width: 150px; height: 150px; border-radius: 50%; background: #0A84FF; border: none; color: white; font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 50px; }
+.radar-btn:active { transform: scale(0.95); }

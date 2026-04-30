@@ -1,0 +1,28 @@
+/* Mobile First Base */
+.dashboard-grid { grid-template-columns: 1fr; }
+
+/* Tablet (768px+) */
+@media (min-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 2rem;
+  }
+  .scroll-container { gap: 1.5rem; }
+  .draggable-item.wide { grid-column: span 2; }
+}
+
+/* Desktop (1200px+) */
+@media (min-width: 1200px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .draggable-item.wide { grid-column: span 3; }
+  .scroll-container { 
+    /* Desktop often prefers grid over horizontal touch scroll */
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    overflow-x: visible; 
+  }
+}

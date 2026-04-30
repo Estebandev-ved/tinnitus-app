@@ -1,89 +1,64 @@
 import React, { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import './Onboarding.css';
+import ConfettiCelebration from '../../DELIVERABLES/Components/ConfettiCelebration';
+import QuizQuestion from '../../DELIVERABLES/Components/QuizQuestion';
+import VideoEmbed from '../../DELIVERABLES/Components/VideoEmbed';
+import WizardStep from '../../DELIVERABLES/Components/WizardStep';
 
-// Illustration imports
-import onb1 from '../assets/illustrations/corte3.png';
-import onb2 from '../assets/illustrations/splash_stairs.png';
-import onb3 from '../assets/illustrations/c2.png';
-import onb4 from '../assets/illustrations/c1.png';
-import onb5 from '../assets/illustrations/4.png';
-
-const SLIDES = [
-    {
-        image: onb1,
-        title: 'Mide tu Tinnitus',
-        desc: 'Encuentra la frecuencia exacta de tu zumbido con nuestro test auditivo profesional.',
-    },
-    {
-        image: onb2,
-        title: 'Registra tu Día',
-        desc: 'Lleva un diario de sueño, estrés e intensidad. Verás patrones y mejoras con el tiempo.',
-    },
-    {
-        image: onb3,
-        title: 'Terapia de Sonido',
-        desc: 'Mezcla sonidos terapéuticos personalizados. Usa el timer de sueño para dormir mejor.',
-    },
-    {
-        image: onb4,
-        title: 'Tu IA Especialista',
-        desc: 'Chatea con una IA entrenada en tinnitus que analiza tus datos para darte consejos personalizados.',
-    },
-    {
-        image: onb5,
-        title: 'Respira y Relájate',
-        desc: 'Técnicas de respiración 4-7-8 y ruido personalizado para reducir la percepción del zumbido.',
-    },
+const steps = [
+  { id: 'intro', title: 'Paso 1: Bienvenida', content: <p>Hola y bienvenido a TinnitOff. Estamos aquí para ayudarte a mejorar.</p> },
+  { id: 'video', title: 'Paso 2: Video Introductorio', content: <VideoEmbed src="https://example.com/intro.mp4" /> },
+  { id: 'freq', title: 'Paso 3: Frequency Matcher Tutorial', content: <p>Aprende a usar el slider para encontrar la frecuencia exacta de tu zumbido.</p> },
+  { id: 'quiz', title: 'Paso 4: Quiz de Conocimiento', content: <QuizQuestion question="¿El tinnitus tiene cura absoluta universal?" options={["Sí", "No", "Depende de la causa"]} onAnswer={(ans)=>console.log('Respuesta:', ans)} /> },
+  { id: 'audio', title: 'Paso 5: Selector de Preferencia de Audio', content: <QuizQuestion question="Escucha y elige: ¿Qué sonido te alivia más?" options={["White Noise (Shhh suave)", "Pink Noise (Shhh grave)", "Aún no lo sé"]} onAnswer={(ans)=>console.log('Audio:', ans)} /> },
+  { id: 'config', title: 'Paso 6: Configurando tu perfil', content: <p>Aplicando las preferencias guardadas a tu gemelo digital...</p> },
+  { id: 'ready', title: 'Paso 7: ¡Todo Listo!', content: <p>Ya puedes empezar a usar la aplicación para tu terapia diaria.</p> }
 ];
 
 const Onboarding = ({ onComplete }) => {
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const isLast = currentSlide === SLIDES.length - 1;
+  const [step, setStep] = useState(0);
+  const [done, setDone] = useState(false);
 
-    const handleNext = () => {
-        if (isLast) {
-            localStorage.setItem('tinnitoff_onboarded', 'true');
-            onComplete();
-        } else {
-            setCurrentSlide(currentSlide + 1);
-        }
-    };
+  const handleNext = () => {
+    if (step < steps.length - 1) setStep(step + 1);
+    else {
+      setDone(true);
+      localStorage.setItem('tinnitoff_onboarded', 'true');
+      setTimeout(onComplete, 4000);
+    }
+  };
 
-    const handleSkip = () => {
-        localStorage.setItem('tinnitoff_onboarded', 'true');
-        onComplete();
-    };
+  const handleSkip = () => {
+      handleNext();
+  };
 
-    const slide = SLIDES[currentSlide];
+  if (done) return <ConfettiCelebration />;
 
-    return (
-        <div className="onboarding-container">
-            <button className="onboarding-skip" onClick={handleSkip}>
-                Saltar
-            </button>
+  const current = steps[step];
 
-            <div className="onboarding-slide animate-fade" key={currentSlide}>
-                <img src={slide.image} alt={slide.title} className="onboarding-illustration" />
-                <h2 className="onboarding-title">{slide.title}</h2>
-                <p className="onboarding-desc">{slide.desc}</p>
-            </div>
-
-            <div className="onboarding-dots">
-                {SLIDES.map((_, i) => (
-                    <div
-                        key={i}
-                        className={`onboarding-dot ${i === currentSlide ? 'active' : ''}`}
-                    />
-                ))}
-            </div>
-
-            <button className="btn btn-primary onboarding-next" onClick={handleNext}>
-                {isLast ? 'Empezar' : 'Siguiente'}
-                <ChevronRight size={20} />
-            </button>
+  return (
+    <div className="wizard-wrapper">
+      <div className="wizard-container">
+        <div className="wizard-progress">
+          {steps.map((s, i) => (
+            <div 
+              key={s.id} 
+              className={`wizard-progress-bar ${i <= step ? 'active' : ''}`} 
+            />
+          ))}
         </div>
-    );
+        
+        <WizardStep 
+          title={current.title} 
+          onNext={handleNext} 
+          onSkip={step === steps.length - 1 ? null : handleSkip}
+        >
+          {current.content}
+        </WizardStep>
+      </div>
+    </div>
+  );
 };
 
 export default Onboarding;

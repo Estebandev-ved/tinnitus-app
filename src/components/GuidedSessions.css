@@ -1,0 +1,22 @@
+.guided-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background, #0B1426); z-index: 200; display: flex; flex-direction: column; padding: 20px; color: white; }
+.gs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.xp-badge { background: rgba(255, 215, 0, 0.2); color: #FFD700; padding: 5px 10px; border-radius: 12px; font-weight: bold; }
+.gs-content { overflow-y: auto; flex: 1; }
+.calendar-grid { display: flex; flex-direction: column; gap: 15px; }
+.day-card { background: rgba(17,29,50,0.8); border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: transform 0.2s; }
+.day-card.completed { border: 1px solid #34C759; opacity: 0.8; }
+.day-card.pending:hover { transform: scale(1.02); background: rgba(255,255,255,0.1); }
+.day-number { font-size: 12px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
+.day-card h3 { margin: 0; font-size: 16px; flex: 1; padding: 0 15px; }
+
+/* Lock styles for days */
+.day-card.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed rgba(255,255,255,0.1);
+  transform: none !important;
+}
+.day-card.locked h3 {
+  color: #666;
+}

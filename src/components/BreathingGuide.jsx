@@ -1,128 +1,121 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, Play, Pause } from 'lucide-react';
+import { X, Play, Square, Wind } from 'lucide-react';
 import { playBreathPhase, stopBreathAudio } from '../utils/breathAudio';
-import breathingIllustration from '../assets/illustrations/2.png';
 import './BreathingGuide.css';
 
-const PHASES = [
-    { name: 'Inhala', duration: 4, color: '#7C5CFC', audioPhase: 'inhale' },
-    { name: 'Sostén', duration: 7, color: '#C084FC', audioPhase: 'hold' },
-    { name: 'Exhala', duration: 8, color: '#38BDF8', audioPhase: 'exhale' },
+const DEFAULT_PHASES = [
+    { id: 'inhale', label: 'Inhala', duration: 4 },
+    { id: 'hold', label: 'Sostén', duration: 7 },
+    { id: 'exhale', label: 'Exhala', duration: 8 }
 ];
 
 const BreathingGuide = ({ onClose }) => {
     const [isRunning, setIsRunning] = useState(false);
-    const [phaseIndex, setPhaseIndex] = useState(0);
-    const [countdown, setCountdown] = useState(PHASES[0].duration);
-    const [cycles, setCycles] = useState(0);
-    const intervalRef = useRef(null);
+    const [currentPhaseIndex, setCurrentPhaseIndex] = useState(null);
+    const [phases, setPhases] = useState(DEFAULT_PHASES); // Optional: could be dynamically changed
+    const timerRef = useRef(null);
 
     useEffect(() => {
         return () => {
-            if (intervalRef.current) clearInterval(intervalRef.current);
-            stopBreathAudio();
+            stopMeditation();
         };
     }, []);
 
-    const start = () => {
-        setIsRunning(true);
-        setCycles(0);
-        setPhaseIndex(0);
-        setCountdown(PHASES[0].duration);
-
-        // Play the first phase sound
-        playBreathPhase(PHASES[0].audioPhase, PHASES[0].duration);
-
-        runTimer(0, PHASES[0].duration);
-    };
-
-    const stop = () => {
+    const stopMeditation = () => {
         setIsRunning(false);
-        if (intervalRef.current) clearInterval(intervalRef.current);
+        setCurrentPhaseIndex(null);
+        if (timerRef.current) clearTimeout(timerRef.current);
         stopBreathAudio();
-        setPhaseIndex(0);
-        setCountdown(PHASES[0].duration);
     };
 
-    const runTimer = (pIdx, remaining) => {
-        if (intervalRef.current) clearInterval(intervalRef.current);
+    const runPhase = (index) => {
+        if (!isRunning) return; // Prevent next phase if stopped
+        
+        setCurrentPhaseIndex(index);
+        const phase = phases[index];
+        
+        // Play human breath audio
+        playBreathPhase(phase.id, phase.duration);
 
-        intervalRef.current = setInterval(() => {
-            remaining--;
-            if (remaining <= 0) {
-                // Move to next phase
-                const nextIdx = (pIdx + 1) % PHASES.length;
-                if (nextIdx === 0) {
-                    setCycles(prev => prev + 1);
-                }
-                setPhaseIndex(nextIdx);
-                remaining = PHASES[nextIdx].duration;
-                setCountdown(remaining);
-
-                // Play sound for the new phase
-                playBreathPhase(PHASES[nextIdx].audioPhase, PHASES[nextIdx].duration);
-
-                // Restart interval for new phase
-                clearInterval(intervalRef.current);
-                runTimer(nextIdx, remaining);
-            } else {
-                setCountdown(remaining);
-            }
-        }, 1000);
+        // Schedule next phase
+        timerRef.current = setTimeout(() => {
+            const nextIndex = (index + 1) % phases.length;
+            runPhase(nextIndex);
+        }, phase.duration * 1000);
     };
 
-    const currentPhase = PHASES[phaseIndex];
-    const totalPhaseDuration = currentPhase.duration;
-    const progress = 1 - (countdown / totalPhaseDuration);
+    // Need to hook into acts when isRunning becomes true originally
+    const handleToggle = () => {
+        if (isRunning) {
+            stopMeditation();
+        } else {
+            setIsRunning(true);
+            // It will trigger in a useEffect or we just call runPhase(0) immediately
+            // Timeout hack to allow state update to flag isRunning true
+            setTimeout(() => {
+                runPhase(0);
+            }, 0);
+        }
+    };
+
+    const currentPhase = currentPhaseIndex !== null ? phases[currentPhaseIndex] : null;
 
     return (
-        <div className="breathing-container animate-fade">
-            <header className="breathing-header">
-                <button className="back-btn" onClick={() => { stop(); onClose(); }}>
-                    <ChevronLeft />
-                </button>
-                <h3>Respiración Guiada</h3>
-                <div style={{ width: 24 }}></div>
-            </header>
+        <div className="bg-wrapper animate-fade">
+            <div className="bg-container">
+                <header className="bg-header">
+                    <h2>Respiración 4-7-8</h2>
+                    <button className="bg-close-btn" onClick={() => { stopMeditation(); onClose(); }}>
+                        <X size={20} />
+                    </button>
+                </header>
 
-            <div className="breathing-content">
-                <img src={breathingIllustration} alt="" className="breathing-illustration" />
-                <p className="breathing-subtitle">Técnica 4-7-8 para calmar tu sistema nervioso</p>
-
-                <div className="circle-wrapper">
-                    <div
-                        className={`breathing-circle ${isRunning ? 'active' : ''}`}
-                        style={{
-                            '--phase-color': currentPhase.color,
-                            '--scale': isRunning ? (currentPhase.name === 'Inhala' ? 1 + progress * 0.4 : currentPhase.name === 'Exhala' ? 1.4 - progress * 0.4 : 1.4) : 1,
-                        }}
-                    >
-                        <span className="phase-name">{isRunning ? currentPhase.name : 'Listo'}</span>
-                        <span className="phase-countdown">
-                            {isRunning ? countdown : ''}
-                        </span>
+                <div className="bg-content">
+                    
+                    <div className="bg-alert">
+                        <Wind size={18} />
+                        Las respiraciones largas envían señales de calma al cerebro, desactivando alertas.
                     </div>
-                </div>
 
-                <div className="phase-indicators">
-                    {PHASES.map((p, i) => (
-                        <div key={i} className={`phase-dot ${i === phaseIndex && isRunning ? 'active' : ''}`} style={{ background: p.color }}>
-                            <span>{p.name}</span>
-                            <span>{p.duration}s</span>
+                    {/* Central Glass Orb Visualizer */}
+                    <div className="bg-orb-display">
+                        <div className="bg-orb-rings">
+                            <div className={`orb-ring r1 ${isRunning ? 'active' : ''} ${currentPhase?.id || ''}`} 
+                                 style={{ animationDuration: currentPhase ? `${currentPhase.duration}s` : '0s' }}></div>
+                            <div className={`orb-ring r2 ${isRunning ? 'active' : ''} ${currentPhase?.id || ''}`} 
+                                 style={{ animationDuration: currentPhase ? `${currentPhase.duration}s` : '0s' }}></div>
                         </div>
-                    ))}
+                        <div className={`bg-main-orb ${isRunning ? 'active' : ''} ${currentPhase?.id || ''}`}
+                             style={{ transitionDuration: currentPhase ? `${currentPhase.duration}s` : '0.5s' }}>
+                            <span className="orb-text">
+                                {isRunning ? currentPhase?.label : 'LISTO'}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Phases Tracker row */}
+                    <div className="phases-tracker">
+                        {phases.map((p, i) => (
+                            <div key={p.id} className={`phase-card ${currentPhaseIndex === i ? 'active' : ''}`}>
+                                <span className="phase-label">{p.label}</span>
+                                <span className="phase-time">{p.duration}s</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Action Button */}
+                    <button 
+                        className={`bg-action-btn ${isRunning ? 'stop' : ''}`}
+                        onClick={handleToggle}
+                    >
+                        {isRunning ? (
+                            <><Square size={20} fill="currentColor"/> Detener</>
+                        ) : (
+                            <><Play size={20} fill="currentColor" /> Comenzar Técnica</>
+                        )}
+                    </button>
+
                 </div>
-
-                {cycles > 0 && (
-                    <p className="cycle-count">{cycles} {cycles === 1 ? 'ciclo' : 'ciclos'} completados</p>
-                )}
-
-                <button
-                    className={`btn btn-primary breathing-btn ${isRunning ? 'stop' : ''}`}
-                    onClick={isRunning ? stop : start}
-                >
-                    {isRunning ? <><Pause size={20} /> Detener</> : <><Play size={20} /> Comenzar</>}
-                </button>
             </div>
         </div>
     );

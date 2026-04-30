@@ -1,0 +1,34 @@
+{
+  "theme": {
+    "light": {
+      "background": "#FFFFFF",
+      "surface": "#F4F5F7",
+      "text": "#1A1A1C",
+      "textSecondary": "#6B7280"
+    },
+    "dark": {
+      "background": "#121212",
+      "surface": "#1E1E20",
+      "text": "#F9FAFB",
+      "textSecondary": "#9CA3AF"
+    }
+  },
+  "metrics": {
+    "tinnitusLevel": {
+      "low": "#10B981",
+      "medium": "#F59E0B",
+      "high": "#EF4444",
+      "textContrast": "#FFFFFF"
+    },
+    "sleep": {
+      "good": "#3B82F6",
+      "fair": "#8B5CF6",
+      "poor": "#6366F1",
+      "textContrast": "#FFFFFF"
+    },
+    "streak": {
+      "active": "#F97316",
+      "inactive": "#9CA3AF"
+    }
+  }
+}

@@ -1,3 +1,14 @@
+# Environment variables (never commit)
+.env
+.env.local
+.env.production
+
+# Android signing (NEVER commit — losing the keystore = can't update on Play Store)
+android/keystore.properties
+android/*.jks
+android/*.keystore
+android/*.jks.b64
+
 # Logs
 logs
 *.log

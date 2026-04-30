@@ -388,3 +388,105 @@ export const FirestoreService = {
         }
     }
 };
+
+// Appended by Coordinator Agent
+export const ExtendedFirestoreService = {
+  async updateUserEcos(userId, amount) {
+    try {
+      const ref = doc(db, USERS_COLLECTION, userId, "meta", "program_progress");
+      const d = await getDoc(ref);
+      if (d.exists()) {
+        await updateDoc(ref, { totalXp: increment(amount) });
+      } else {
+        await setDoc(ref, { totalXp: amount, completedDays: [] });
+      }
+    } catch (e) { console.error(e); }
+  },
+  // Agent 1
+  async saveVoiceDiaryEntry(userId, data) {
+    try {
+        const ref = collection(db, USERS_COLLECTION, userId, 'voice_diary');
+        await addDoc(ref, data);
+    } catch (e) { console.error(e); }
+  },
+  async getVoiceDiaryEntries(userId, limitNum=10) {
+    try {
+        const q = query(collection(db, USERS_COLLECTION, userId, 'voice_diary'), orderBy('createdAt', 'desc'), limit(limitNum));
+        const s = await getDocs(q);
+        return s.docs.map(d => ({id: d.id, ...d.data()}));
+    } catch (e) { return []; }
+  },
+  // Agent 3
+  async getUserAchievements(userId) {
+    try {
+        const d = await getDoc(doc(db, USERS_COLLECTION, userId, 'meta', 'achievements'));
+        return d.exists() ? d.data() : { unlockedIds: [], unlockedDates: {} };
+    } catch (e) { return null; }
+  },
+  async unlockAchievement(userId, achievementId, rewardEcos) {
+    try {
+        const ref = doc(db, USERS_COLLECTION, userId, 'meta', 'achievements');
+        const d = await getDoc(ref);
+        let data = d.exists() ? d.data() : { unlockedIds: [], unlockedDates: {} };
+        if (!data.unlockedIds.includes(achievementId)) {
+            data.unlockedIds.push(achievementId);
+            data.unlockedDates[achievementId] = new Date().toISOString();
+            await setDoc(ref, data);
+            
+            // Add real reward
+            await this.updateUserEcos(userId, rewardEcos);
+            return true; // Newly unlocked
+        }
+        return false; // Already unlocked
+    } catch (e) { console.error(e); return false; }
+  },
+  // Agent 4
+  async generateCaregiverCode(userId) { return Math.random().toString(36).substring(2, 8).toUpperCase(); },
+  async getCaregiverLinks(userId) { return []; },
+  async getCaregiverPatients(caregiverUid) { return []; },
+  // Agent 5
+  async savePrediction(userId, data) {
+      try { await addDoc(collection(db, USERS_COLLECTION, userId, 'predictions'), {...data, createdAt: Timestamp.now()}); } catch (e) {}
+  },
+  // Agent 6
+  async saveSessionProgress(userId, day, steps, xp) {
+    try {
+      const ref = doc(db, USERS_COLLECTION, userId, 'meta', 'program_progress');
+      const d = await getDoc(ref);
+      const now = Timestamp.now();
+      if (d.exists()) {
+        await updateDoc(ref, {
+          completedDays: arrayUnion(day),
+          totalXp: increment(xp),
+          lastCompletedDate: now
+        });
+      } else {
+        await setDoc(ref, {
+          completedDays: [day],
+          totalXp: xp,
+          lastCompletedDate: now
+        });
+      }
+      return true;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  },
+  async getSessionProgress(userId) {
+    try {
+      const d = await getDoc(doc(db, USERS_COLLECTION, userId, 'meta', 'program_progress'));
+      if (d.exists()) {
+        const data = d.data();
+        return {
+          ...data,
+          lastCompletedDate: data.lastCompletedDate ? data.lastCompletedDate.toDate().toISOString() : null
+        };
+      }
+      return { completedDays: [], totalXp: 0, lastCompletedDate: null };
+    } catch (e) {
+      return { completedDays: [], totalXp: 0, lastCompletedDate: null };
+    }
+  }
+};
+Object.assign(FirestoreService, ExtendedFirestoreService);

@@ -1,0 +1,33 @@
+// Reglas Básicas Agente 6 (Firebase)
+// Sólo usuario ve su data
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+      
+      // Agente 1: Gamification
+      match /badges/{badgeId} { allow read: if isOwner(userId); allow write: if false; } // Sólo escribe Server/CloudFunction
+      match /challenges/{challengeId} { allow read: if isOwner(userId); allow write: if isOwner(userId); }
+      
+      // Agente 2: Audio
+      match /custom_mixes/{mixId} { allow read, write: if isOwner(userId); }
+      
+      // Agente 3: Analytics
+      match /daily_logs/{logId} { allow read, write: if isOwner(userId); }
+      
+      // Agente 4: CBT
+      match /thought_diary/{entryId} { allow read, write: if isOwner(userId); }
+    }
+    
+    // Contenido Público CBT o Retos (solo lectura)
+    match /cbt_modules/{moduleId} {
+      allow read: if request.auth != null;
+    }
+  }
+}

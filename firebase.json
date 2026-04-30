@@ -10,11 +10,14 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "rewrites": [
+    "redirects": [
       {
         "source": "/",
-        "destination": "/landing.html"
-      },
+        "destination": "/landing.html",
+        "type": 302
+      }
+    ],
+    "rewrites": [
       {
         "source": "/privacy",
         "destination": "/privacy.html"

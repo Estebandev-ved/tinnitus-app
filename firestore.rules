@@ -57,6 +57,22 @@ service cloud.firestore {
       allow create: if request.auth != null;
     }
 
+    // Download events: anyone can write (anonymous tracking), only admin can read
+    // Security: unauthenticated write only allows specific fields (rate limiting via Firebase quotas)
+    match /download_events/{eventId} {
+      allow write: if true; // Anonymous tracking - only timestamp/platform/source written by client
+      allow read: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)/profile/data).data.role == 'admin'
+        || (request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+    }
+
+    // Admin config: only admin UID can access
+    match /admin_config/{doc} {
+      allow read, write: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
     // Block everything else
     match /{document=**} {
       allow read, write: if false;

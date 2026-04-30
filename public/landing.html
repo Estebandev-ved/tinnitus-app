@@ -511,6 +511,16 @@
 </div>
 
 <script>
+  function getPlatform(ua){if(/android/i.test(ua))return'Android';if(/iphone|ipad/i.test(ua))return'iOS';if(/windows/i.test(ua))return'Windows';if(/mac/i.test(ua))return'Mac';return'Other';}
+  function getBrowser(ua){if(/edg\//i.test(ua))return'Edge';if(/chrome/i.test(ua))return'Chrome';if(/firefox/i.test(ua))return'Firefox';if(/safari/i.test(ua))return'Safari';return'Other';}
+  function trackDownload(source){
+    const ua=navigator.userAgent;
+    const body=JSON.stringify({fields:{timestamp:{timestampValue:new Date().toISOString()},source:{stringValue:source},platform:{stringValue:getPlatform(ua)},browser:{stringValue:getBrowser(ua)},referrer:{stringValue:document.referrer||'direct'},userAgent:{stringValue:ua.substring(0,200)}}});
+    fetch('https://firestore.googleapis.com/v1/projects/tinnitusoff-e61c4/databases/(default)/documents/download_events?key=AIzaSyA35uv9JUC64iDQSiszn8oyH7eySxbfsWk',{method:'POST',headers:{'Content-Type':'application/json'},body}).catch(()=>{});
+  }
+  const apkBtn=document.getElementById('apk-btn');
+  if(apkBtn) apkBtn.addEventListener('click',()=>trackDownload('landing_page'));
+</script>
   // Smooth nav highlight
   const sections = document.querySelectorAll('section[id], div[id]');
   const navLinks = document.querySelectorAll('.nav-links a');

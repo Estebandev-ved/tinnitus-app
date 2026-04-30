@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>TinnitOff — Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--navy:#0A1628;--navy2:#0e1f3d;--teal:#00C2B8;--white:#fff;--gray:#8a9bbf;--danger:#FF3B30;--warn:#FF9500;--success:#34C759;--card:rgba(14,31,61,.8);--border:rgba(0,194,184,.12)}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--navy);color:var(--white);min-height:100vh}
+    /* LOGIN */
+    #login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(0,194,184,.1) 0%,transparent 70%)}
+    .login-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:48px 40px;max-width:420px;width:100%;text-align:center;backdrop-filter:blur(16px)}
+    .login-card .logo{font-size:2rem;font-weight:800;margin-bottom:8px}.login-card .logo b{color:var(--teal)}
+    .login-card .subtitle{color:var(--gray);font-size:.9rem;margin-bottom:32px}
+    .badge-admin{display:inline-block;background:rgba(0,194,184,.1);border:1px solid rgba(0,194,184,.3);color:var(--teal);font-size:.72rem;font-weight:700;padding:5px 14px;border-radius:50px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:32px}
+    #google-signin-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:15px 24px;background:#fff;color:#3c4043;border:none;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+    #google-signin-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.3)}
+    #login-error{margin-top:16px;padding:12px;background:rgba(255,59,48,.1);border:1px solid rgba(255,59,48,.3);border-radius:8px;color:#ff6b6b;font-size:.85rem;display:none}
+    /* DASHBOARD */
+    #dashboard{display:none}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:rgba(10,22,40,.9);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+    .topbar .brand{font-size:1.1rem;font-weight:800}.topbar .brand b{color:var(--teal)}
+    .topbar-right{display:flex;align-items:center;gap:16px}
+    .user-pill{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);padding:8px 14px;border-radius:50px;font-size:.82rem;color:var(--gray)}
+    .user-pill img{width:24px;height:24px;border-radius:50%}
+    #signout-btn{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--gray);padding:8px 16px;border-radius:8px;font-size:.8rem;cursor:pointer;transition:all .2s}
+    #signout-btn:hover{border-color:var(--danger);color:var(--danger)}
+    .main{max-width:1200px;margin:0 auto;padding:32px 24px;display:flex;flex-direction:column;gap:28px}
+    /* ACCESS DENIED */
+    #access-denied{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;gap:16px}
+    #access-denied h2{font-size:1.8rem;color:var(--danger)}
+    #access-denied p{color:var(--gray);max-width:480px}
+    .uid-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 24px;font-family:monospace;font-size:.9rem;color:var(--teal);word-break:break-all;max-width:480px;cursor:pointer;transition:border-color .2s}
+    .uid-box:hover{border-color:var(--teal)}
+    /* STAT CARDS */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;transition:border-color .3s}
+    .stat-card:hover{border-color:rgba(0,194,184,.4)}
+    .stat-card .label{font-size:.75rem;color:var(--gray);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+    .stat-card .value{font-size:2.4rem;font-weight:800;line-height:1;color:var(--white)}
+    .stat-card .sub{font-size:.78rem;color:var(--gray);margin-top:6px}
+    .stat-card.teal .value{color:var(--teal)}
+    /* PANELS */
+    .panels{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+    @media(max-width:768px){.panels{grid-template-columns:1fr}}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px}
+    .panel h3{font-size:.9rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.1em;margin-bottom:20px}
+    /* PLATFORM BARS */
+    .platform-bar{margin-bottom:14px}
+    .platform-bar .pl-label{display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px}
+    .platform-bar .pl-label span:first-child{color:var(--white)}
+    .platform-bar .pl-label span:last-child{color:var(--teal);font-weight:700}
+    .pl-track{height:8px;background:rgba(255,255,255,.06);border-radius:8px;overflow:hidden}
+    .pl-fill{height:100%;background:linear-gradient(90deg,var(--teal),#0073ff);border-radius:8px;transition:width 1s ease}
+    /* TABLE */
+    .table-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:.82rem}
+    th{text-align:left;color:var(--gray);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--border);text-transform:uppercase;font-size:.72rem;letter-spacing:.08em}
+    td{padding:12px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#c8d4ea}
+    tr:hover td{background:rgba(0,194,184,.04)}
+    .tag{display:inline-block;padding:3px 10px;border-radius:50px;font-size:.7rem;font-weight:700}
+    .tag-dl{background:rgba(0,194,184,.1);color:var(--teal)}
+    .tag-land{background:rgba(0,115,255,.1);color:#60a5fa}
+    .tag-android{background:rgba(52,199,89,.1);color:var(--success)}
+    .tag-win{background:rgba(0,115,255,.1);color:#60a5fa}
+    .tag-mac{background:rgba(255,149,0,.1);color:var(--warn)}
+    .tag-other{background:rgba(142,142,147,.1);color:var(--gray)}
+    /* SETUP PANEL */
+    .setup-panel{background:rgba(255,149,0,.06);border:1px solid rgba(255,149,0,.2);border-radius:18px;padding:24px;display:none}
+    .setup-panel h3{color:var(--warn);margin-bottom:10px;font-size:1rem}
+    .setup-panel p{color:var(--gray);font-size:.85rem;line-height:1.7}
+    /* LOADING */
+    .loading{display:flex;align-items:center;gap:8px;color:var(--gray);font-size:.9rem}
+    .spinner{width:18px;height:18px;border:2px solid rgba(0,194,184,.2);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .refresh-btn{background:var(--teal);color:var(--navy);border:none;padding:9px 18px;border-radius:8px;font-weight:700;font-size:.82rem;cursor:pointer;transition:opacity .2s}
+    .refresh-btn:hover{opacity:.8}
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="logo">Tinnit<b>Off</b></div>
+    <p class="subtitle">Panel de Administración</p>
+    <div class="badge-admin">🔐 Acceso Restringido</div>
+    <button id="google-signin-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continuar con Google
+    </button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="topbar">
+    <div class="brand">Tinnit<b>Off</b> <span style="color:var(--gray);font-weight:400;font-size:.85rem">/ Admin Dashboard</span></div>
+    <div class="topbar-right">
+      <div class="user-pill">
+        <img id="user-photo" src="" alt=""/>
+        <span id="user-name">—</span>
+      </div>
+      <button id="signout-btn">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- SETUP WARNING -->
+    <div class="setup-panel" id="setup-panel">
+      <h3>⚠️ Primer acceso — Configura tu rol de admin</h3>
+      <p>Accediste con Google pero tu cuenta aún no tiene el rol <code>admin</code> en Firestore. Añade el campo <code>role: "admin"</code> a tu documento de usuario en <strong>Firebase Console → Firestore → users/{tu-uid}</strong> y recarga la página.<br/><br/>
+      Tu UID: <strong id="setup-uid" style="color:var(--teal)"></strong></p>
+    </div>
+
+    <!-- ACCESS DENIED -->
+    <div id="access-denied">
+      <h2>🚫 Acceso Denegado</h2>
+      <p>Tu cuenta de Google no tiene permisos de administrador para ver este panel. Pide al propietario del proyecto que añada el rol <code>admin</code> a tu UID en Firestore.</p>
+      <p style="margin-top:8px;font-size:.82rem;color:var(--gray)">Tu UID (cópialo y dáselo al admin):</p>
+      <div class="uid-box" id="denied-uid" onclick="navigator.clipboard.writeText(this.textContent).then(()=>this.textContent='✅ Copiado!')"></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card teal">
+        <div class="label">Total Descargas</div>
+        <div class="value" id="stat-total"><div class="spinner"></div></div>
+        <div class="sub">desde el inicio</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Hoy</div>
+        <div class="value" id="stat-today">—</div>
+        <div class="sub" id="stat-today-date">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Esta semana</div>
+        <div class="value" id="stat-week">—</div>
+        <div class="sub">últimos 7 días</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Este mes</div>
+        <div class="value" id="stat-month">—</div>
+        <div class="sub" id="stat-month-name">—</div>
+      </div>
+    </div>
+
+    <!-- CHART + PLATFORMS -->
+    <div class="panels">
+      <div class="panel">
+        <h3>Descargas — Últimos 30 Días</h3>
+        <canvas id="chart-downloads" height="120"></canvas>
+      </div>
+      <div class="panel">
+        <h3>Por Plataforma</h3>
+        <div id="platform-bars"><div class="loading"><div class="spinner"></div> Cargando...</div></div>
+      </div>
+    </div>
+
+    <!-- RECENT TABLE -->
+    <div class="panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <h3 style="margin:0">Descargas Recientes</h3>
+        <button class="refresh-btn" onclick="loadData()">↻ Actualizar</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fecha / Hora</th><th>Plataforma</th><th>Navegador</th><th>Origen</th><th>Referrer</th></tr></thead>
+          <tbody id="events-table"><tr><td colspan="5" style="color:var(--gray);text-align:center;padding:32px">Cargando eventos...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, getDocs, query, orderBy, limit, getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const app = initializeApp({
+  apiKey: 'AIzaSyA35uv9JUC64iDQSiszn8oyH7eySxbfsWk',
+  authDomain: 'tinnitusoff-e61c4.firebaseapp.com',
+  projectId: 'tinnitusoff-e61c4',
+  storageBucket: 'tinnitusoff-e61c4.firebasestorage.app',
+  messagingSenderId: '1076993132357',
+  appId: '1:1076993132357:web:6a439600cf61fbb617202c'
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let chartInstance = null;
+
+// AUTH STATE
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('dashboard').style.display = 'none';
+    return;
+  }
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('user-name').textContent = user.displayName || user.email;
+  document.getElementById('user-photo').src = user.photoURL || '';
+  document.getElementById('setup-uid').textContent = user.uid;
+  document.getElementById('denied-uid').textContent = user.uid;
+
+  // Check admin role
+  let isAdmin = false;
+  try {
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (userDoc.exists() && userDoc.data().role === 'admin') isAdmin = true;
+  } catch(e) { /* Firestore rules denied → not admin */ }
+
+  if (!isAdmin) {
+    // Try to load data anyway (maybe rules allow it)
+    try {
+      await loadData();
+      isAdmin = true;
+    } catch(e) {
+      document.getElementById('setup-panel').style.display = 'block';
+      document.getElementById('access-denied').style.display = 'flex';
+      document.getElementById('stats-row').style.display = 'none';
+      return;
+    }
+  }
+  await loadData();
+});
+
+// SIGN IN
+document.getElementById('google-signin-btn').onclick = async () => {
+  try {
+    await signInWithPopup(auth, new GoogleAuthProvider());
+  } catch(e) {
+    const err = document.getElementById('login-error');
+    err.style.display = 'block';
+    err.textContent = 'Error al iniciar sesión: ' + e.message;
+  }
+};
+
+// SIGN OUT
+document.getElementById('signout-btn').onclick = () => signOut(auth);
+
+// LOAD DATA
+window.loadData = async function() {
+  try {
+    const q = query(collection(db, 'download_events'), orderBy('timestamp','desc'), limit(200));
+    const snap = await getDocs(q);
+    const events = [];
+    snap.forEach(d => events.push({ id: d.id, ...d.data() }));
+
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const weekAgo = new Date(now - 7*86400000);
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    let today=0, week=0, month=0;
+    const dayMap = {}, platformMap = {}, sourceMap = {};
+
+    events.forEach(ev => {
+      const ts = ev.timestamp ? new Date(ev.timestamp) : null;
+      if (!ts) return;
+      const dayStr = ts.toISOString().split('T')[0];
+      if (dayStr === todayStr) today++;
+      if (ts >= weekAgo) week++;
+      if (ts >= monthStart) month++;
+      dayMap[dayStr] = (dayMap[dayStr]||0) + 1;
+      const pl = ev.platform || 'Unknown';
+      platformMap[pl] = (platformMap[pl]||0) + 1;
+      const src = ev.source || 'unknown';
+      sourceMap[src] = (sourceMap[src]||0) + 1;
+    });
+
+    document.getElementById('stat-total').textContent = events.length;
+    document.getElementById('stat-today').textContent = today;
+    document.getElementById('stat-today-date').textContent = todayStr;
+    document.getElementById('stat-week').textContent = week;
+    document.getElementById('stat-month').textContent = month;
+    document.getElementById('stat-month-name').textContent = now.toLocaleString('es',{month:'long',year:'numeric'});
+
+    // Chart — last 30 days
+    const days30 = [];
+    const vals30 = [];
+    for (let i=29;i>=0;i--) {
+      const d = new Date(now - i*86400000);
+      const k = d.toISOString().split('T')[0];
+      days30.push(d.toLocaleDateString('es',{day:'2-digit',month:'short'}));
+      vals30.push(dayMap[k]||0);
+    }
+    if (chartInstance) chartInstance.destroy();
+    chartInstance = new Chart(document.getElementById('chart-downloads'), {
+      type: 'bar',
+      data: {
+        labels: days30,
+        datasets: [{
+          label: 'Descargas',
+          data: vals30,
+          backgroundColor: 'rgba(0,194,184,.6)',
+          borderColor: '#00C2B8',
+          borderWidth: 1,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#8a9bbf', maxTicksLimit: 10, font:{size:10} }, grid: { color: 'rgba(255,255,255,.04)' } },
+          y: { ticks: { color: '#8a9bbf', font:{size:11} }, grid: { color: 'rgba(255,255,255,.06)' }, beginAtZero: true }
+        }
+      }
+    });
+
+    // Platform bars
+    const total = events.length || 1;
+    const plOrder = Object.entries(platformMap).sort((a,b)=>b[1]-a[1]);
+    const tagClass = {Android:'android',Windows:'win',Mac:'mac',iOS:'mac'};
+    document.getElementById('platform-bars').innerHTML = plOrder.map(([pl,cnt])=>`
+      <div class="platform-bar">
+        <div class="pl-label"><span>${pl}</span><span>${cnt} (${Math.round(cnt/total*100)}%)</span></div>
+        <div class="pl-track"><div class="pl-fill" style="width:${Math.round(cnt/total*100)}%"></div></div>
+      </div>`).join('') || '<p style="color:var(--gray)">Sin datos</p>';
+
+    // Table
+    const srcTag = {download_page:'tag-dl',download_page_secondary:'tag-dl',landing_page:'tag-land'};
+    const srcLabel = {download_page:'Portal Descarga',download_page_secondary:'Portal (Alt)',landing_page:'Landing'};
+    document.getElementById('events-table').innerHTML = events.slice(0,50).map(ev => {
+      const ts = ev.timestamp ? new Date(ev.timestamp) : null;
+      const date = ts ? ts.toLocaleString('es',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+      const pl = ev.platform||'—';
+      const plC = 'tag tag-'+(tagClass[pl]||'other');
+      const src = ev.source||'unknown';
+      const srcC = 'tag '+(srcTag[src]||'tag-other');
+      const ref = ev.referrer && ev.referrer!=='direct' ? `<span title="${ev.referrer}" style="color:var(--gray)">${ev.referrer.substring(0,30)}…</span>` : '<span style="color:var(--gray)">Direct</span>';
+      return `<tr><td>${date}</td><td><span class="${plC}">${pl}</span></td><td>${ev.browser||'—'}</td><td><span class="${srcC}">${srcLabel[src]||src}</span></td><td>${ref}</td></tr>`;
+    }).join('') || '<tr><td colspan="5" style="color:var(--gray);text-align:center;padding:32px">No hay descargas aún</td></tr>';
+
+  } catch(e) {
+    console.error('Error loading data:', e);
+    document.getElementById('setup-panel').style.display = 'block';
+  }
+};
+</script>
+</body>
+</html>

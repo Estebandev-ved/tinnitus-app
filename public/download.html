@@ -289,5 +289,41 @@
   <div class="footer-bottom">© 2026 TinnitOff Enterprise. Todos los derechos reservados. · Desarrollado en Latinoamérica 🌎</div>
 </div>
 
+<script>
+  // Security: solo escribe campos específicos, no lee nada, sin datos personales
+  function getPlatform(ua) {
+    if (/android/i.test(ua)) return 'Android';
+    if (/iphone|ipad/i.test(ua)) return 'iOS';
+    if (/windows/i.test(ua)) return 'Windows';
+    if (/mac/i.test(ua)) return 'Mac';
+    if (/linux/i.test(ua)) return 'Linux';
+    return 'Unknown';
+  }
+  function getBrowser(ua) {
+    if (/edg\//i.test(ua)) return 'Edge';
+    if (/chrome/i.test(ua)) return 'Chrome';
+    if (/firefox/i.test(ua)) return 'Firefox';
+    if (/safari/i.test(ua)) return 'Safari';
+    return 'Other';
+  }
+  function trackDownload(source) {
+    const ua = navigator.userAgent;
+    const body = JSON.stringify({
+      fields: {
+        timestamp:  { timestampValue: new Date().toISOString() },
+        source:     { stringValue: source },
+        platform:   { stringValue: getPlatform(ua) },
+        browser:    { stringValue: getBrowser(ua) },
+        referrer:   { stringValue: document.referrer || 'direct' },
+        userAgent:  { stringValue: ua.substring(0, 200) }
+      }
+    });
+    const url = 'https://firestore.googleapis.com/v1/projects/tinnitusoff-e61c4/databases/(default)/documents/download_events?key=AIzaSyA35uv9JUC64iDQSiszn8oyH7eySxbfsWk';
+    fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body })
+      .catch(() => {}); // Silently fail - tracking should never break UX
+  }
+  document.getElementById('download-btn').addEventListener('click', () => trackDownload('download_page'));
+  document.getElementById('apk-main').addEventListener('click', () => trackDownload('download_page_secondary'));
+</script>
 </body>
 </html>

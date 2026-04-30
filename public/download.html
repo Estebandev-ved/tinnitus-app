@@ -1,445 +1,293 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TinnitOff Enterprise | Portal de Distribución</title>
-  <meta name="description" content="Descarga oficial de TinnitOff. Plataforma avanzada de neuromodulación acústica y monitoreo biométrico." />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>TinnitOff — Descarga Oficial</title>
+  <meta name="description" content="Descarga oficial de TinnitOff para Android. Plataforma clínica de neuromodulación acústica e IA terapéutica."/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --bg-color: #05050a;
-      --panel-bg: rgba(20, 20, 35, 0.4);
-      --panel-border: rgba(255, 255, 255, 0.08);
-      --text-main: #f0f0f5;
-      --text-muted: #9494b8;
-      --accent-1: #6d28d9;
-      --accent-2: #4f46e5;
-      --accent-glow: rgba(79, 70, 229, 0.5);
-      --success: #10b981;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0A1628;--navy2:#0e1f3d;
+      --teal:#00C2B8;--teal-light:#00e5d9;--teal-dim:rgba(0,194,184,.12);
+      --white:#ffffff;--gray:#8a9bbf;--gray-light:#c8d4ea;
+      --card-bg:rgba(14,31,61,.7);--border:rgba(0,194,184,.12);
     }
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--navy);color:var(--white);overflow-x:hidden;line-height:1.6}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow-x: hidden;
-      line-height: 1.6;
-    }
+    /* ── NAV ── */
+    nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(10,22,40,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .nav-logo svg{width:34px;height:34px}
+    .nav-logo span{font-size:1.2rem;font-weight:800;color:var(--white)}
+    .nav-logo span b{color:var(--teal)}
+    .nav-links{display:flex;gap:36px}
+    .nav-links a{color:var(--gray);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .2s}
+    .nav-links a:hover{color:var(--teal)}
+    .nav-cta{background:var(--teal);color:var(--navy);padding:10px 24px;border-radius:50px;font-weight:700;font-size:.9rem;text-decoration:none;transition:opacity .2s,transform .2s}
+    .nav-cta:hover{opacity:.85;transform:translateY(-1px)}
 
-    /* Animated Background Blobs */
-    .blob {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(100px);
-      z-index: -1;
-      opacity: 0.6;
-      animation: float 20s infinite ease-in-out alternate;
-    }
-    .blob-1 {
-      top: -10%; left: -10%; width: 50vw; height: 50vw;
-      background: radial-gradient(circle, rgba(109,40,217,0.4) 0%, rgba(0,0,0,0) 70%);
-      animation-delay: 0s;
-    }
-    .blob-2 {
-      bottom: -10%; right: -10%; width: 60vw; height: 60vw;
-      background: radial-gradient(circle, rgba(79,70,229,0.3) 0%, rgba(0,0,0,0) 70%);
-      animation-delay: -5s;
-    }
+    /* ── HERO ── */
+    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:140px 24px 80px;position:relative;overflow:hidden}
+    .hero-glow{position:absolute;top:-10%;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(0,194,184,.18) 0%,transparent 65%);pointer-events:none}
+    .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,194,184,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,194,184,.04) 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
+    .badge{display:inline-flex;align-items:center;gap:8px;background:var(--teal-dim);border:1px solid rgba(0,194,184,.3);color:var(--teal);padding:6px 18px;border-radius:50px;font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:28px;position:relative;z-index:1}
+    .badge-dot{width:7px;height:7px;background:var(--teal);border-radius:50%;box-shadow:0 0 8px var(--teal);animation:blink 2s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .hero h1{font-size:clamp(2.4rem,6vw,4rem);font-weight:800;line-height:1.1;letter-spacing:-.03em;margin-bottom:20px;position:relative;z-index:1}
+    .hero h1 span{color:var(--teal)}
+    .hero .subtitle{font-size:clamp(1rem,2vw,1.15rem);color:var(--gray);max-width:560px;margin:0 auto 44px;position:relative;z-index:1}
+    .hero-actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;position:relative;z-index:1}
+    .btn-dl{display:inline-flex;align-items:center;gap:12px;background:var(--teal);color:var(--navy);padding:17px 36px;border-radius:50px;font-weight:700;font-size:1rem;text-decoration:none;box-shadow:0 0 40px rgba(0,194,184,.4);transition:transform .2s,box-shadow .2s;animation:pulse-glow 3s ease-in-out infinite}
+    @keyframes pulse-glow{0%,100%{box-shadow:0 0 40px rgba(0,194,184,.4)}50%{box-shadow:0 0 65px rgba(0,194,184,.7)}}
+    .btn-dl:hover{transform:translateY(-3px)}
+    .btn-outline{display:inline-flex;align-items:center;gap:10px;border:1.5px solid rgba(255,255,255,.18);color:var(--white);padding:17px 36px;border-radius:50px;font-weight:600;font-size:1rem;text-decoration:none;transition:border-color .2s,color .2s}
+    .btn-outline:hover{border-color:var(--teal);color:var(--teal)}
+    .hero-note{margin-top:18px;font-size:.78rem;color:rgba(138,155,191,.55);position:relative;z-index:1}
 
-    @keyframes float {
-      0% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(5%, 10%) scale(1.1); }
-      100% { transform: translate(-5%, -5%) scale(0.9); }
-    }
+    /* ── STATS BAR ── */
+    .stats-bar{display:flex;flex-wrap:wrap;justify-content:center;gap:48px;padding:52px 24px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:rgba(14,31,61,.4)}
+    .stat-n{font-size:2.4rem;font-weight:800;color:var(--teal);line-height:1}
+    .stat-l{font-size:.82rem;color:var(--gray);margin-top:4px}
 
-    /* Navigation */
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 40px;
-      border-bottom: 1px solid var(--panel-border);
-      background: rgba(5, 5, 10, 0.7);
-      backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .navbar .logo {
-      font-size: 1.2rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .navbar .logo span {
-      color: var(--accent-2);
-      font-weight: 400;
-    }
-    .navbar .status {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .status-dot {
-      width: 8px; height: 8px;
-      background-color: var(--success);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--success);
-      animation: pulse-dot 2s infinite;
-    }
+    /* ── SECTIONS ── */
+    .section{padding:90px 24px;max-width:1100px;margin:0 auto}
+    .tag{color:var(--teal);font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px}
+    .section-title{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:800;line-height:1.2;margin-bottom:14px}
+    .section-sub{font-size:1rem;color:var(--gray);max-width:540px;line-height:1.75;margin-bottom:52px}
 
-    @keyframes pulse-dot {
-      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-      70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-    }
+    /* ── TECH GRID ── */
+    .grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+    .tech-card{background:var(--card-bg);border:1px solid rgba(0,194,184,.1);border-radius:18px;padding:28px;transition:transform .3s,border-color .3s}
+    .tech-card:hover{transform:translateY(-5px);border-color:rgba(0,194,184,.4)}
+    .tc-icon{width:46px;height:46px;background:var(--teal-dim);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--teal);margin-bottom:18px}
+    .tech-card h3{font-size:1rem;font-weight:700;margin-bottom:10px}
+    .tech-card p{font-size:.85rem;color:var(--gray);line-height:1.7}
 
-    /* Main Container */
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 60px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-    }
+    /* ── INSTALL STEPS ── */
+    .steps-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;position:relative}
+    .steps-row::before{content:'';position:absolute;top:28px;left:10%;right:10%;height:2px;background:linear-gradient(90deg,var(--teal),rgba(0,194,184,.1));z-index:0}
+    .install-step{position:relative;z-index:1;text-align:center;padding:0 16px}
+    .step-circle{width:56px;height:56px;border-radius:50%;background:var(--teal);color:var(--navy);font-size:1.2rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 0 24px rgba(0,194,184,.4)}
+    .install-step h4{font-size:.95rem;font-weight:700;margin-bottom:8px}
+    .install-step p{font-size:.82rem;color:var(--gray);line-height:1.65}
+    .install-step p strong{color:var(--gray-light)}
 
-    /* Glassmorphism Panels */
-    .glass-panel {
-      background: var(--panel-bg);
-      border: 1px solid var(--panel-border);
-      border-radius: 24px;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      padding: 40px;
-    }
+    /* ── DOWNLOAD SECTION ── */
+    .dl-section{background:linear-gradient(135deg,rgba(0,194,184,.07) 0%,rgba(0,115,255,.07) 100%);border-top:1px solid rgba(0,194,184,.15);border-bottom:1px solid rgba(0,194,184,.15);padding:90px 24px;text-align:center}
+    .dl-section h2{font-size:clamp(1.7rem,4vw,2.4rem);font-weight:800;margin-bottom:14px}
+    .dl-section p{color:var(--gray);margin-bottom:44px;max-width:480px;margin-left:auto;margin-right:auto}
+    .dl-btn-wrap{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-bottom:16px}
+    .store-btn{display:inline-flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.14);color:var(--white);padding:15px 28px;border-radius:14px;text-decoration:none;font-size:.95rem;transition:background .2s,border-color .2s}
+    .store-btn:hover{background:var(--teal-dim);border-color:var(--teal)}
+    .store-btn svg{width:28px;height:28px;flex-shrink:0}
+    .store-btn .sl{text-align:left}
+    .store-btn .sn{font-weight:700;display:block}
+    .store-btn .ss{font-size:.75rem;color:var(--gray);display:block}
+    .dl-note{font-size:.76rem;color:rgba(138,155,191,.5)}
 
-    /* Hero Section */
-    .hero {
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent-2), transparent);
-      opacity: 0.5;
-    }
-    .badge {
-      display: inline-block;
-      background: rgba(79, 70, 229, 0.15);
-      color: #818cf8;
-      border: 1px solid rgba(79, 70, 229, 0.3);
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 6px 16px;
-      border-radius: 100px;
-      margin-bottom: 24px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-    .hero h1 {
-      font-size: 3rem;
-      font-weight: 700;
-      line-height: 1.1;
-      margin-bottom: 20px;
-      letter-spacing: -0.02em;
-    }
-    .gradient-text {
-      background: linear-gradient(135deg, #a78bfa, #818cf8, #4f46e5);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero p.subtitle {
-      font-size: 1.1rem;
-      color: var(--text-muted);
-      max-width: 600px;
-      margin: 0 auto 40px auto;
-    }
+    /* ── DISCLAIMER ── */
+    .disclaimer{padding:18px 24px;text-align:center;background:rgba(255,149,0,.06);border-top:1px solid rgba(255,149,0,.18);font-size:.8rem;color:rgba(138,155,191,.8);line-height:1.6}
 
-    /* Download Button */
-    .action-area {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
-    .btn-primary {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-      color: white;
-      text-decoration: none;
-      font-size: 1.1rem;
-      font-weight: 600;
-      padding: 18px 40px;
-      border-radius: 16px;
-      transition: all 0.3s ease;
-      box-shadow: 0 10px 20px -5px var(--accent-glow);
-      position: relative;
-      overflow: hidden;
-    }
-    .btn-primary::after {
-      content: '';
-      position: absolute;
-      top: -50%; left: -50%; width: 200%; height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 25px -5px var(--accent-glow);
-    }
-    .btn-primary:hover::after {
-      opacity: 1;
-    }
-    .security-note {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .security-note svg {
-      width: 14px; height: 14px;
-      color: var(--success);
-    }
+    /* ── FOOTER ── */
+    .footer-wrap{background:rgba(0,0,0,.25)}
+    footer{max-width:1100px;margin:0 auto;padding:64px 40px 40px;display:flex;flex-wrap:wrap;gap:48px;justify-content:space-between;border-top:1px solid rgba(255,255,255,.06)}
+    .footer-brand .ft-logo{font-size:1.3rem;font-weight:800;margin-bottom:12px}
+    .footer-brand .ft-logo b{color:var(--teal)}
+    .footer-brand p{font-size:.83rem;color:var(--gray);max-width:240px;line-height:1.7}
+    .ft-col h4{font-size:.72rem;font-weight:700;color:var(--gray);letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+    .ft-col a{display:block;color:#8a9bbf;text-decoration:none;font-size:.85rem;margin-bottom:10px;transition:color .2s}
+    .ft-col a:hover{color:var(--teal)}
+    .ft-badge{display:inline-flex;align-items:center;gap:6px;background:var(--teal-dim);border:1px solid rgba(0,194,184,.2);color:var(--teal);font-size:.7rem;font-weight:600;padding:5px 12px;border-radius:50px;margin-top:16px;letter-spacing:.06em}
+    .footer-bottom{text-align:center;padding:20px;font-size:.75rem;color:rgba(138,155,191,.4);border-top:1px solid rgba(255,255,255,.04)}
 
-    /* Tech Specs Section */
-    .section-title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 30px;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .section-title::before {
-      content: '';
-      display: block;
-      width: 24px; height: 2px;
-      background: var(--accent-2);
-    }
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
-    }
-    .tech-card {
-      background: rgba(20, 20, 35, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 20px;
-      padding: 30px;
-      transition: transform 0.3s ease, background 0.3s ease;
-    }
-    .tech-card:hover {
-      transform: translateY(-5px);
-      background: rgba(30, 30, 50, 0.5);
-      border-color: rgba(129, 140, 248, 0.3);
-    }
-    .tech-card .icon-wrapper {
-      width: 48px; height: 48px;
-      background: rgba(79, 70, 229, 0.1);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-      color: #818cf8;
-    }
-    .tech-card h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: #e0e0ff;
-    }
-    .tech-card p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-
-    /* Install Guide */
-    .install-guide {
-      margin-top: 20px;
-    }
-    .steps-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 30px;
-    }
-    .step {
-      position: relative;
-    }
-    .step-num {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: rgba(255, 255, 255, 0.05);
-      position: absolute;
-      top: -15px; left: -10px;
-      z-index: 0;
-      letter-spacing: -0.05em;
-    }
-    .step h4 {
-      font-size: 1.05rem;
-      font-weight: 600;
-      margin-bottom: 10px;
-      color: #c4b5fd;
-      position: relative;
-      z-index: 1;
-    }
-    .step p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      position: relative;
-      z-index: 1;
-    }
-    .step p strong {
-      color: #e0e0ff;
-    }
-
-    /* Footer */
-    footer {
-      margin-top: auto;
-      padding: 40px 20px;
-      text-align: center;
-      border-top: 1px solid var(--panel-border);
-      background: rgba(5, 5, 10, 0.8);
-    }
-    footer p {
-      font-size: 0.85rem;
-      color: #505070;
-    }
-
-    @media (max-width: 768px) {
-      .hero h1 { font-size: 2.2rem; }
-      .container { padding: 40px 20px; }
-      .glass-panel { padding: 30px 20px; }
-      .navbar { padding: 15px 20px; }
+    /* ── RESPONSIVE ── */
+    @media(max-width:768px){
+      nav{padding:14px 20px}
+      .nav-links{display:none}
+      .steps-row::before{display:none}
+      footer{padding:40px 20px;gap:32px}
     }
   </style>
 </head>
 <body>
-  <!-- Ambient Background -->
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
 
-  <nav class="navbar">
-    <div class="logo">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #818cf8;">
-        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-        <line x1="12" y1="19" x2="12" y2="22"></line>
-      </svg>
-      TinnitOff <span>Enterprise</span>
+<!-- ── NAV ── -->
+<nav>
+  <a class="nav-logo" href="/">
+    <svg viewBox="0 0 32 32" fill="none">
+      <circle cx="16" cy="16" r="16" fill="#0A1628"/>
+      <path d="M8 16 Q8 9 13 6" stroke="#00C2B8" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M6 16 Q6 8 12 4" stroke="#00C2B8" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".6"/>
+      <ellipse cx="18" cy="15" rx="5" ry="7" fill="none" stroke="white" stroke-width="2"/>
+      <ellipse cx="18" cy="17" rx="2.6" ry="3.6" fill="none" stroke="white" stroke-width="1.6"/>
+      <line x1="18" y1="20.6" x2="18" y2="23.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="18" cy="17" r="1.2" fill="#00C2B8"/>
+    </svg>
+    <span>Tinnit<b>Off</b></span>
+  </a>
+  <div class="nav-links">
+    <a href="#tech">Tecnología</a>
+    <a href="#instalacion">Instalación</a>
+    <a href="#descargar">Descargar</a>
+    <a href="/">Landing</a>
+  </div>
+  <a class="nav-cta" href="#descargar">↓ Descargar APK</a>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-grid"></div>
+  <div class="badge"><div class="badge-dot"></div>Release Candidate · v1.0.0 · Android</div>
+  <h1>Portal de Distribución<br/><span>TinnitOff</span></h1>
+  <p class="subtitle">Acceso corporativo al artefacto de producción de la plataforma clínica de neuromodulación acústica con IA Edge integrada.</p>
+  <div class="hero-actions">
+    <a class="btn-dl" href="https://github.com/Estebandev-ved/tinnitus-app/releases/latest/download/tinnitoff-release.apk" id="download-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Descargar Artefacto (APK)
+    </a>
+    <a class="btn-outline" href="/">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Ver landing principal
+    </a>
+  </div>
+  <p class="hero-note">Android 5.1+ · ~25 MB · Firma Keystore SHA-256 verificada</p>
+</section>
+
+<!-- ── STATS ── -->
+<div class="stats-bar">
+  <div><div class="stat-n">15+</div><div class="stat-l">Módulos terapéuticos</div></div>
+  <div><div class="stat-n">3</div><div class="stat-l">Motores de IA integrados</div></div>
+  <div><div class="stat-n">0ms</div><div class="stat-l">Latencia de inferencia Edge</div></div>
+  <div><div class="stat-n">256-bit</div><div class="stat-l">Cifrado de datos en reposo</div></div>
+</div>
+
+<!-- ── TECH ── -->
+<section class="section" id="tech">
+  <p class="tag">Arquitectura del Sistema</p>
+  <h2 class="section-title">Tecnología de Producción</h2>
+  <p class="section-sub">Infraestructura diseñada bajo estándares clínicos con procesamiento local y sincronización segura en la nube.</p>
+  <div class="grid-4">
+    <div class="tech-card">
+      <div class="tc-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l2-9 5 18 3-9h6"/></svg>
+      </div>
+      <h3>DSP en Tiempo Real</h3>
+      <p>Motor de Digital Signal Processing que sintetiza ruido paramétrico (Browniano, Blanco, Rosa) y audio espacial 3D con enmascaramiento activo personalizado.</p>
     </div>
-    <div class="status">
-      <div class="status-dot"></div>
-      Sistemas Operativos
+    <div class="tech-card">
+      <div class="tc-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><circle cx="12" cy="17" r="1"/><path d="M8 21h8"/></svg>
+      </div>
+      <h3>Biometría Facial Edge</h3>
+      <p>Modelos ML ejecutados directamente en dispositivo (on-device inference). Detecta tensión maxilofacial y correlaciona estrés anatómico con episodios críticos.</p>
     </div>
-  </nav>
-
-  <main class="container">
-    <!-- Hero Section -->
-    <section class="hero glass-panel">
-      <div class="badge">Release Candidate v1.0.0</div>
-      <h1>Plataforma Avanzada de<br><span class="gradient-text">Neuromodulación Acústica</span></h1>
-      <p class="subtitle">Acceso corporativo a la arquitectura de monitoreo biométrico e inteligencia artificial especializada en el tratamiento del acúfeno.</p>
-      
-      <div class="action-area">
-        <a class="btn-primary" href="https://github.com/Estebandev-ved/tinnitus-app/releases/latest/download/tinnitoff-release.apk" id="download-btn">
-          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Descargar Artefacto (APK)
-        </a>
-        <div class="security-note">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Firma criptográfica verificada (Keystore SHA-256)
-        </div>
+    <div class="tech-card">
+      <div class="tc-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
       </div>
-    </section>
-
-    <!-- Technical Specifications -->
-    <section>
-      <h2 class="section-title">Arquitectura del Sistema</h2>
-      <div class="grid-2">
-        <div class="tech-card">
-          <div class="icon-wrapper">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l2-9 5 18 3-9h6"/></svg>
-          </div>
-          <h3>Procesamiento DSP en Tiempo Real</h3>
-          <p>Motor de Audio (Digital Signal Processing) que sintetiza ruido paramétrico (Browniano, Blanco, Rosa) y renderiza audio espacial 3D, ajustando dinámicamente el enmascaramiento activo según la acufenometría del paciente.</p>
-        </div>
-        <div class="tech-card">
-          <div class="icon-wrapper">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/><path d="M12 15v2"/><path d="M12 7v2"/><path d="M15 12h2"/><path d="M7 12h2"/></svg>
-          </div>
-          <h3>Biometría Facial con IA Edge</h3>
-          <p>Implementación de modelos ML directamente en el dispositivo para inferencia de baja latencia. Analiza microexpresiones para detectar tensión maxilofacial, correlacionando el estrés anatómico con episodios críticos.</p>
-        </div>
-        <div class="tech-card">
-          <div class="icon-wrapper">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
-          </div>
-          <h3>Gemelo Digital & Telemetría</h3>
-          <p>Sincronización en la nube mediante base de datos NoSQL con reglas de seguridad estrictas. El gemelo digital procesa grandes volúmenes de telemetría anonimizada para generar modelos terapéuticos adaptativos.</p>
-        </div>
-        <div class="tech-card">
-          <div class="icon-wrapper">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-          </div>
-          <h3>Infraestructura Resiliente</h3>
-          <p>Desarrollado bajo principios de Clean Architecture. Soporta un modelo "offline-first" con persistencia local robusta y sincronización optimista, garantizando continuidad de la terapia sin depender de la red.</p>
-        </div>
+      <h3>Gemelo Digital en Nube</h3>
+      <p>Sincronización NoSQL con reglas de seguridad estrictas. Telemetría anonimizada para modelos terapéuticos adaptativos en tiempo real.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
       </div>
-    </section>
+      <h3>Clean Architecture</h3>
+      <p>Modelo Offline-First con persistencia local robusta y sincronización optimista. Continuidad de terapia sin dependencia de conectividad de red.</p>
+    </div>
+  </div>
+</section>
 
-    <!-- Installation Guide -->
-    <section class="install-guide glass-panel">
-      <h2 class="section-title">Protocolo de Despliegue (Android)</h2>
-      <div class="steps-grid">
-        <div class="step">
-          <div class="step-num">01</div>
-          <h4>Descarga de Artefacto</h4>
-          <p>Inicie la transferencia del archivo <strong>.apk</strong> desde nuestros repositorios seguros utilizando el botón de descarga principal.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">02</div>
-          <h4>Configuración de Entorno</h4>
-          <p>Navegue a <strong>Ajustes > Seguridad</strong> y habilite temporalmente la instalación desde <strong>Fuentes Desconocidas</strong> para su navegador.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">03</div>
-          <h4>Ejecución y Validación</h4>
-          <p>Abra el paquete descargado y seleccione <strong>Instalar</strong>. El sistema operativo validará la firma SHA-256 antes de desplegar la aplicación.</p>
-        </div>
-      </div>
-    </section>
-  </main>
+<!-- ── INSTALL ── -->
+<section class="section" id="instalacion" style="padding-top:0">
+  <p class="tag">Protocolo de Despliegue</p>
+  <h2 class="section-title">Instalación en Android</h2>
+  <p class="section-sub">Proceso estándar de sideloading para distribución beta fuera de Google Play.</p>
+  <div class="steps-row">
+    <div class="install-step">
+      <div class="step-circle">1</div>
+      <h4>Descarga del Artefacto</h4>
+      <p>Inicia la transferencia del <strong>archivo .apk</strong> desde el botón principal de descarga.</p>
+    </div>
+    <div class="install-step">
+      <div class="step-circle">2</div>
+      <h4>Configurar Entorno</h4>
+      <p>Ve a <strong>Ajustes → Seguridad</strong> y activa <strong>«Instalar apps de fuentes desconocidas»</strong> para tu navegador.</p>
+    </div>
+    <div class="install-step">
+      <div class="step-circle">3</div>
+      <h4>Ejecutar Instalador</h4>
+      <p>Abre el archivo descargado y selecciona <strong>Instalar</strong>. El SO validará la firma SHA-256.</p>
+    </div>
+    <div class="install-step">
+      <div class="step-circle">4</div>
+      <h4>Acceso y Sincronización</h4>
+      <p>Inicia sesión con Google. Tus datos se cifran y sincronizan de forma segura en la nube.</p>
+    </div>
+  </div>
+</section>
 
+<!-- ── DOWNLOAD ── -->
+<section class="dl-section" id="descargar">
+  <p class="tag">Distribución Oficial</p>
+  <h2>Obtener TinnitOff</h2>
+  <p>Descarga directa del artefacto firmado. Gratis, sin anuncios y sin suscripción obligatoria.</p>
+  <div class="dl-btn-wrap">
+    <a class="store-btn" href="https://github.com/Estebandev-ved/tinnitus-app/releases/latest/download/tinnitoff-release.apk" id="apk-main">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18" stroke-width="3"/></svg>
+      <div class="sl"><span class="ss">Descarga directa</span><span class="sn">APK para Android</span></div>
+    </a>
+    <a class="store-btn" href="#" style="opacity:.45;cursor:not-allowed;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zM2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+      <div class="sl"><span class="ss">Próximamente</span><span class="sn">Google Play</span></div>
+    </a>
+  </div>
+  <p class="dl-note">Android 5.1 (API 22) o superior · ~25 MB · Requiere permisos de micrófono y cámara para módulos de IA</p>
+</section>
+
+<!-- ── DISCLAIMER ── -->
+<div class="disclaimer">
+  ⚠️ <strong>Aviso médico:</strong> TinnitOff es una herramienta de apoyo complementario. No reemplaza el diagnóstico ni el tratamiento de un profesional de la salud. Consulta a un otorrinolaringólogo ante síntomas graves.
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="footer-wrap">
   <footer>
-    <p>&copy; 2026 TinnitOff Enterprise Solutions. Todos los derechos reservados. | Infraestructura Certificada para el Manejo de Datos de Salud.</p>
+    <div class="footer-brand">
+      <div class="ft-logo">Tinnit<b>Off</b></div>
+      <p>La primera plataforma clínica integral de terapia para tinnitus desarrollada en Latinoamérica.</p>
+      <div class="ft-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Datos cifrados · Cumplimiento HIPAA
+      </div>
+    </div>
+    <div class="ft-col">
+      <h4>Plataforma</h4>
+      <a href="#tech">Arquitectura</a>
+      <a href="#instalacion">Instalación</a>
+      <a href="#descargar">Descargar APK</a>
+      <a href="/">Landing Principal</a>
+    </div>
+    <div class="ft-col">
+      <h4>Módulos</h4>
+      <a href="/">DSP &amp; Audio Espacial</a>
+      <a href="/">Biometría Facial IA</a>
+      <a href="/">Gemelo Digital</a>
+      <a href="/">Programa TCC 30D</a>
+    </div>
+    <div class="ft-col">
+      <h4>Legal</h4>
+      <a href="./privacy.html">Política de Privacidad</a>
+      <a href="#">Términos de Uso</a>
+      <a href="mailto:privacy@tinnitoff.app">Contacto</a>
+    </div>
   </footer>
+  <div class="footer-bottom">© 2026 TinnitOff Enterprise. Todos los derechos reservados. · Desarrollado en Latinoamérica 🌎</div>
+</div>
+
 </body>
 </html>

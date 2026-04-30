@@ -20,6 +20,10 @@
         "destination": "/privacy.html"
       },
       {
+        "source": "/download",
+        "destination": "/download.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

@@ -448,7 +448,7 @@
 
   <div class="store-btns">
     <!-- APK directo -->
-    <a class="store-btn" href="./downloads/tinnitoff.apk" download="TinnitOff.apk" id="apk-btn">
+    <a class="store-btn" href="https://github.com/Estebandev-ved/tinnitus-app/releases/latest/download/tinnitoff-release.apk" id="apk-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
         <line x1="12" y1="18" x2="12" y2="18" stroke-width="2.5"/>
@@ -511,25 +511,6 @@
 </div>
 
 <script>
-  // Track APK download
-  document.getElementById('apk-btn').addEventListener('click', function(e) {
-    const href = this.getAttribute('href');
-    if (href === './downloads/tinnitoff.apk') {
-      // Check if file exists before downloading
-      fetch('./downloads/tinnitoff.apk', { method: 'HEAD' })
-        .then(r => {
-          if (!r.ok) {
-            e.preventDefault();
-            alert('El APK estará disponible muy pronto. ¡Gracias por tu interés!');
-          }
-        })
-        .catch(() => {
-          e.preventDefault();
-          alert('El APK estará disponible muy pronto. ¡Gracias por tu interés!');
-        });
-    }
-  });
-
   // Smooth nav highlight
   const sections = document.querySelectorAll('section[id], div[id]');
   const navLinks = document.querySelectorAll('.nav-links a');

@@ -65,9 +65,33 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease --stacktrace --info
 
+      - name: Rename APK for release
+        run: cp android/app/build/outputs/apk/release/app-release.apk tinnitoff-release.apk
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: tinnitoff-release
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: tinnitoff-release.apk
           retention-days: 30
+
+      - name: Get release date
+        id: date
+        run: echo "date=$(date +'%Y.%m.%d')" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.date.outputs.date }}-${{ github.run_number }}
+          name: TinnitOff v${{ steps.date.outputs.date }}
+          body: |
+            ## TinnitOff — Beta Android
+
+            Descarga e instala el APK en tu dispositivo Android.
+
+            ### Instalación
+            1. Descarga `tinnitoff-release.apk`
+            2. En tu Android: Ajustes → Seguridad → Fuentes desconocidas ✓
+            3. Abre el archivo y toca **Instalar**
+          files: tinnitoff-release.apk
+          token: ${{ secrets.GITHUB_TOKEN }}

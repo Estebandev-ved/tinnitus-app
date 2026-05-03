@@ -6,6 +6,8 @@ import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    // Fix: usar el dominio de hosting (web.app) en lugar de firebaseapp.com
+    // Esto evita el error de almacenamiento particionado en navegadores modernos
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
     projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
     storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,

@@ -32,6 +32,10 @@ export function AuthProvider({ children }) {
 
     function signInWithGoogle() {
         const provider = new GoogleAuthProvider();
+        // Fix: forzar selección de cuenta y evitar problemas de almacenamiento particionado
+        provider.setCustomParameters({
+            prompt: 'select_account'
+        });
         return signInWithPopup(auth, provider);
     }
 

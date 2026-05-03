@@ -217,32 +217,18 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById('user-name').textContent = user.displayName || user.email;
   document.getElementById('user-photo').src = user.photoURL || '';
 
-  // Step 1: try to read user's own Firestore document to check role
-  let role = null;
-  try {
-    const userDoc = await getDoc(doc(db, 'users', user.uid));
-    if (userDoc.exists()) role = userDoc.data().role || null;
-  } catch(e) {
-    // Permission denied reading users/{uid} — rules missing for root doc
-    console.warn('Cannot read user doc:', e.code, e.message);
-  }
+  const ADMIN_UID = 'fOtY0GglYPSD9VhMAZ9im10xQE32';
 
-  if (role !== 'admin') {
-    // Step 2: try to load data directly — Firestore rules may still grant access
-    try {
-      await loadData();
-      // If we got here, data loaded fine
-    } catch(e) {
-      const reason = e.code === 'permission-denied'
-        ? `Tu cuenta (${user.email}) no tiene el campo <code>role: "admin"</code> en Firestore.<br/>
-           Revisa en <a href="https://console.firebase.google.com/project/tinnitusoff-e61c4/firestore/data/~2Fusers~2F${user.uid}" target="_blank" style="color:var(--teal)">Firebase Console → Firestore → users/${user.uid}</a> que exista el campo <code>role</code> con valor <code>"admin"</code>.`
-        : `Error Firestore: <code>${e.code}</code> — ${e.message}`;
-      showSetupPanel(user.uid, reason);
-    }
+  if (user.uid !== ADMIN_UID) {
+    document.getElementById('setup-uid').textContent = user.uid;
+    document.getElementById('denied-uid').textContent = user.uid;
+    document.getElementById('setup-panel').style.display = 'none';
+    document.getElementById('access-denied').style.display = 'flex';
+    document.getElementById('stats-row').style.display = 'none';
     return;
   }
 
-  // Role confirmed — load dashboard
+  // Admin confirmado — cargar dashboard
   await loadData();
 });
 

@@ -63,12 +63,11 @@ service cloud.firestore {
     }
 
     // Download events: anyone can write (anonymous tracking), only admin can read
-    // Security: rate limiting handled by Firebase quota; fields are minimal and anonymized
+    // Security: admin UID hardcoded server-side — imposible de bypassear desde el cliente
     match /download_events/{eventId} {
       allow write: if true;
-      // Read: only if authenticated AND user document at users/{uid} has role == 'admin'
       allow read: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+        request.auth.uid == 'fOtY0GglYPSD9VhMAZ9im10xQE32';
     }
 
     // Admin config: only admin UID can access

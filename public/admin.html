@@ -184,7 +184,7 @@ import { getFirestore, collection, getDocs, query, orderBy, limit, getDoc, doc }
 
 const app = initializeApp({
   apiKey: 'AIzaSyA35uv9JUC64iDQSiszn8oyH7eySxbfsWk',
-  authDomain: 'tinnitusoff-e61c4.firebaseapp.com',
+  authDomain: 'tinnitusoff-e61c4.web.app',
   projectId: 'tinnitusoff-e61c4',
   storageBucket: 'tinnitusoff-e61c4.firebasestorage.app',
   messagingSenderId: '1076993132357',
@@ -194,6 +194,16 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let chartInstance = null;
+
+function showSetupPanel(uid, msg) {
+  document.getElementById('setup-uid').textContent = uid;
+  document.getElementById('denied-uid').textContent = uid;
+  document.getElementById('setup-panel').style.display = 'block';
+  document.getElementById('setup-panel').querySelector('p').innerHTML =
+    `${msg}<br/><br/>Tu UID: <strong style="color:var(--teal)">${uid}</strong>`;
+  document.getElementById('access-denied').style.display = 'flex';
+  document.getElementById('stats-row').style.display = 'none';
+}
 
 // AUTH STATE
 onAuthStateChanged(auth, async (user) => {
@@ -206,35 +216,42 @@ onAuthStateChanged(auth, async (user) => {
   document.getElementById('dashboard').style.display = 'block';
   document.getElementById('user-name').textContent = user.displayName || user.email;
   document.getElementById('user-photo').src = user.photoURL || '';
-  document.getElementById('setup-uid').textContent = user.uid;
-  document.getElementById('denied-uid').textContent = user.uid;
 
-  // Check admin role
-  let isAdmin = false;
+  // Step 1: try to read user's own Firestore document to check role
+  let role = null;
   try {
     const userDoc = await getDoc(doc(db, 'users', user.uid));
-    if (userDoc.exists() && userDoc.data().role === 'admin') isAdmin = true;
-  } catch(e) { /* Firestore rules denied → not admin */ }
+    if (userDoc.exists()) role = userDoc.data().role || null;
+  } catch(e) {
+    // Permission denied reading users/{uid} — rules missing for root doc
+    console.warn('Cannot read user doc:', e.code, e.message);
+  }
 
-  if (!isAdmin) {
-    // Try to load data anyway (maybe rules allow it)
+  if (role !== 'admin') {
+    // Step 2: try to load data directly — Firestore rules may still grant access
     try {
       await loadData();
-      isAdmin = true;
+      // If we got here, data loaded fine
     } catch(e) {
-      document.getElementById('setup-panel').style.display = 'block';
-      document.getElementById('access-denied').style.display = 'flex';
-      document.getElementById('stats-row').style.display = 'none';
-      return;
+      const reason = e.code === 'permission-denied'
+        ? `Tu cuenta (${user.email}) no tiene el campo <code>role: "admin"</code> en Firestore.<br/>
+           Revisa en <a href="https://console.firebase.google.com/project/tinnitusoff-e61c4/firestore/data/~2Fusers~2F${user.uid}" target="_blank" style="color:var(--teal)">Firebase Console → Firestore → users/${user.uid}</a> que exista el campo <code>role</code> con valor <code>"admin"</code>.`
+        : `Error Firestore: <code>${e.code}</code> — ${e.message}`;
+      showSetupPanel(user.uid, reason);
     }
+    return;
   }
+
+  // Role confirmed — load dashboard
   await loadData();
 });
 
 // SIGN IN
 document.getElementById('google-signin-btn').onclick = async () => {
   try {
-    await signInWithPopup(auth, new GoogleAuthProvider());
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    await signInWithPopup(auth, provider);
   } catch(e) {
     const err = document.getElementById('login-error');
     err.style.display = 'block';
@@ -248,6 +265,7 @@ document.getElementById('signout-btn').onclick = () => signOut(auth);
 // LOAD DATA
 window.loadData = async function() {
   try {
+    document.getElementById('stat-total').innerHTML = '<div class="spinner"></div>';
     const q = query(collection(db, 'download_events'), orderBy('timestamp','desc'), limit(200));
     const snap = await getDocs(q);
     const events = [];
@@ -283,8 +301,7 @@ window.loadData = async function() {
     document.getElementById('stat-month-name').textContent = now.toLocaleString('es',{month:'long',year:'numeric'});
 
     // Chart — last 30 days
-    const days30 = [];
-    const vals30 = [];
+    const days30 = [], vals30 = [];
     for (let i=29;i>=0;i--) {
       const d = new Date(now - i*86400000);
       const k = d.toISOString().split('T')[0];
@@ -294,28 +311,10 @@ window.loadData = async function() {
     if (chartInstance) chartInstance.destroy();
     chartInstance = new Chart(document.getElementById('chart-downloads'), {
       type: 'bar',
-      data: {
-        labels: days30,
-        datasets: [{
-          label: 'Descargas',
-          data: vals30,
-          backgroundColor: 'rgba(0,194,184,.6)',
-          borderColor: '#00C2B8',
-          borderWidth: 1,
-          borderRadius: 4
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { ticks: { color: '#8a9bbf', maxTicksLimit: 10, font:{size:10} }, grid: { color: 'rgba(255,255,255,.04)' } },
-          y: { ticks: { color: '#8a9bbf', font:{size:11} }, grid: { color: 'rgba(255,255,255,.06)' }, beginAtZero: true }
-        }
-      }
+      data: { labels: days30, datasets: [{ label: 'Descargas', data: vals30, backgroundColor: 'rgba(0,194,184,.6)', borderColor: '#00C2B8', borderWidth: 1, borderRadius: 4 }] },
+      options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#8a9bbf', maxTicksLimit: 10, font:{size:10} }, grid: { color: 'rgba(255,255,255,.04)' } }, y: { ticks: { color: '#8a9bbf', font:{size:11} }, grid: { color: 'rgba(255,255,255,.06)' }, beginAtZero: true } } }
     });
 
-    // Platform bars
     const total = events.length || 1;
     const plOrder = Object.entries(platformMap).sort((a,b)=>b[1]-a[1]);
     const tagClass = {Android:'android',Windows:'win',Mac:'mac',iOS:'mac'};
@@ -323,9 +322,8 @@ window.loadData = async function() {
       <div class="platform-bar">
         <div class="pl-label"><span>${pl}</span><span>${cnt} (${Math.round(cnt/total*100)}%)</span></div>
         <div class="pl-track"><div class="pl-fill" style="width:${Math.round(cnt/total*100)}%"></div></div>
-      </div>`).join('') || '<p style="color:var(--gray)">Sin datos</p>';
+      </div>`).join('') || '<p style="color:var(--gray)">Sin datos aún</p>';
 
-    // Table
     const srcTag = {download_page:'tag-dl',download_page_secondary:'tag-dl',landing_page:'tag-land'};
     const srcLabel = {download_page:'Portal Descarga',download_page_secondary:'Portal (Alt)',landing_page:'Landing'};
     document.getElementById('events-table').innerHTML = events.slice(0,50).map(ev => {
@@ -337,11 +335,12 @@ window.loadData = async function() {
       const srcC = 'tag '+(srcTag[src]||'tag-other');
       const ref = ev.referrer && ev.referrer!=='direct' ? `<span title="${ev.referrer}" style="color:var(--gray)">${ev.referrer.substring(0,30)}…</span>` : '<span style="color:var(--gray)">Direct</span>';
       return `<tr><td>${date}</td><td><span class="${plC}">${pl}</span></td><td>${ev.browser||'—'}</td><td><span class="${srcC}">${srcLabel[src]||src}</span></td><td>${ref}</td></tr>`;
-    }).join('') || '<tr><td colspan="5" style="color:var(--gray);text-align:center;padding:32px">No hay descargas aún</td></tr>';
+    }).join('') || '<tr><td colspan="5" style="color:var(--gray);text-align:center;padding:32px">No hay descargas aún — haz clic en "Descargar APK" para registrar la primera</td></tr>';
 
   } catch(e) {
-    console.error('Error loading data:', e);
-    document.getElementById('setup-panel').style.display = 'block';
+    console.error('loadData error:', e.code, e.message);
+    // Re-throw so auth handler can detect permission errors
+    throw e;
   }
 };
 </script>

@@ -3,6 +3,11 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // Users can only read/write their own data
+    // Rule for root user document (users/{uid})
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    // Rule for user subcollections (users/{uid}/anyCollection/anyDoc)
     match /users/{userId}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
@@ -58,13 +63,12 @@ service cloud.firestore {
     }
 
     // Download events: anyone can write (anonymous tracking), only admin can read
-    // Security: unauthenticated write only allows specific fields (rate limiting via Firebase quotas)
+    // Security: rate limiting handled by Firebase quota; fields are minimal and anonymized
     match /download_events/{eventId} {
-      allow write: if true; // Anonymous tracking - only timestamp/platform/source written by client
+      allow write: if true;
+      // Read: only if authenticated AND user document at users/{uid} has role == 'admin'
       allow read: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)/profile/data).data.role == 'admin'
-        || (request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
     // Admin config: only admin UID can access

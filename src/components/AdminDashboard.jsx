@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../firebase';
-import { collection, getDocs, query, orderBy, limit, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, limit, doc, setDoc } from 'firebase/firestore';
 import { 
   Users, Smartphone, Download, RefreshCw, ChevronLeft, Shield, BarChart3, 
   Activity, Calendar, Tag, Trash2, Cpu, HardDrive, CheckCircle, AlertTriangle 
@@ -112,11 +112,11 @@ export default function AdminDashboard({ onClose }) {
     setSavingConfig(true);
     try {
       const configRef = doc(db, 'app_config', 'metadata');
-      await updateDoc(configRef, {
+      await setDoc(configRef, {
         latest_version: appConfig.latest_version,
         download_url: appConfig.download_url,
         force_update: appConfig.force_update
-      });
+      }, { merge: true });
       alert('¡Configuración de actualización actualizada con éxito!');
     } catch (error) {
       console.error("Error saving App Config:", error);

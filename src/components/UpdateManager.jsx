@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { App } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 import { db } from '../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { Download, AlertTriangle, Cpu } from 'lucide-react';
@@ -17,13 +18,20 @@ export default function UpdateManager({ children }) {
     const setupVersionCheck = async () => {
       try {
         // 1. Get current installed native version using Capacitor App API
+        const isNative = Capacitor.isNativePlatform();
         let version = '1.0.0';
-        try {
-          const info = await App.getInfo();
-          version = info.version;
-          setCurrentVersion(version);
-        } catch (e) {
-          console.warn("Capacitor App getInfo not available (likely web browser):", e);
+        
+        if (isNative) {
+          try {
+            const info = await App.getInfo();
+            version = info.version;
+            setCurrentVersion(version);
+          } catch (e) {
+            console.warn("Capacitor App getInfo not available:", e);
+          }
+        } else {
+          // If we are on web, set current version to latest to bypass blocking
+          setCurrentVersion('1.0.0');
         }
 
         // 2. Listen to real-time configuration changes from Firestore
@@ -34,7 +42,8 @@ export default function UpdateManager({ children }) {
             setLatestVersion(latest_version);
             setApkUrl(download_url);
 
-            if (force_update && isOutdated(version, latest_version)) {
+            // ONLY block if running inside the native APK, force_update is active, and is outdated
+            if (isNative && force_update && isOutdated(version, latest_version)) {
               setUpdateRequired(true);
             } else {
               setUpdateRequired(false);

@@ -7,13 +7,107 @@ import VideoEmbed from '../../DELIVERABLES/Components/VideoEmbed';
 import WizardStep from '../../DELIVERABLES/Components/WizardStep';
 
 const steps = [
-  { id: 'intro', title: 'Paso 1: Bienvenida', content: <p>Hola y bienvenido a TinnitOff. Estamos aquí para ayudarte a mejorar.</p> },
-  { id: 'video', title: 'Paso 2: Video Introductorio', content: <VideoEmbed src="https://example.com/intro.mp4" /> },
-  { id: 'freq', title: 'Paso 3: Frequency Matcher Tutorial', content: <p>Aprende a usar el slider para encontrar la frecuencia exacta de tu zumbido.</p> },
-  { id: 'quiz', title: 'Paso 4: Quiz de Conocimiento', content: <QuizQuestion question="¿El tinnitus tiene cura absoluta universal?" options={["Sí", "No", "Depende de la causa"]} onAnswer={(ans)=>console.log('Respuesta:', ans)} /> },
-  { id: 'audio', title: 'Paso 5: Selector de Preferencia de Audio', content: <QuizQuestion question="Escucha y elige: ¿Qué sonido te alivia más?" options={["White Noise (Shhh suave)", "Pink Noise (Shhh grave)", "Aún no lo sé"]} onAnswer={(ans)=>console.log('Audio:', ans)} /> },
-  { id: 'config', title: 'Paso 6: Configurando tu perfil', content: <p>Aplicando las preferencias guardadas a tu gemelo digital...</p> },
-  { id: 'ready', title: 'Paso 7: ¡Todo Listo!', content: <p>Ya puedes empezar a usar la aplicación para tu terapia diaria.</p> }
+  { 
+    id: 'intro', 
+    title: 'Paso 1: ¡Te damos la bienvenida!', 
+    content: (
+      <div style={{ textAlign: 'center', padding: '10px 0' }}>
+        <p style={{ fontSize: 16, lineHeight: 1.6 }}>
+          Hola. TinnitOff está diseñado por especialistas para ayudarte a <strong>habituar y reducir</strong> la percepción de tu acúfeno (tinnitus).
+        </p>
+        <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
+          A través de este asistente rápido, configuraremos la aplicación para adaptarla exactamente a tus oídos. ¡Solo tomará un minuto!
+        </p>
+      </div>
+    ) 
+  },
+  { 
+    id: 'video', 
+    title: 'Paso 2: ¿Cómo funciona la terapia?', 
+    content: (
+      <div style={{ textAlign: 'center' }}>
+        <p style={{ fontSize: 14, marginBottom: 16, lineHeight: 1.5 }}>
+          Mira este video explicativo rápido para entender los principios científicos de la habituación acústica.
+        </p>
+        <VideoEmbed src="https://example.com/intro.mp4" />
+      </div>
+    ) 
+  },
+  { 
+    id: 'freq', 
+    title: 'Paso 3: Tutorial de Frecuencia', 
+    content: (
+      <div style={{ textAlign: 'left', lineHeight: 1.5 }}>
+        <p style={{ fontSize: 15 }}>
+          Para que el tratamiento funcione, necesitamos saber a qué tono suena tu tinnitus.
+        </p>
+        <ul style={{ paddingLeft: 20, fontSize: 13, color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <li>Usarás un selector deslizante (slider) para generar un sonido artificial.</li>
+          <li>Ajustarás los Hz (hercios) hasta que el sonido sea <strong>lo más parecido posible</strong> a tu zumbido habitual.</li>
+          <li>Una vez guardado, tus terapias de sonido se emitirán en frecuencias protectoras personalizadas.</li>
+        </ul>
+      </div>
+    ) 
+  },
+  { 
+    id: 'quiz', 
+    title: 'Paso 4: Un dato muy importante', 
+    content: (
+      <div style={{ textAlign: 'center' }}>
+        <p style={{ fontSize: 14, marginBottom: 12, color: 'var(--text-secondary)' }}>
+          Aprender sobre tu condición reduce la ansiedad, lo que disminuye la intensidad del acúfeno.
+        </p>
+        <QuizQuestion 
+          question="¿El tinnitus se puede aliviar y habituar?" 
+          options={["No, nunca cambia", "Sí, con terapias acústicas y de relajación", "Solo con cirugía"]} 
+          onAnswer={(ans)=>console.log('Respuesta:', ans)} 
+        />
+      </div>
+    ) 
+  },
+  { 
+    id: 'audio', 
+    title: 'Paso 5: Tu Sonido de Alivio', 
+    content: (
+      <div style={{ textAlign: 'center' }}>
+        <p style={{ fontSize: 14, marginBottom: 12, color: 'var(--text-secondary)' }}>
+          ¿Qué tipo de fondo te resulta más relajante y enmascara mejor tu acúfeno en este momento?
+        </p>
+        <QuizQuestion 
+          question="Elige tu preferencia de ruido inicial:" 
+          options={["Ruido Blanco (shhh suave similar a TV sin señal)", "Ruido Rosa (shhh más profundo similar a la lluvia)", "Aún no lo sé, prefiero explorar luego"]} 
+          onAnswer={(ans)=>console.log('Audio:', ans)} 
+        />
+      </div>
+    ) 
+  },
+  { 
+    id: 'config', 
+    title: 'Paso 6: Creando tu Gemelo Digital', 
+    content: (
+      <div style={{ textAlign: 'center', padding: '20px 0' }}>
+        <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--primary)' }}>Procesando preferencias...</p>
+        <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
+          Estamos configurando tu <strong>Gemelo Digital de Inteligencia Artificial</strong>. Esta herramienta simulará el estado de tu oído interno para predecir y evitar crisis de estrés auditivo.
+        </p>
+      </div>
+    ) 
+  },
+  { 
+    id: 'ready', 
+    title: 'Paso 7: ¡Todo Listo para Empezar!', 
+    content: (
+      <div style={{ textAlign: 'center', padding: '10px 0' }}>
+        <h3 style={{ color: 'var(--success)', marginBottom: 12 }}>🎉 ¡Configuración Exitosa!</h3>
+        <p style={{ fontSize: 15, lineHeight: 1.5 }}>
+          Tu perfil médico ha sido inicializado con éxito.
+        </p>
+        <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+          En la pantalla de inicio verás una <strong>Guía de Inicio Rápido</strong> interactiva por si en algún momento olvidas cuál es el siguiente paso de tu terapia. ¡Tu camino hacia el alivio comienza hoy!
+        </p>
+      </div>
+    ) 
+  }
 ];
 
 const Onboarding = ({ onComplete }) => {

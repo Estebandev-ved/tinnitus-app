@@ -95,6 +95,15 @@ const CustomNoise = ({ onClose, tinnitusFrequency }) => {
                                 animationDuration: modulation > 0 ? `${1 / modulation}s` : '3s'
                             }}
                         ></div>
+                        {isPlaying && (
+                            <div className="dynamic-waves-container">
+                                <div className="wave-bar" style={{ animationDelay: '0.1s', animationDuration: '0.6s', background: activePreset.color }}></div>
+                                <div className="wave-bar" style={{ animationDelay: '0.3s', animationDuration: '0.9s', background: activePreset.color }}></div>
+                                <div className="wave-bar" style={{ animationDelay: '0.2s', animationDuration: '0.7s', background: activePreset.color }}></div>
+                                <div className="wave-bar" style={{ animationDelay: '0.4s', animationDuration: '1.1s', background: activePreset.color }}></div>
+                                <div className="wave-bar" style={{ animationDelay: '0.5s', animationDuration: '0.8s', background: activePreset.color }}></div>
+                            </div>
+                        )}
                         <div className="orb-info">
                             <span className="orb-name">{activePreset.name}</span>
                             <span className="orb-freq">{frequency} Hz</span>

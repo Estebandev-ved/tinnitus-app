@@ -174,7 +174,9 @@ const DailyTracker = ({ onClose, onSave }) => {
                   <span>Intensidad del Zumbido</span>
                 </div>
                 <div className="interactive-slider-container">
-                  <span className="value-display">{tinnitusLevel}/100</span>
+                  <span className="value-display" style={{ color: tinnitusLevel < 30 ? 'var(--primary)' : tinnitusLevel < 70 ? 'var(--accent)' : '#FF3B30' }}>
+                    {tinnitusLevel}/100
+                  </span>
                   <input
                     type="range"
                     min="0"
@@ -182,7 +184,25 @@ const DailyTracker = ({ onClose, onSave }) => {
                     value={tinnitusLevel}
                     onChange={(e) => setTinnitusLevel(parseInt(e.target.value))}
                     className="custom-slider intensity-slider"
+                    style={{ '--slider-color': tinnitusLevel < 30 ? 'var(--primary)' : tinnitusLevel < 70 ? 'var(--accent)' : '#FF3B30' }}
                   />
+                  {(() => {
+                    const getTinnitusLabel = (val) => {
+                      if (val < 30) return { emoji: "😌", label: "Muy leve / Calmo", color: "var(--primary)", text: "El zumbido está bajo control en este momento." };
+                      if (val < 70) return { emoji: "😟", label: "Moderado / Molesto", color: "var(--accent)", text: "Es perceptible pero perfectamente manejable." };
+                      return { emoji: "😫", label: "Intenso / Invasivo", color: "#FF3B30", text: "Zumbido muy fuerte. ¡Intenta hacer una terapia sonora ahora!" };
+                    };
+                    const info = getTinnitusLabel(tinnitusLevel);
+                    return (
+                      <div className="intensity-feedback" style={{ borderLeft: `4px solid ${info.color}` }}>
+                        <span className="feedback-emoji">{info.emoji}</span>
+                        <div className="feedback-text">
+                          <strong style={{ color: info.color }}>{info.label}</strong>
+                          <p>{info.text}</p>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             </>

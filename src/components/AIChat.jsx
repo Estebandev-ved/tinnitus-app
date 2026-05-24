@@ -121,6 +121,13 @@ const generateSmartResponse = (input) => {
 };
 
 const AIChat = ({ onClose, tinnitusFrequency }) => {
+    const QUICK_CHIPS = [
+        { label: "🚨 Crisis ahora", query: "Tengo una crisis de zumbido justo ahora, ¿qué puedo hacer?" },
+        { label: "💤 Ayuda a dormir", query: "Tengo problemas para dormir por el zumbido, ¿me aconsejas?" },
+        { label: "🫁 Relajación rápida", query: "Enséñame un ejercicio rápido para bajar la tensión de mi cabeza" },
+        { label: "🍎 Alimentos a evitar", query: "¿Qué comidas o bebidas pueden empeorar el tinnitus?" }
+    ];
+
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -298,10 +305,11 @@ const AIChat = ({ onClose, tinnitusFrequency }) => {
         }
     };
 
-    const handleSend = async () => {
-        if (!inputText.trim()) return;
+    const handleSend = async (customText) => {
+        const textToSend = typeof customText === 'string' ? customText : inputText;
+        if (!textToSend.trim()) return;
 
-        const userMsg = { id: Date.now(), sender: 'user', text: inputText, timestamp: new Date().toISOString() };
+        const userMsg = { id: Date.now(), sender: 'user', text: textToSend, timestamp: new Date().toISOString() };
         const updatedMessages = [...messages, userMsg];
         setMessages(updatedMessages);
         setInputText('');
@@ -472,6 +480,18 @@ const AIChat = ({ onClose, tinnitusFrequency }) => {
                     </div>
                 )}
                 <div ref={messagesEndRef} />
+            </div>
+
+            <div className="chat-quick-chips">
+                {QUICK_CHIPS.map((chip, idx) => (
+                    <button
+                        key={idx}
+                        className="quick-chip press-effect"
+                        onClick={() => handleSend(chip.query)}
+                    >
+                        {chip.label}
+                    </button>
+                ))}
             </div>
 
             <footer className="chat-input-area">

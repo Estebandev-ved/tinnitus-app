@@ -487,6 +487,50 @@ export const ExtendedFirestoreService = {
     } catch (e) {
       return { completedDays: [], totalXp: 0, lastCompletedDate: null };
     }
+  },
+
+  // --- Telemetría de Dispositivos (Panel de Administración) ---
+  // Propósito: Almacena de manera segura las especificaciones de hardware del usuario para el panel de control.
+  // Medidas de Seguridad: Prevención de inyección mediante el uso estricto de APIs nativas de Firebase SDK.
+  async saveDeviceTelemetry(userId, telemetryData) {
+    try {
+      if (!userId || !telemetryData || !telemetryData.deviceId) return false;
+      const ref = doc(db, USERS_COLLECTION, userId, 'devices', telemetryData.deviceId);
+      await setDoc(ref, {
+        ...telemetryData,
+        lastActive: Timestamp.now()
+      }, { merge: true });
+      return true;
+    } catch (e) {
+      console.error("Error al registrar telemetría de dispositivo:", e);
+      return false;
+    }
+  },
+
+  // --- Analíticas de Landing Page de Descargas ---
+  // Propósito: Loguear y registrar las fuentes de instalación y el origen del tráfico.
+  // Medidas de Seguridad: Validación de referencias y conteo atómico mediante 'increment'.
+  async logDownloadAttribution(referrer, userAgent, platform) {
+    try {
+      const sanitizedReferrer = (referrer || 'directo').replace(/[^a-zA-Z0-9_\-]/g, '').substring(0, 50);
+      const logsRef = collection(db, 'download_logs');
+      await addDoc(logsRef, {
+        referrer: sanitizedReferrer,
+        userAgent: userAgent || 'unknown',
+        platform: platform || 'unknown',
+        timestamp: Timestamp.now()
+      });
+
+      const refCounterRef = doc(db, 'download_analytics', sanitizedReferrer);
+      await setDoc(refCounterRef, {
+        clicksCount: increment(1)
+      }, { merge: true });
+
+      return true;
+    } catch (e) {
+      console.error("Error al registrar analíticas de descarga:", e);
+      return false;
+    }
   }
 };
 Object.assign(FirestoreService, ExtendedFirestoreService);

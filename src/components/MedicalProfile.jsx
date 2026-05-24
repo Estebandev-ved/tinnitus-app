@@ -74,7 +74,7 @@ const MedicalProfile = ({ onClose }) => {
                         <div className="medical-card highlight-card primary">
                             <div className="medical-label" style={{ color: 'white', opacity: 0.9 }}>
                                 <Ear size={18} />
-                                <span>Última Acufenometría</span>
+                                <span>Última medición de tinnitus</span>
                             </div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '12px', color: 'white' }}>
                                 <div>

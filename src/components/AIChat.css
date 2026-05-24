@@ -206,3 +206,42 @@
     background: rgba(0, 122, 255, 0.1);
     border-radius: 50%;
 }
+
+/* Premium Quick Helper Chips */
+.chat-quick-chips {
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px;
+    overflow-x: auto;
+    background: rgba(17, 29, 50, 0.9);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    scrollbar-width: none; /* Hide scrollbar Firefox */
+}
+
+.chat-quick-chips::-webkit-scrollbar {
+    display: none; /* Hide scrollbar Chrome/Safari */
+}
+
+.quick-chip {
+    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #E8EDF4;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.quick-chip:hover {
+    background: rgba(0, 229, 255, 0.1);
+    border-color: var(--primary);
+    color: #FFF;
+    transform: translateY(-1px);
+}
+
+.quick-chip:active {
+    transform: scale(0.96);
+}

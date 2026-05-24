@@ -39,6 +39,34 @@ export const NotificationService = {
     await LocalNotifications.cancel({ notifications: [{ id: 1 }] }).catch(() => {});
   },
 
+  async scheduleHourlyReminder() {
+    if (!isNative()) return;
+    const granted = await this.requestPermission();
+    if (!granted) return;
+
+    await LocalNotifications.cancel({ notifications: [{ id: 2 }] }).catch(() => {});
+
+    await LocalNotifications.schedule({
+      notifications: [{
+        id: 2,
+        title: 'TinnitOff: Alivio Auditivo 🧘',
+        body: 'Es hora de un breve descanso acústico o de realizar una respiración profunda.',
+        schedule: {
+          every: 'hour',
+          allowWhileIdle: true
+        },
+        sound: null,
+        actionTypeId: '',
+        extra: null
+      }]
+    });
+  },
+
+  async cancelHourlyReminder() {
+    if (!isNative()) return;
+    await LocalNotifications.cancel({ notifications: [{ id: 2 }] }).catch(() => {});
+  },
+
   async scheduleSessionReminder(sessionName, delayMinutes = 30) {
     if (!isNative()) return;
     const granted = await this.requestPermission();

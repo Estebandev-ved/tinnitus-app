@@ -228,6 +228,14 @@ const SpatialAudio = ({ onClose, initialFrequency = 4000, initialType = 'pure' }
                         <Info size={16} />
                         <p>Basado en los principios de externalización auditiva, esta técnica ayuda a disminuir la percepción del acúfeno como un sonido "interno".</p>
                     </div>
+
+                    <button
+                        className="btn full-width"
+                        style={{ marginTop: '16px', background: 'rgba(255, 59, 48, 0.1)', color: '#FF3B30', border: '1px solid rgba(255, 59, 48, 0.3)' }}
+                        onClick={onClose}
+                    >
+                        Salir de Terapia 3D
+                    </button>
                 </div>
             </div>
         </div>

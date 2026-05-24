@@ -182,3 +182,28 @@
   border: none;
   box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
 }
+
+/* Premium Wave Visualizer */
+.dynamic-waves-container {
+  position: absolute;
+  bottom: 0px;
+  display: flex;
+  gap: 8px;
+  height: 40px;
+  align-items: flex-end;
+  z-index: 5;
+}
+
+.wave-bar {
+  width: 4px;
+  height: 100%;
+  border-radius: 2px;
+  animation: ripple-wave 1s ease-in-out infinite alternate;
+  transform-origin: bottom;
+  box-shadow: 0 0 10px currentColor;
+}
+
+@keyframes ripple-wave {
+  0% { transform: scaleY(0.15); opacity: 0.3; }
+  100% { transform: scaleY(1); opacity: 1; }
+}

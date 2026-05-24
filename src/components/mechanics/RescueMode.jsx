@@ -1,21 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import { X, Heart, Wind, ShieldCheck } from 'lucide-react';
+import { X, Heart, Wind, ShieldCheck, AlertCircle } from 'lucide-react';
 import { AudioEngine } from '../../utils/audioEngine';
 import { FirestoreService } from '../../services/firestoreService';
 import { useAuth } from '../../contexts/AuthContext';
 import './RescueMode.css';
 
-export const RescueMode = ({ onClose }) => {
+const GROUNDING_MESSAGES = [
+  "Este zumbido es solo una señal inofensiva. Estás a salvo.",
+  "Tu respiración profunda le indica a tu cerebro que puede relajarse.",
+  "Mantén tu atención en la esfera expansiva de luz.",
+  "El sonido de fondo está enmascarando el acúfeno para darte descanso.",
+  "Siente la temperatura del aire al inhalar y exhalar.",
+  "Tu cerebro se está adaptando. Este pico de intensidad pasará."
+];
+
+export const RescueMode = ({ onClose, matchedFrequency }) => {
   const { currentUser } = useAuth();
   const [step, setStep] = useState('input'); // input, breathing, done
-  const [discomfort, setDiscomfort] = useState(5);
+  const [discomfort, setDiscomfort] = useState(7);
   const [phase, setPhase] = useState('Inhala');
-  const [timeLeft, setTimeLeft] = useState(300);
+  const [timeLeft, setTimeLeft] = useState(180); // 3 minutes is perfect for quick panic relief
+  const [messageIndex, setMessageIndex] = useState(0);
+
+  const targetFreq = matchedFrequency ? (typeof matchedFrequency === 'object' ? matchedFrequency.frequency : matchedFrequency) : null;
 
   const startRescue = () => {
     setStep('breathing');
-    AudioEngine.play('pink');
-    AudioEngine.setVolume('pink', 0.6); // Mascaramiento envolvente
+    // If matched frequency exists, play customized enmascarador noise
+    if (targetFreq) {
+      AudioEngine.playCustomNoise(targetFreq, 2.0); // Modulate high frequency with LFO pulses
+      AudioEngine.setVolume('custom', 0.85);
+    } else {
+      // Play standard calming pink noise
+      AudioEngine.play('pink');
+      AudioEngine.setVolume('pink', 0.8);
+    }
+  };
+
+  const stopRescueSound = () => {
+    if (targetFreq) {
+      AudioEngine.stop('custom');
+    } else {
+      AudioEngine.stop('pink');
+    }
   };
 
   useEffect(() => {
@@ -23,16 +50,24 @@ export const RescueMode = ({ onClose }) => {
       let count = 0;
       const interval = setInterval(() => {
         count++;
+        // 4-4-4 Calming Square/Box Breathing rhythm is best under panic
         if (count <= 4) setPhase('Inhala');
-        else if (count <= 11) setPhase('Sostén');
-        else if (count <= 19) setPhase('Exhala');
+        else if (count <= 8) setPhase('Sostén');
+        else if (count <= 12) setPhase('Exhala');
         else count = 0;
-        
+
         setTimeLeft(t => {
+          // Cycle messages every 7 seconds
+          if (t % 7 === 0) {
+            setMessageIndex(prev => (prev + 1) % GROUNDING_MESSAGES.length);
+          }
+
           if (t <= 1) {
             setStep('done');
-            AudioEngine.stop('pink');
-            if (currentUser) FirestoreService.updateUserEcos(currentUser.uid, 20); // Recompensa por resiliencia
+            stopRescueSound();
+            if (currentUser) {
+              FirestoreService.updateUserEcos(currentUser.uid, 25); // Resilience rewards
+            }
             return 0;
           }
           return t - 1;
@@ -43,53 +78,105 @@ export const RescueMode = ({ onClose }) => {
   }, [step]);
 
   useEffect(() => {
-    return () => { AudioEngine.stop('pink'); };
+    return () => {
+      stopRescueSound();
+    };
   }, []);
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
 
   return (
     <div className="rescue-mode animate-fade">
-      {step !== 'breathing' && <button className="rescue-close" onClick={onClose}><X size={32}/></button>}
-      
+      {step !== 'breathing' && (
+        <button className="rescue-close press-effect" onClick={onClose} aria-label="Cerrar">
+          <X size={28} />
+        </button>
+      )}
+
       {step === 'input' && (
-        <div className="rescue-content">
-          <Heart size={64} color="#FF3B30" className="rescue-icon-static" />
-          <h2>SOS - Modo Rescate</h2>
-          <p>¿Qué tan fuerte es la molestia ahora mismo?</p>
-          <div style={{fontSize: 48, fontWeight: 'bold', margin: '20px 0'}}>{discomfort}/10</div>
+        <div className="rescue-content input-view">
+          <div className="alert-badge">
+            <AlertCircle size={16} /> SOS ALIVIO INMEDIATO
+          </div>
+          <h2 className="title-gradient">¿Cómo te sientes ahora?</h2>
+          <p className="subtitle">Usa el slider para registrar el nivel de molestia del acúfeno.</p>
+          
+          <div className="discomfort-circle" style={{ 
+            '--glow-color': discomfort < 4 ? 'var(--primary)' : discomfort < 8 ? 'var(--accent)' : '#FF3B30'
+          }}>
+            <span className="discomfort-number">{discomfort}</span>
+            <span className="discomfort-label">Intensidad</span>
+          </div>
+
           <input 
             type="range" min="1" max="10" 
             value={discomfort} 
-            onChange={(e) => setDiscomfort(e.target.value)} 
-            style={{width: '100%', maxWidth: '300px', accentColor: '#FF3B30', marginBottom: 40}}
+            onChange={(e) => setDiscomfort(parseInt(e.target.value))} 
+            className="rescue-slider"
+            style={{ 
+              '--accent-color': discomfort < 4 ? 'var(--primary)' : discomfort < 8 ? 'var(--accent)' : '#FF3B30'
+            }}
           />
-          <button onClick={startRescue} style={{background: '#FF3B30', color: '#fff', border: 'none', padding: '15px 40px', borderRadius: 30, fontSize: 18, fontWeight: 'bold', cursor: 'pointer'}}>
-            Iniciar Rescate (5 Min)
+
+          <button className="btn-rescue press-effect" onClick={startRescue}>
+            Comenzar Calma SOS
           </button>
         </div>
       )}
 
       {step === 'breathing' && (
-        <div className="rescue-content">
-          <h2>Respira con la guía</h2>
-          <p style={{opacity: 0.7}}>Concéntrate en el centro. El ruido rosa te protege.</p>
-          <div className={`rescue-circle ${phase.toLowerCase()}`}>
-            <Wind size={40} color="white" />
-            <span className="rescue-phase">{phase}</span>
+        <div className="rescue-content breathing-view">
+          <div className="breathing-top-info">
+            <h3>Crisis de Acúfeno</h3>
+            <p>El sonido {targetFreq ? `de enmascaramiento a ${targetFreq} Hz` : 'rosa terapéutico'} te protege. Sigue la esfera.</p>
           </div>
-          <div className="rescue-timer">
-            {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+
+          {/* Glowing breathing sphere */}
+          <div className="breathing-sphere-container">
+            <div className={`breathing-glow-ring ${phase.toLowerCase()}`} />
+            <div className={`rescue-main-sphere ${phase.toLowerCase()}`}>
+              <span className="sphere-phase-text">{phase}</span>
+            </div>
           </div>
+
+          {/* Comfort message */}
+          <div className="grounding-message-card">
+            <p className="grounding-text">{GROUNDING_MESSAGES[messageIndex]}</p>
+          </div>
+
+          <div className="rescue-timer-container">
+            <Wind size={20} color="#00E5FF" className="pulse-wind" />
+            <span className="rescue-timer-text">{formatTime(timeLeft)}</span>
+          </div>
+
+          <button className="btn-stop-rescue press-effect" onClick={() => { stopRescueSound(); onClose(); }}>
+            Detener e ir al Dashboard
+          </button>
         </div>
       )}
 
       {step === 'done' && (
-        <div className="rescue-content">
-          <ShieldCheck size={64} color="#34C759" />
-          <h2>Crisis Superada</h2>
-          <p>Tu cerebro recuperó el control de tu sistema nervioso.</p>
-          <div style={{color: '#FFD700', fontWeight: 'bold', margin: '20px 0', fontSize: 24}}>+20 Ecos (Resiliencia)</div>
-          <button onClick={onClose} style={{background: '#34C759', color: '#fff', border: 'none', padding: '15px 40px', borderRadius: 30, fontSize: 18, fontWeight: 'bold', cursor: 'pointer'}}>
-            Volver
+        <div className="rescue-content done-view">
+          <div className="success-icon-container">
+            <ShieldCheck size={72} color="#00E5FF" className="glow-success" />
+          </div>
+          <h2 className="title-gradient">Bucle de Estrés Roto</h2>
+          <p className="success-subtitle">Has desactivado las señales de alarma en tu sistema auditivo. ¡Excelente trabajo!</p>
+          
+          <div className="ecos-reward-badge">
+            <span className="gift-emoji">🏆</span>
+            <div className="ecos-info">
+              <strong>+25 Ecos de Resiliencia</strong>
+              <span>Guardados en tu perfil</span>
+            </div>
+          </div>
+
+          <button className="btn-finish-rescue press-effect" onClick={onClose}>
+            Listo, volver al Dashboard
           </button>
         </div>
       )}

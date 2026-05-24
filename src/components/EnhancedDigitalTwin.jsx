@@ -13,7 +13,7 @@ export const EnhancedDigitalTwin = ({ onClose, onActionSelect, userInput }) => {
   const [predictionText, setPredictionText] = useState('');
 
   useEffect(() => {
-    if(userInput) {
+    if (userInput) {
       const detected = analyzeEmotion(userInput);
       setMood(detected);
     }
@@ -37,43 +37,43 @@ export const EnhancedDigitalTwin = ({ onClose, onActionSelect, userInput }) => {
 
   return (
     <div className="twin-overlay animate-fade">
-      <div className="twin-modal" style={{background: 'var(--surface)', color: 'var(--text)'}}>
+      <div className="twin-modal">
         <header className="twin-header">
           <h3>Tu Gemelo Digital IA</h3>
           <button className="close-btn" onClick={onClose}><X size={24} /></button>
         </header>
 
-        <div className="twin-content" style={{textAlign: 'center', padding: '20px 0'}}>
-          <div className={`avatar-3d state-${mood}`} style={{fontSize: '80px', margin: '20px 0'}}>
+        <div className="twin-content">
+          <div className={`avatar-3d state-${mood}`}>
             {mood === 'frustration' ? '😣' : mood === 'anxiety' ? '😟' : mood === 'calm' ? '😌' : '🤖'}
           </div>
           
-          <div className={`mood-badge mood-${mood}`} style={{margin: '10px auto', padding: '8px 16px', borderRadius: '20px', background: mood === 'frustration' ? '#FF3B30' : mood === 'anxiety' ? '#FF9500' : '#34C759', color: 'white', display: 'inline-block'}}>
+          <div className={`mood-badge mood-${mood}`}>
             {mood === 'frustration' ? 'Detectamos estrés, respiremos juntos' : mood === 'anxiety' ? 'Notamos ansiedad, prueba sonido 3D' : mood === 'calm' ? '¡Día tranquilo! Sigue así' : 'Estado neutral'}
           </div>
 
           {loading ? (
-             <p>Analizando patrones...</p>
+             <p className="ai-message">Analizando patrones...</p>
           ) : (
-            <div className="insight-card predictive" style={{background: '#1c1c1e', color: 'white', padding: '15px', borderRadius: '12px', marginTop: '20px', textAlign: 'left'}}>
-              <h4><span role="img" aria-label="brain">🧠</span> IA Predictiva</h4>
-              <p style={{fontSize: '14px', marginTop: '8px'}}>{predictionText}</p>
+            <div className="insight-card predictive">
+              <h4>🧠 IA Predictiva</h4>
+              <p>{predictionText}</p>
             </div>
           )}
 
-          <div className="action-recommendations" style={{marginTop: '20px'}}>
+          <div className="action-recommendations">
               <h4>Plan Preventivo Sugerido</h4>
-              <div className="action-list" style={{display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px'}}>
-                  <button className="btn full-width suggestion-btn" onClick={() => onActionSelect('breathing')} style={{display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center'}}>
+              <div className="action-list">
+                  <button className="suggestion-btn" onClick={() => onActionSelect('breathing')}>
                       <Wind size={18} /> Minutos de Respiración
                   </button>
-                  <button className="btn full-width suggestion-btn" onClick={() => onActionSelect('spatial')} style={{display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center'}}>
+                  <button className="suggestion-btn" onClick={() => onActionSelect('spatial')}>
                       <TrendingDown size={18} /> Terapia 3D de Inmediato
                   </button>
               </div>
           </div>
           
-          <p className="disclaimer-text" style={{fontSize: '11px', opacity: 0.7, marginTop: '30px'}}>
+          <p className="disclaimer-text">
             Recordatorio: Soy una IA de apoyo emocional, no sustituyo consejo médico profesional.
           </p>
         </div>

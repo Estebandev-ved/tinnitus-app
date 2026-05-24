@@ -330,7 +330,7 @@ const FrequencyMatcher = ({ onComplete, onCancel }) => {
                     </button>
                 ) : (
                     <button className="btn btn-primary full-width" onClick={handleFinish}>
-                        Listo, terminar examen <Check size={20} />
+                        Listo, guardar medición <Check size={20} />
                     </button>
                 )}
             </footer>

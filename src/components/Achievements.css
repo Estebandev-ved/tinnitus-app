@@ -1,32 +1,72 @@
-.achievements-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background, #0B1426); z-index: 200; display: flex; flex-direction: column; padding: 20px; color: white; }
-.ach-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.ach-grid { display: flex; flex-direction: column; gap: 16px; overflow-y: auto; padding-bottom: 20px; }
+.achievements-modal { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    background: rgba(3, 6, 20, 0.95); 
+    backdrop-filter: blur(16px);
+    z-index: 9999; 
+    display: flex; 
+    flex-direction: column; 
+    padding: 24px; 
+    color: var(--text-main); 
+}
+
+.ach-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 24px; 
+}
+
+.ach-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.ach-grid { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 16px; 
+    overflow-y: auto; 
+    padding-bottom: 24px; 
+    scrollbar-width: none;
+}
+
+.ach-grid::-webkit-scrollbar {
+    display: none;
+}
 
 .ach-card { 
-    background: rgba(17,29,50,0.8); 
-    border-radius: 16px; 
-    padding: 16px; 
+    background: rgba(255, 255, 255, 0.02); 
+    border: 1px solid var(--glass-border);
+    border-radius: 20px; 
+    padding: 20px; 
     display: flex; 
     align-items: center; 
-    gap: 16px; 
+    gap: 20px; 
     position: relative;
-    border: 1px solid rgba(255,255,255,0.05);
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .ach-emoji-wrapper {
     position: relative;
-    width: 60px;
-    height: 60px;
+    width: 64px;
+    height: 64px;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 50%;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
     flex-shrink: 0;
 }
-
-.ach-emoji { font-size: 32px; }
 
 .ach-lock-overlay {
     position: absolute;
@@ -34,9 +74,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(0,0,0,0.6);
+    background: rgba(3, 6, 20, 0.6);
     border-radius: 50%;
-    color: white;
+    color: var(--text-secondary);
 }
 
 .ach-info {
@@ -44,65 +84,103 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    padding-right: 120px; /* Safe space to prevent absolute button overlap */
 }
 
-.ach-info h3 { margin: 0 0 4px 0; font-size: 16px; font-weight: bold; }
-.ach-desc { margin: 0 0 8px 0; font-size: 12px; color: #9ca3af; line-height: 1.4; }
+.ach-info h3 { 
+    margin: 0 0 6px 0; 
+    font-size: 17px; 
+    font-weight: 700; 
+    color: var(--text-main);
+    font-family: 'Outfit', sans-serif;
+}
+
+.ach-desc { 
+    margin: 0 0 10px 0; 
+    font-size: 13px; 
+    color: var(--text-secondary); 
+    line-height: 1.5; 
+}
 
 .ach-reward {
     display: flex;
     align-items: center;
     gap: 6px;
     font-size: 12px;
-    font-weight: bold;
-    color: #eab308; /* Yellow/Gold for reward */
-    background: rgba(234, 179, 8, 0.1);
-    padding: 4px 8px;
-    border-radius: 4px;
+    font-weight: 700;
+    color: var(--accent); 
+    background: rgba(176, 114, 255, 0.1);
+    border: 1px solid rgba(176, 114, 255, 0.15);
+    padding: 6px 12px;
+    border-radius: 10px;
     width: fit-content;
 }
 
-/* FOMO Effect (Locked State) */
+/* Locked State */
 .ach-card.locked { 
-    opacity: 0.8; 
+    opacity: 0.7; 
 }
-.ach-card.locked .ach-emoji { 
-    filter: grayscale(100%) blur(1px); 
-    opacity: 0.5;
-}
-.ach-card.locked .ach-info h3 { color: #d1d5db; }
+.ach-card.locked .ach-info h3 { color: var(--text-secondary); }
 .ach-card.locked .ach-reward {
-    color: #9ca3af;
-    background: rgba(156, 163, 175, 0.1);
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.02);
+    border-color: var(--glass-border);
 }
-.ach-card.locked .reward-icon { color: #9ca3af; }
 
 /* Success Effect (Unlocked State) */
 .ach-card.unlocked { 
-    border: 1px solid #FFD700; 
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.15); 
-    background: linear-gradient(145deg, rgba(17,29,50,0.9) 0%, rgba(255,215,0,0.05) 100%);
+    border: 1px solid rgba(0, 229, 255, 0.3); 
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.08); 
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 229, 255, 0.03) 100%);
 }
+
 .ach-card.unlocked .ach-emoji-wrapper {
-    background: rgba(255, 215, 0, 0.1);
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    background: rgba(0, 229, 255, 0.08);
+    border-color: rgba(0, 229, 255, 0.3);
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
 }
 
 .share-btn { 
     position: absolute;
-    top: 16px;
-    right: 16px;
+    top: 20px;
+    right: 20px;
     display: flex; 
     align-items: center; 
-    gap: 5px; 
-    background: rgba(255,215,0,0.2); 
-    border: 1px solid rgba(255,215,0,0.4);
-    padding: 6px 12px; 
-    border-radius: 8px; 
-    color: #FFD700; 
+    gap: 6px; 
+    background: rgba(0, 229, 255, 0.1); 
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    padding: 8px 16px; 
+    border-radius: 12px; 
+    color: var(--primary); 
     cursor: pointer; 
     font-size: 12px;
-    font-weight: bold;
-    transition: all 0.2s;
+    font-weight: 700;
+    transition: all 0.2s ease;
 }
-.share-btn:hover { background: rgba(255,215,0,0.3); transform: scale(1.05); }
+
+.share-btn:hover { 
+    background: rgba(0, 229, 255, 0.2); 
+    transform: translateY(-1px);
+}
+
+/* Mobile Responsiveness for achievements */
+@media (max-width: 580px) {
+    .ach-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 16px;
+    }
+    
+    .ach-info {
+        padding-right: 0 !important;
+        width: 100%;
+    }
+    
+    .share-btn {
+        position: static;
+        width: 100%;
+        justify-content: center;
+        margin-top: 8px;
+    }
+}

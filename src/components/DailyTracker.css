@@ -240,10 +240,11 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: rgba(17, 29, 50, 0.8);
-    border: 2px solid #FF3B30;
+    background: rgba(17, 29, 50, 0.9);
+    border: 2px solid var(--slider-color, #FF3B30);
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 12px var(--slider-color, #FF3B30);
+    transition: all 0.2s ease;
 }
 
 .tracker-footer {
@@ -294,4 +295,61 @@
     .tracker-modal {
         height: 95vh;
     }
+}
+
+/* Premium Reactive Tinnitus Intensity Feedback Panel */
+.intensity-feedback {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 16px;
+    margin-top: 14px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.feedback-emoji {
+    font-size: 2.2rem;
+    animation: emoji-bounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: inline-block;
+}
+
+.feedback-text {
+    text-align: left;
+}
+
+.feedback-text strong {
+    font-size: 0.95rem;
+    display: block;
+    margin-bottom: 3px;
+    font-weight: 700;
+}
+
+.feedback-text p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+@keyframes emoji-bounce {
+    0% { transform: scale(0.4) rotate(-10deg); }
+    70% { transform: scale(1.1) rotate(5deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+.mood-btn {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.mood-btn:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.mood-btn.selected {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.15);
+    background: rgba(0, 122, 255, 0.05);
 }

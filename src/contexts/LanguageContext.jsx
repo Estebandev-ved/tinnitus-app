@@ -35,14 +35,14 @@ const translations = {
         daily_tip_title: "Consejo del Día",
 
         // Frequency Matcher
-        matcher_title: "Igualador de Frecuencia",
+        matcher_title: "Mide tu Tinnitus",
         matcher_desc: "Encuentra tu tono",
-        matcher_modal_title: "Encuentra tu Frecuencia",
+        matcher_modal_title: "Mide tu Tinnitus",
         matcher_instruction: "Usa el deslizador para igualar el tono de tu tinnitus.",
         save_match_btn: "Guardar Frecuencia",
 
         // Actions Grid
-        action_matcher: "Frecuencia",
+        action_matcher: "Mide tu Tinnitus",
         action_tracker: "Seguimiento",
         action_chat: "AI Chat",
         action_library: "Biblioteca",

@@ -258,7 +258,7 @@
     <a href="#testimonios">Testimonios</a>
     <a href="#descargar">Descargar</a>
   </div>
-  <a class="nav-cta" href="/download">Descargar gratis</a>
+  <a class="nav-cta download-link" href="https://github.com/Estebandev-ved/tinnitus-app/releases/latest/download/tinnitoff-release.apk">Descargar gratis</a>
 </nav>
 
 <!-- HERO -->
@@ -271,7 +271,7 @@
   <h1>Recupera tu<br/><span>silencio interior</span></h1>
   <p>Terapia sonora basada en TCC, seguimiento inteligente y una IA que te acompaña en cada paso del tratamiento.</p>
   <div class="hero-btns">
-    <a class="btn-primary download" href="/download">
+    <a class="btn-primary download download-link" href="https://github.com/Estebandev-ved/tinnitus-app/releases/latest/download/tinnitoff-release.apk">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Descargar para Android
     </a>
@@ -448,7 +448,7 @@
 
   <div class="store-btns">
     <!-- APK directo -->
-    <a class="store-btn" href="https://github.com/Estebandev-ved/tinnitus-app/releases/latest/download/tinnitoff-release.apk" id="apk-btn">
+    <a class="store-btn download-link" href="https://github.com/Estebandev-ved/tinnitus-app/releases/latest/download/tinnitoff-release.apk" id="apk-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
         <line x1="12" y1="18" x2="12" y2="18" stroke-width="2.5"/>
@@ -511,16 +511,64 @@
 </div>
 
 <script>
+  let downloadUrl = 'https://github.com/Estebandev-ved/tinnitus-app/releases/latest/download/tinnitoff-release.apk';
+  let referrer = 'direct';
+
+  // Get referrer from query parameter
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('ref')) {
+    referrer = params.get('ref');
+  }
+
+  // Fetch dynamic download URL and version from Firestore REST API
+  fetch('https://firestore.googleapis.com/v1/projects/tinnitusoff-e61c4/databases/(default)/documents/app_config/metadata?key=AIzaSyA35uv9JUC64iDQSiszn8oyH7eySxbfsWk')
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.fields) {
+        if (data.fields.download_url) {
+          downloadUrl = data.fields.download_url.stringValue;
+          // Update all download buttons href
+          const downloadLinks = document.querySelectorAll('.download-link');
+          downloadLinks.forEach(link => {
+            link.href = downloadUrl;
+          });
+        }
+      }
+    })
+    .catch(err => console.error("Error fetching app metadata:", err));
+
   function getPlatform(ua){if(/android/i.test(ua))return'Android';if(/iphone|ipad/i.test(ua))return'iOS';if(/windows/i.test(ua))return'Windows';if(/mac/i.test(ua))return'Mac';return'Other';}
   function getBrowser(ua){if(/edg\//i.test(ua))return'Edge';if(/chrome/i.test(ua))return'Chrome';if(/firefox/i.test(ua))return'Firefox';if(/safari/i.test(ua))return'Safari';return'Other';}
-  function trackDownload(source){
-    const ua=navigator.userAgent;
-    const body=JSON.stringify({fields:{timestamp:{timestampValue:new Date().toISOString()},source:{stringValue:source},platform:{stringValue:getPlatform(ua)},browser:{stringValue:getBrowser(ua)},referrer:{stringValue:document.referrer||'direct'},userAgent:{stringValue:ua.substring(0,200)}}});
-    fetch('https://firestore.googleapis.com/v1/projects/tinnitusoff-e61c4/databases/(default)/documents/download_events?key=AIzaSyA35uv9JUC64iDQSiszn8oyH7eySxbfsWk',{method:'POST',headers:{'Content-Type':'application/json'},body}).catch(()=>{});
+
+  function trackDownloadClick() {
+    const ua = navigator.userAgent;
+    const platform = navigator.platform || 'unknown';
+    
+    const body = JSON.stringify({
+      fields: {
+        timestamp: { timestampValue: new Date().toISOString() },
+        referrer: { stringValue: referrer },
+        platform: { stringValue: getPlatform(ua) },
+        browser: { stringValue: getBrowser(ua) },
+        userAgent: { stringValue: ua.substring(0, 200) }
+      }
+    });
+    
+    fetch('https://firestore.googleapis.com/v1/projects/tinnitusoff-e61c4/databases/(default)/documents/download_logs?key=AIzaSyA35uv9JUC64iDQSiszn8oyH7eySxbfsWk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body
+    }).catch(() => {});
   }
-  const apkBtn=document.getElementById('apk-btn');
-  if(apkBtn) apkBtn.addEventListener('click',()=>trackDownload('landing_page'));
-</script>
+
+  // Attach click tracking to all download links
+  document.addEventListener('DOMContentLoaded', () => {
+    const downloadLinks = document.querySelectorAll('.download-link');
+    downloadLinks.forEach(link => {
+      link.addEventListener('click', trackDownloadClick);
+    });
+  });
+
   // Smooth nav highlight
   const sections = document.querySelectorAll('section[id], div[id]');
   const navLinks = document.querySelectorAll('.nav-links a');

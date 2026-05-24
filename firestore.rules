@@ -76,6 +76,14 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    // App Config: anyone can read (to check updates before login), only admin can write
+    match /app_config/{doc} {
+      allow read: if true;
+      allow write: if request.auth != null &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         request.auth.token.email == 'admin@tinnitoff.com');
+    }
+
     // Block everything else
     match /{document=**} {
       allow read, write: if false;

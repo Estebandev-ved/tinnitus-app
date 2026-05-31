@@ -386,6 +386,26 @@ export const FirestoreService = {
             console.error('Error getting user profile:', e);
             return null;
         }
+    },
+
+    // --- User Root Metadata ---
+    // Propósito: Almacena de manera segura los datos raíz del usuario en 'users/{userId}' para asegurar que exista físicamente para el panel de administración.
+    // Medidas de Seguridad: Saneamiento y mapeo seguro de campos con prevención de sobreescritura destructiva usando merge: true.
+    async saveUserMetadata(userId, data) {
+        try {
+            const ref = doc(db, USERS_COLLECTION, userId);
+            await setDoc(ref, {
+                email: data.email || null,
+                displayName: data.displayName || null,
+                photoURL: data.photoURL || null,
+                role: data.role || 'user',
+                lastActive: Timestamp.now()
+            }, { merge: true });
+            return true;
+        } catch (e) {
+            console.error('Error saving user metadata:', e);
+            return false;
+        }
     }
 };
 

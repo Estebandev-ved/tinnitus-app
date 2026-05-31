@@ -165,6 +165,18 @@ function App() {
     setStep('splash');
     setShowDisclaimer(true);
 
+    // Save root user metadata to ensure it physically exists for Admin Dashboard query
+    try {
+      await FirestoreService.saveUserMetadata(userData.uid, {
+        email: userData.email,
+        displayName: userData.displayName,
+        photoURL: userData.photoURL || null,
+        role: userData.role || (userData.email === 'admin@tinnitoff.com' ? 'admin' : 'user')
+      });
+    } catch (e) {
+      console.error("Error saving root user metadata:", e);
+    }
+
     // Save device telemetry on successful login
     try {
       let info = { platform: 'web', operatingSystem: 'unknown', osVersion: 'unknown', model: 'unknown', manufacturer: 'unknown', isVirtual: false };

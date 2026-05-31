@@ -2,14 +2,40 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Users can only read/write their own data
+    // Users can only read/write their own data, but admins can read/write everything
     // Rule for root user document (users/{uid})
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if request.auth != null && (
+        request.auth.uid == userId || 
+        request.auth.token.email == 'admin@tinnitoff.com' || 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
     }
     // Rule for user subcollections (users/{uid}/anyCollection/anyDoc)
     match /users/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if request.auth != null && (
+        request.auth.uid == userId || 
+        request.auth.token.email == 'admin@tinnitoff.com' || 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+
+    // Download logs: anyone can write (anonymous attribution), only admin can read
+    match /download_logs/{logId} {
+      allow create: if true;
+      allow read: if request.auth != null && (
+        request.auth.token.email == 'admin@tinnitoff.com' || 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+
+    // Download analytics: anyone can write/update, only admin can read
+    match /download_analytics/{analyticId} {
+      allow create, update: if true;
+      allow read: if request.auth != null && (
+        request.auth.token.email == 'admin@tinnitoff.com' || 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
     }
 
     // Daily logs: owner only

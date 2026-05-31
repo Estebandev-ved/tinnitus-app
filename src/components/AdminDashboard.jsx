@@ -339,73 +339,65 @@ export default function AdminDashboard({ onClose }) {
           {/* Tab 2: Users List & Devices Telemetry */}
           {activeTab === 'users' && (
             <div className="users-tab-content animate-slide-up">
-              <div className="card glass full-width">
-                <div className="card-header-with-actions">
-                  <div>
-                    <h3>Lista de Usuarios y sus Dispositivos</h3>
-                    <p>Revisa qué hardware usan los usuarios finales para afinar los audios y resolver bugs.</p>
-                  </div>
-                </div>
+              <div className="users-list-header">
+                <h3>Lista de Usuarios y Dispositivos</h3>
+                <p>Revisa qué hardware usan los usuarios finales para afinar los audios y resolver bugs.</p>
+              </div>
 
-                <div className="table-responsive">
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>Nombre / Email</th>
-                        <th>ID de Usuario</th>
-                        <th>Rol</th>
-                        <th>Dispositivos Registrados (Telemetría)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {users.length > 0 ? (
-                        users.map((u) => (
-                          <tr key={u.id} className="table-row">
-                            <td className="user-cell">
-                              <div className="avatar-small">
-                                {u.photoURL ? (
-                                  <img src={u.photoURL} alt={u.displayName || 'User'} />
-                                ) : (
-                                  (u.displayName || 'U').charAt(0).toUpperCase()
-                                )}
-                              </div>
-                              <div className="user-credentials">
-                                <strong>{u.displayName || 'Usuario de TinnitOff'}</strong>
-                                <span>{u.email || 'Sin correo electrónico'}</span>
-                              </div>
-                            </td>
-                            <td className="mono-text">{u.id}</td>
-                            <td>
-                              <span className={`badge ${u.role === 'admin' ? 'admin' : 'user'}`}>
-                                {u.role === 'admin' ? 'Administrador' : 'Usuario'}
-                              </span>
-                            </td>
-                            <td>
-                              {u.devices && u.devices.length > 0 ? (
-                                <div className="devices-badges">
-                                  {u.devices.map(dev => (
-                                    <div key={dev.id} className="device-telemetry-badge">
-                                      <Smartphone size={12} />
-                                      <span>
-                                        {dev.manufacturer} {dev.model} ({dev.operatingSystem} {dev.osVersion}) {dev.isVirtual ? ' (Emulador)' : ''}
-                                      </span>
-                                    </div>
-                                  ))}
+              <div className="users-list-wrapper">
+                {users.length > 0 ? (
+                  users.map((u) => (
+                    <div key={u.id} className="user-admin-card glass animate-fade">
+                      <div className="user-card-header">
+                        <div className="user-card-profile">
+                          <div className="avatar-small">
+                            {u.photoURL ? (
+                              <img src={u.photoURL} alt={u.displayName || 'User'} />
+                            ) : (
+                              (u.displayName || 'U').charAt(0).toUpperCase()
+                            )}
+                          </div>
+                          <div className="user-card-credentials">
+                            <h4>{u.displayName || 'Usuario de TinnitOff'}</h4>
+                            <span className="user-card-email">{u.email || 'Sin correo electrónico'}</span>
+                          </div>
+                        </div>
+                        
+                        <span className={`badge ${u.role === 'admin' ? 'admin' : 'user'}`}>
+                          {u.role === 'admin' ? 'Administrador' : 'Usuario'}
+                        </span>
+                      </div>
+
+                      <div className="user-card-body">
+                        <div className="user-body-item">
+                          <span className="item-label">ID de Usuario:</span>
+                          <span className="mono-text user-id-badge">{u.id}</span>
+                        </div>
+
+                        <div className="user-body-telemetry">
+                          <h5>Dispositivos Registrados (Telemetría)</h5>
+                          {u.devices && u.devices.length > 0 ? (
+                            <div className="user-devices-list">
+                              {u.devices.map(dev => (
+                                <div key={dev.id} className="user-device-item">
+                                  <Smartphone size={14} className="device-icon-blue" />
+                                  <div className="device-details-text">
+                                    <strong>{dev.manufacturer} {dev.model}</strong>
+                                    <span>{dev.operatingSystem} {dev.osVersion} {dev.isVirtual ? ' (Emulador)' : ''}</span>
+                                  </div>
                                 </div>
-                              ) : (
-                                <span className="no-devices">Sin telemetría de Capacitor todavía</span>
-                              )}
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="4" className="text-center">No hay usuarios registrados.</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="no-devices">Sin telemetría de dispositivo registrada todavía</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="no-users-box">No hay usuarios registrados.</div>
+                )}
               </div>
             </div>
           )}
@@ -415,41 +407,31 @@ export default function AdminDashboard({ onClose }) {
             <div className="downloads-tab-content animate-slide-up">
               <div className="downloads-dashboard-row">
                 
-                {/* Referrers summary table */}
+                {/* Referrers summary cards */}
                 <div className="card glass">
                   <h3>Estadísticas por Enlace (Referidos)</h3>
                   <p className="card-sub">Conteo consolidado de descargas provenientes de links compartidos.</p>
 
-                  <div className="table-responsive" style={{ marginTop: 15 }}>
-                    <table className="admin-table">
-                      <thead>
-                        <tr>
-                          <th>Enlace de Referencia</th>
-                          <th>Identificador URL</th>
-                          <th>Descargas / Clics</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {referrals.length > 0 ? (
-                          referrals.map(ref => (
-                            <tr key={ref.id}>
-                              <td>
-                                <div className="link-badge-info">
-                                  <Tag size={14} />
-                                  <strong>{ref.id === 'directo' ? 'Acceso Directo (Landing)' : `Campaña: ${ref.id}`}</strong>
-                                </div>
-                              </td>
-                              <td className="mono-text">?ref={ref.id}</td>
-                              <td className="downloads-count-cell">{ref.clicksCount || 0}</td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="3" className="text-center">Aún no se ha trackeado ninguna descarga.</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
+                  <div className="referrals-list-wrapper" style={{ marginTop: 15 }}>
+                    {referrals.length > 0 ? (
+                      referrals.map(ref => (
+                        <div key={ref.id} className="referral-summary-item">
+                          <div className="referral-item-info">
+                            <Tag size={16} className="referral-tag-icon" />
+                            <div className="referral-text-details">
+                              <strong>{ref.id === 'directo' ? 'Acceso Directo (Landing)' : `Campaña: ${ref.id}`}</strong>
+                              <span className="mono-text">?ref={ref.id}</span>
+                            </div>
+                          </div>
+                          <div className="referral-item-count">
+                            <span className="downloads-count-text">{ref.clicksCount || 0}</span>
+                            <span className="downloads-label">clics</span>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="no-logs">Aún no se ha trackeado ninguna descarga.</p>
+                    )}
                   </div>
                 </div>
 

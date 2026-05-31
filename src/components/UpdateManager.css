@@ -187,3 +187,103 @@
   color: #7f7f90;
   line-height: 1.4;
 }
+
+/* 2. Optional Update Overlay */
+.update-optional-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(5, 5, 15, 0.6);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.update-modal.optional {
+  border: 1px solid rgba(0, 194, 184, 0.25);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 
+              0 0 40px rgba(0, 194, 184, 0.15);
+}
+
+.update-modal.optional::before {
+  background: radial-gradient(circle, rgba(0, 194, 184, 0.08) 0%, transparent 60%);
+}
+
+.info-pulse {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(0, 194, 184, 0.1);
+  color: #00c2b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(0, 194, 184, 0.2);
+  animation: pulseTeal 2s infinite ease-in-out;
+}
+
+@keyframes pulseTeal {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(0, 194, 184, 0.2);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 0 35px rgba(0, 194, 184, 0.4);
+  }
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a0a0b0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.close-btn:hover {
+  background: rgba(255, 59, 48, 0.1);
+  border-color: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
+  transform: rotate(90deg);
+}
+
+.optional-btn {
+  background: linear-gradient(135deg, #00c2b8 0%, #007aff 100%);
+  box-shadow: 0 4px 20px rgba(0, 194, 184, 0.35);
+}
+
+.optional-btn:hover {
+  background: linear-gradient(135deg, #00e5d9 0%, #0088ff 100%);
+  box-shadow: 0 6px 28px rgba(0, 194, 184, 0.5);
+}
+
+.update-later-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 14px;
+  color: #a0a0b0;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.update-later-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}

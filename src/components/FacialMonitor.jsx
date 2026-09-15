@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as faceapi from '@vladmandic/face-api';
-import { Camera, X, AlertCircle, Activity, Smile, Frown } from 'lucide-react';
+import { Camera, X, AlertCircle, Activity, Smile, Frown, ScanFace } from 'lucide-react';
 import './FacialMonitor.css';
-import facialMonitorIllustration from '../assets/illustrations/facial_monitor.png';
 
 const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model';
 
@@ -134,7 +133,13 @@ const FacialMonitor = ({ onClose, onDetectTension }) => {
                     <button className="close-btn" onClick={onClose}><X size={24} /></button>
                 </header>
 
-                <img src={facialMonitorIllustration} alt="" className="feature-illustration" />
+                <div className="feature-hero-anim hero-teal" aria-hidden="true">
+                    <div className="fha-ring fha-r1" />
+                    <div className="fha-ring fha-r2" />
+                    <div className="fha-orb">
+                        <ScanFace size={26} strokeWidth={1.8} />
+                    </div>
+                </div>
 
                 <div className="facial-content">
                     {error ? (

@@ -1,11 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, ChevronLeft, ShieldCheck, Settings, Save, Play, Pause, Timer, XCircle } from 'lucide-react';
+import { Send, Bot, User, ChevronLeft, ShieldCheck, Settings, Save, Play, Pause, Timer, XCircle, Mic, Volume2, VolumeX, Wind, ClipboardList, AlertTriangle, Brain, WifiOff } from 'lucide-react';
 import { FirestoreService } from '../services/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
 import { AzureService } from '../services/azureService';
 import { AudioEngine } from '../utils/audioEngine';
 import './AIChat.css';
-import aiChatIllustration from '../assets/illustrations/ai_chat.png';
 
 const SMART_RESPONSES = {
     greetings: [
@@ -75,35 +74,52 @@ const SMART_RESPONSES = {
 const generateSmartResponse = (input) => {
     const lower = input.toLowerCase().trim();
 
-    // Topic matching with variety (picks random from category)
     const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-    // 1. GREETINGS FIRST — Natural conversation before anything else
+    // 1. Specific routing actions based on keywords
+    if (lower.includes('medir') || lower.includes('matcher') || lower.includes('tono') || lower.includes('frecuencia') || lower.includes('hz') || lower.includes('audiometria') || lower.includes('calibrar')) {
+        return "¡Excelente idea! Para medir tu tinnitus y ajustar la terapia sonora a tu zumbido exacto, podemos iniciar la herramienta de medición. (ACTION: matcher)";
+    }
+
+    if (lower.includes('respirar') || lower.includes('respiración') || lower.includes('respiracion') || lower.includes('calmar') || lower.includes('relajar') || lower.includes('estrés') || lower.includes('estres') || lower.includes('tensión') || lower.includes('tension')) {
+        return "Para reducir el estrés, activar el sistema nervioso parasimpático y bajar la tensión auditiva, te recomiendo hacer una sesión de respiración diafragmática. (ACTION: breathing)";
+    }
+
+    if (lower.includes('registrar') || lower.includes('diario') || lower.includes('tracker') || lower.includes('síntomas') || lower.includes('sintomas') || lower.includes('hoy') || lower.includes('guardar')) {
+        if (lower.includes('voz') || lower.includes('grabar') || lower.includes('audio') || lower.includes('hablar')) {
+            return "Graba una nota de voz en tu diario clínico para hacer seguimiento de cómo te sientes hoy. (ACTION: voice_diary)";
+        }
+        return "Llevar un registro diario te ayuda a entender qué factores mejoran o empeoran tu acúfeno. Registremos tus síntomas de hoy. (ACTION: tracker)";
+    }
+
+    if (lower.includes('voz') || lower.includes('grabar') || lower.includes('audio') || lower.includes('hablar')) {
+        return "Puedes grabar tus reflexiones y el nivel de tu tinnitus en audio usando tu diario de voz. (ACTION: voice_diary)";
+    }
+
+    if (lower.includes('crisis') || lower.includes('sos') || lower.includes('insoportable') || lower.includes('fuerte') || lower.includes('pánico') || lower.includes('panico') || lower.includes('molestia')) {
+        return "Entiendo que el zumbido esté muy molesto y alto justo ahora. Mantén la calma, respira despacio y activemos la terapia acústica de rescate SOS de inmediato. (ACTION: rescue)";
+    }
+
+    // 2. GREETINGS FIRST — Natural conversation before anything else
     const greetingWords = ['hola', 'hey', 'buenas', 'buenos días', 'buenos dias', 'buenas tardes', 'buenas noches', 'qué tal', 'que tal', 'saludos', 'hi', 'hello', 'ey', 'holi'];
     if (greetingWords.some(g => lower === g || lower.startsWith(g + ' ') || lower.startsWith(g + ',') || lower.startsWith(g + '!')))
         return pick(SMART_RESPONSES.greetings);
 
-    // 2. Casual / positive messages — keep the conversation going
+    // 3. Casual / positive messages — keep the conversation going
     const casualWords = ['bien', 'genial', 'todo bien', 'normal', 'ahí vamos', 'ahi vamos', 'más o menos', 'mas o menos', 'regular', 'ok', 'gracias', 'vale', 'perfecto', 'claro', 'sí', 'si', 'no mucho', 'nada'];
     if (casualWords.some(c => lower === c || lower === c + '!' || lower === c + '.'))
         return pick(SMART_RESPONSES.casual);
 
-    // 3. Emergency detection
+    // 4. Emergency detection
     if (lower.includes('dolor') || lower.includes('urgencia') || lower.includes('sangr') || lower.includes('sordo'))
         return SMART_RESPONSES.danger[0];
 
-    // 4. Specific topic matching — only when user brings up the topic
+    // 5. Specific topic matching — only when user brings up the topic
     if (lower.includes('dormir') || lower.includes('sueño') || lower.includes('noche') || lower.includes('insomni'))
         return pick(SMART_RESPONSES.sleep);
 
-    if (lower.includes('estrés') || lower.includes('estres') || lower.includes('nervios') || lower.includes('tensión') || lower.includes('tension'))
-        return pick(SMART_RESPONSES.stress);
-
     if (lower.includes('sonido') || lower.includes('ruido') || lower.includes('música') || lower.includes('escuchar') || lower.includes('enmascarar') || lower.includes('terapia'))
         return pick(SMART_RESPONSES.sounds);
-
-    if (lower.includes('respirar') || lower.includes('respiración') || lower.includes('respiracion') || lower.includes('calmar'))
-        return pick(SMART_RESPONSES.breathing);
 
     if (lower.includes('medicamento') || lower.includes('pastilla') || lower.includes('fármaco') || lower.includes('farmaco') || lower.includes('droga'))
         return pick(SMART_RESPONSES.medications);
@@ -120,12 +136,12 @@ const generateSmartResponse = (input) => {
     return pick(SMART_RESPONSES.general);
 };
 
-const AIChat = ({ onClose, tinnitusFrequency }) => {
+const AIChat = ({ onClose, tinnitusFrequency, isDashboard = false, onNavigate }) => {
     const QUICK_CHIPS = [
-        { label: "🚨 Crisis ahora", query: "Tengo una crisis de zumbido justo ahora, ¿qué puedo hacer?" },
-        { label: "💤 Ayuda a dormir", query: "Tengo problemas para dormir por el zumbido, ¿me aconsejas?" },
-        { label: "🫁 Relajación rápida", query: "Enséñame un ejercicio rápido para bajar la tensión de mi cabeza" },
-        { label: "🍎 Alimentos a evitar", query: "¿Qué comidas o bebidas pueden empeorar el tinnitus?" }
+        { label: "Medir Tinnitus", icon: Volume2, query: "Quiero medir mi tinnitus" },
+        { label: "Relajarme / Respirar", icon: Wind, query: "Quiero relajarme con un ejercicio de respiración" },
+        { label: "Registrar mis síntomas", icon: ClipboardList, query: "Quiero registrar cómo me siento hoy" },
+        { label: "Crisis: Zumbido alto", icon: AlertTriangle, query: "Tengo una crisis de zumbido muy fuerte justo ahora" }
     ];
 
     const [messages, setMessages] = useState([]);
@@ -133,6 +149,78 @@ const AIChat = ({ onClose, tinnitusFrequency }) => {
     const [isTyping, setIsTyping] = useState(false);
     const [contextData, setContextData] = useState(null);
     const [showSettings, setShowSettings] = useState(false);
+
+    // Speech-to-Text and Text-to-Speech States
+    const [isListening, setIsListening] = useState(false);
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const [autoSpeakEnabled, setAutoSpeakEnabled] = useState(true);
+
+    const recognitionRef = useRef(null);
+
+    // Initialize speech recognition (STT)
+    useEffect(() => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const rec = new SpeechRecognition();
+            rec.lang = 'es-ES';
+            rec.continuous = false;
+            rec.interimResults = false;
+
+            rec.onstart = () => setIsListening(true);
+            rec.onend = () => setIsListening(false);
+            rec.onerror = (e) => {
+                console.error("Speech recognition error", e.error);
+                setIsListening(false);
+            };
+            rec.onresult = (e) => {
+                const text = e.results[0][0].transcript;
+                if (text) {
+                    setInputText(prev => prev + (prev ? ' ' : '') + text);
+                }
+            };
+            recognitionRef.current = rec;
+        }
+    }, []);
+
+    const toggleListening = () => {
+        if (!recognitionRef.current) {
+            alert("El reconocimiento de voz no está soportado en este navegador.");
+            return;
+        }
+        if (isListening) {
+            recognitionRef.current.stop();
+        } else {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                setIsSpeaking(false);
+            }
+            recognitionRef.current.start();
+        }
+    };
+
+    const speakText = (text) => {
+        if ('speechSynthesis' in window) {
+            if (isSpeaking) {
+                window.speechSynthesis.cancel();
+                setIsSpeaking(false);
+                return;
+            }
+            window.speechSynthesis.cancel();
+
+            // Clean action tags for natural voice reading
+            const cleanText = text
+                .replace(/\(SOUND:\s*\w+\s*\|\s*\d+\)/gi, '')
+                .replace(/\(ACTION:\s*\w+\)/gi, '')
+                .trim();
+
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'es-ES';
+            utterance.onend = () => setIsSpeaking(false);
+            utterance.onerror = () => setIsSpeaking(false);
+            setIsSpeaking(true);
+            window.speechSynthesis.speak(utterance);
+        }
+    };
 
     // Azure Config State
     const [azureConfig, setAzureConfig] = useState({
@@ -183,12 +271,16 @@ const AIChat = ({ onClose, tinnitusFrequency }) => {
                             timestamp: msg.timestamp
                         }));
                         // Add a "welcome back" message
+                        const welcomeBackText = '¡Hola de nuevo! 👋 Recuerdo nuestra conversación anterior. ¿En qué puedo ayudarte hoy?';
                         restored.push({
                             id: Date.now(),
                             sender: 'bot',
-                            text: '¡Hola de nuevo! 👋 Recuerdo nuestra conversación anterior. ¿En qué puedo ayudarte hoy?'
+                            text: welcomeBackText
                         });
                         setMessages(restored);
+                        if (autoSpeakEnabled) {
+                            speakText(welcomeBackText);
+                        }
                         return; // Skip default greeting since we restored history
                     }
 
@@ -205,14 +297,26 @@ const AIChat = ({ onClose, tinnitusFrequency }) => {
                         greetParts.push(`Noto que tu tinnitus afecta ${earMap[medProfile.ear] || 'tu oído'}.`);
                     }
                     greetParts.push('¿En qué puedo ayudarte hoy?');
-                    setMessages([{ id: 1, sender: 'bot', text: greetParts.join(' ') }]);
+                    const initialGreeting = greetParts.join(' ');
+                    setMessages([{ id: 1, sender: 'bot', text: initialGreeting }]);
+                    if (autoSpeakEnabled) {
+                        speakText(initialGreeting);
+                    }
 
                 } catch (e) {
                     console.error("Error loading chat context", e);
-                    setMessages([{ id: 1, sender: 'bot', text: 'Hola, soy tu asistente clínico. ¿Cómo te sientes hoy?' }]);
+                    const fallbackGreet = 'Hola, soy tu asistente clínico. ¿Cómo te sientes hoy?';
+                    setMessages([{ id: 1, sender: 'bot', text: fallbackGreet }]);
+                    if (autoSpeakEnabled) {
+                        speakText(fallbackGreet);
+                    }
                 }
             } else {
-                setMessages([{ id: 1, sender: 'bot', text: 'Hola, soy tu asistente clínico. Inicia sesión para obtener consejos personalizados.' }]);
+                const anonGreet = 'Hola, soy tu asistente clínico. Inicia sesión para obtener consejos personalizados.';
+                setMessages([{ id: 1, sender: 'bot', text: anonGreet }]);
+                if (autoSpeakEnabled) {
+                    speakText(anonGreet);
+                }
             }
         };
         loadContext();
@@ -326,7 +430,7 @@ const AIChat = ({ onClose, tinnitusFrequency }) => {
             } catch (error) {
                 console.error("Azure Error:", error);
                 const fallback = generateSmartResponse(userMsg.text);
-                botResponse = { id: Date.now() + 1, sender: 'bot', text: `📡 _Modo offline_ — ${fallback}`, timestamp: new Date().toISOString() };
+                botResponse = { id: Date.now() + 1, sender: 'bot', text: `_Modo offline_ — ${fallback}`, timestamp: new Date().toISOString() };
             }
         } else {
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -338,6 +442,11 @@ const AIChat = ({ onClose, tinnitusFrequency }) => {
         setMessages(finalMessages);
         setIsTyping(false);
 
+        // Read bot response out loud
+        if (autoSpeakEnabled && botResponse) {
+            speakText(botResponse.text);
+        }
+
         // Save to Firestore for cross-session memory
         persistMessages(finalMessages);
     };
@@ -345,7 +454,9 @@ const AIChat = ({ onClose, tinnitusFrequency }) => {
     // Render Message Helper with Therapy Card
     const renderMessageContent = (msg) => {
         // Regex to find (SOUND: id | mins)
-        const soundMatch = msg.text.match(/\(SOUND:\s*(\w+)\s*\|\s*(\d+)\)/);
+        const soundMatch = msg.text.match(/\(SOUND:\s*(\w+)\s*\|\s*(\d+)\)/i);
+        // Regex to find (ACTION: id)
+        const actionMatch = msg.text.match(/\(ACTION:\s*(\w+)\)/i);
 
         if (soundMatch && msg.sender === 'bot') {
             const soundId = soundMatch[1];
@@ -396,32 +507,125 @@ const AIChat = ({ onClose, tinnitusFrequency }) => {
                     </div>
                 </div>
             );
+        } else if (actionMatch && msg.sender === 'bot') {
+            const actionId = actionMatch[1];
+            const cleanText = msg.text.replace(actionMatch[0], "").trim();
+
+            let actionName = 'Abrir Herramienta';
+            let actionDesc = 'Acceder a la sección seleccionada';
+            let actionClass = 'senior-card-matcher';
+
+            if (actionId === 'matcher') {
+                actionName = 'Iniciar Medición de Tinnitus';
+                actionDesc = 'Calibra la frecuencia exacta de tu zumbido.';
+                actionClass = 'senior-card-matcher';
+            } else if (actionId === 'breathing') {
+                actionName = 'Ejercicio de Respiración';
+                actionDesc = 'Sesión guiada para relajar la mente y reducir la tensión.';
+                actionClass = 'senior-card-relax';
+            } else if (actionId === 'tracker') {
+                actionName = 'Registrar mis Síntomas';
+                actionDesc = 'Anota tu nivel de zumbido, estrés y sueño de hoy.';
+                actionClass = 'senior-card-tracker';
+            } else if (actionId === 'rescue') {
+                actionName = 'Activar Modo SOS de Emergencia';
+                actionDesc = 'Enmascarador acústico rápido para calmar molestias fuertes.';
+                actionClass = 'senior-card-sos';
+            } else if (actionId === 'voice_diary') {
+                actionName = 'Grabar en mi Diario de Voz';
+                actionDesc = 'Graba una nota contándome cómo te sientes hoy.';
+                actionClass = 'senior-card-therapy';
+            }
+
+            return (
+                <div>
+                    <p style={{ margin: 0 }}>{cleanText}</p>
+                    <div className={`senior-action-card ${actionClass}`} style={{ marginTop: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <button
+                            onClick={() => {
+                                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                                setIsSpeaking(false);
+                                if (onNavigate) {
+                                    onNavigate(actionId);
+                                } else {
+                                    alert(`Navegar a: ${actionId}`);
+                                }
+                            }}
+                            className="btn btn-primary"
+                            style={{
+                                width: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '10px',
+                                fontSize: '15px',
+                                fontWeight: 700,
+                                padding: '12px',
+                                borderRadius: '12px',
+                                cursor: 'pointer',
+                                background: actionId === 'rescue' ? 'linear-gradient(135deg, #FF3B30 0%, #FF2D55 100%)' : undefined,
+                                border: actionId === 'rescue' ? 'none' : undefined,
+                                boxShadow: actionId === 'rescue' ? '0 4px 12px rgba(255,59,48,0.3)' : undefined
+                            }}
+                        >
+                            {actionName}
+                        </button>
+                        <span style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', textAlign: 'center' }}>
+                            {actionDesc}
+                        </span>
+                    </div>
+                </div>
+            );
         }
         return <div className="bubble-content">{msg.text}</div>;
     };
 
     return (
-        <div className="chat-container animate-fade">
+        <div className={`chat-container animate-fade ${isDashboard ? 'dashboard-mode' : ''}`}>
             <header className="chat-header">
-                <button className="back-btn" onClick={onClose}>
-                    <ChevronLeft />
-                </button>
+                {!isDashboard && (
+                    <button className="back-btn" onClick={onClose}>
+                        <ChevronLeft />
+                    </button>
+                )}
                 <div className="bot-info">
-                    <img src={aiChatIllustration} alt="" className="chat-avatar-illustration" />
+                    <div className="chat-avatar-anim" aria-hidden="true">
+                        <Bot size={19} strokeWidth={1.9} />
+                        <span className="avatar-status-dot" />
+                    </div>
                     <h3>Asistente Clínico</h3>
                     <div className="badge">
                         <ShieldCheck size={12} />
-                        <span>{azureConfig.apiKey ? 'Modo: Azure AI 🧠' : 'Modo: Básico'}</span>
+                        <span>{azureConfig.apiKey ? 'Modo: Azure AI' : 'Modo: Básico'}</span>
                     </div>
                 </div>
-                <button className="settings-btn" onClick={() => setShowSettings(!showSettings)}>
-                    <Settings size={20} />
-                </button>
+                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                    <button 
+                        className="speech-toggle-btn" 
+                        onClick={() => {
+                            if (autoSpeakEnabled) {
+                                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                                setIsSpeaking(false);
+                            }
+                            setAutoSpeakEnabled(!autoSpeakEnabled);
+                        }}
+                        style={{
+                            background: 'none', border: 'none', color: autoSpeakEnabled ? 'var(--primary)' : 'var(--text-muted)',
+                            marginRight: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        }}
+                        title={autoSpeakEnabled ? "Lectura automática activada" : "Lectura automática desactivada"}
+                    >
+                        {autoSpeakEnabled ? <Volume2 size={22} className="icon-glow" style={{ filter: 'drop-shadow(0 0 4px var(--primary))' }} /> : <VolumeX size={22} />}
+                    </button>
+                    <button className="settings-btn" onClick={() => setShowSettings(!showSettings)}>
+                        <Settings size={20} />
+                    </button>
+                </div>
             </header>
 
             {showSettings && (
                 <div className="settings-panel animate-fade">
-                    <h4>⚙️ Configuración Azure AI</h4>
+                    <h4><Settings size={15} style={{ verticalAlign: '-2px', marginRight: 6 }} /> Configuración Azure AI</h4>
                     <p>Conecta tu modelo GPT-4o / GPT-5.2</p>
 
                     <label>Endpoint (URL)</label>
@@ -461,13 +665,24 @@ const AIChat = ({ onClose, tinnitusFrequency }) => {
                         {msg.sender === 'bot' ? (
                             <div className="bubble-wrapper" style={{ maxWidth: '85%' }}>
                                 <div className="bubble-content" style={{
-                                    paddingRight: msg.text.includes('(SOUND:') ? '20px' : undefined,
+                                    paddingRight: msg.text.includes('(SOUND:') || msg.text.includes('(ACTION:') ? '20px' : undefined,
                                     background: 'white',
                                     color: 'var(--text-main)',
                                     borderBottomLeftRadius: '4px'
                                 }}>
                                     {renderMessageContent(msg)}
                                 </div>
+                                <button 
+                                    onClick={() => speakText(msg.text)} 
+                                    style={{
+                                        background: 'none', border: 'none', color: 'var(--text-secondary)',
+                                        padding: '4px 8px', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px',
+                                        marginTop: '4px'
+                                    }}
+                                >
+                                    <Volume2 size={12} />
+                                    <span>Escuchar</span>
+                                </button>
                             </div>
                         ) : (
                             <div className="bubble-content">{msg.text}</div>
@@ -483,26 +698,56 @@ const AIChat = ({ onClose, tinnitusFrequency }) => {
             </div>
 
             <div className="chat-quick-chips">
-                {QUICK_CHIPS.map((chip, idx) => (
-                    <button
-                        key={idx}
-                        className="quick-chip press-effect"
-                        onClick={() => handleSend(chip.query)}
-                    >
-                        {chip.label}
-                    </button>
-                ))}
+                {QUICK_CHIPS.map((chip, idx) => {
+                    const ChipIcon = chip.icon;
+                    return (
+                        <button
+                            key={idx}
+                            className="quick-chip press-effect"
+                            onClick={() => handleSend(chip.query)}
+                            style={{ padding: '12px 18px', fontSize: '14px', borderRadius: '20px' }}
+                        >
+                            <ChipIcon size={15} style={{ verticalAlign: '-2px', marginRight: 6 }} />
+                            {chip.label}
+                        </button>
+                    );
+                })}
             </div>
 
             <footer className="chat-input-area">
+                <button 
+                    className={`mic-btn ${isListening ? 'listening' : ''}`}
+                    onClick={toggleListening}
+                    style={{
+                        background: isListening ? 'linear-gradient(135deg, #FF3B30 0%, #FF2D55 100%)' : 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: '16px',
+                        width: '50px',
+                        height: '50px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: isListening ? 'white' : 'var(--text-main)',
+                        marginRight: '8px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        boxShadow: isListening ? '0 0 15px rgba(255, 59, 48, 0.4)' : 'none',
+                        flexShrink: 0
+                    }}
+                    title={isListening ? "Detener grabación" : "Hablar con la IA"}
+                >
+                    <Mic size={22} className={isListening ? 'icon-glow' : ''} />
+                </button>
                 <input
                     type="text"
-                    placeholder={azureConfig.apiKey ? "Pregunta a GPT... (Modo Avanzado)" : "Pide un consejo..."}
+                    placeholder={isListening ? "Escuchando tu voz..." : (azureConfig.apiKey ? "Pregunta a GPT... (Modo Avanzado)" : "Pide un consejo...")}
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                    disabled={isListening}
+                    style={{ fontSize: '16px', padding: '12px 16px' }}
                 />
-                <button className="send-btn" onClick={handleSend}>
+                <button className="send-btn" onClick={handleSend} style={{ flexShrink: 0 }}>
                     <Send size={20} />
                 </button>
             </footer>

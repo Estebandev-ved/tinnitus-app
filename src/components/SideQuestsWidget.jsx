@@ -15,7 +15,7 @@ export const SideQuestsWidget = () => {
       try {
         const parsed = JSON.parse(saved);
         if (parsed.date === today) return parsed.quests;
-      } catch (e) {}
+      } catch (e) { /* ignore parse errors */ }
     }
     return { water: false, med: false, posture: false };
   });

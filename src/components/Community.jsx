@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { X, Send, Heart, MessageCircle, User, Plus, Trophy, MessageSquare, Map as MapIcon, Globe2, Sparkles } from 'lucide-react';
+import { X, Send, Heart, MessageCircle, User, Plus, Trophy, MessageSquare, Map as MapIcon, Globe2, Sparkles, Lightbulb, BookOpen, HelpCircle, MessagesSquare } from 'lucide-react';
 import { FirestoreService } from '../services/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
 import GlobalMap from './GlobalMap';
 import './Community.css';
 
 const CATEGORIES = [
-    { key: 'all', label: 'Todos' },
-    { key: 'tips', label: '💡 Tips' },
-    { key: 'experiencias', label: '📖 Experiencias' },
-    { key: 'preguntas', label: '❓ Preguntas' },
+    { key: 'all', label: 'Todos', icon: MessagesSquare },
+    { key: 'tips', label: 'Tips', icon: Lightbulb },
+    { key: 'experiencias', label: 'Experiencias', icon: BookOpen },
+    { key: 'preguntas', label: 'Preguntas', icon: HelpCircle },
 ];
 
 const Community = ({ onClose }) => {
@@ -87,9 +87,10 @@ const Community = ({ onClose }) => {
         ? posts
         : posts.filter(p => p.category === activeCategory);
 
-    const getCategoryEmoji = (cat) => {
-        const map = { tips: '💡', experiencias: '📖', preguntas: '❓' };
-        return map[cat] || '💬';
+    const getCategoryIcon = (cat) => {
+        const found = CATEGORIES.find(c => c.key === cat);
+        const Icon = found?.icon || MessagesSquare;
+        return <Icon size={13} />;
     };
 
     const timeAgo = (timestamp) => {
@@ -128,15 +129,18 @@ const Community = ({ onClose }) => {
                     {activeTab === 'forum' && (
                         <>
                             <div className="comm-categories">
-                                {CATEGORIES.map(cat => (
-                                    <button
-                                        key={cat.key}
-                                        className={`cat-pill ${activeCategory === cat.key ? 'active' : ''}`}
-                                        onClick={() => setActiveCategory(cat.key)}
-                                    >
-                                        {cat.label}
-                                    </button>
-                                ))}
+                                {CATEGORIES.map(cat => {
+                                    const Icon = cat.icon;
+                                    return (
+                                        <button
+                                            key={cat.key}
+                                            className={`cat-pill ${activeCategory === cat.key ? 'active' : ''}`}
+                                            onClick={() => setActiveCategory(cat.key)}
+                                        >
+                                            <Icon size={14} /> {cat.label}
+                                        </button>
+                                    );
+                                })}
                             </div>
 
                             <div className="comm-posts-area">
@@ -153,7 +157,7 @@ const Community = ({ onClose }) => {
                                                     <span>{post.authorName || 'Anónimo'}</span>
                                                     <span className="time-stamp">• {timeAgo(post.createdAt)}</span>
                                                 </div>
-                                                <span className="cat-badge">{getCategoryEmoji(post.category)}</span>
+                                                <span className="cat-badge">{getCategoryIcon(post.category)}</span>
                                             </div>
                                             <p className="post-content-text">{post.text}</p>
                                             

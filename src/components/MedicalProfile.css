@@ -1,13 +1,17 @@
+/* ═══════════════════════════════════════════════════
+   MEDICAL PROFILE — Oceanic Clinical Dark
+   Inspirado en: DashboardHome card style
+═══════════════════════════════════════════════════ */
+
 .medical-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
     z-index: 100;
     display: flex;
     align-items: flex-end;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .medical-modal {
@@ -19,6 +23,8 @@
     max-height: 90vh;
     display: flex;
     flex-direction: column;
+    border-top: 1px solid rgba(0, 180, 216, 0.15);
+    box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.65);
 }
 
 .medical-header {
@@ -26,12 +32,18 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px 24px 16px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(0, 180, 216, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
 .medical-header h3 {
-    font-size: 20px;
-    color: var(--text-main);
+    font-size: 18px;
+    font-weight: 800;
+    color: #F0F4F8;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.3px;
 }
 
 .medical-content {
@@ -41,6 +53,14 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 180, 216, 0.12) transparent;
+}
+
+.medical-content::-webkit-scrollbar { width: 3px; }
+.medical-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 180, 216, 0.18);
+    border-radius: 3px;
 }
 
 .medical-card {
@@ -55,40 +75,52 @@
     gap: 8px;
     font-size: 14px;
     font-weight: 600;
-    color: var(--text-main);
+    color: #F0F4F8;
 }
 
 .medical-input {
     padding: 12px 16px;
     border-radius: 12px;
-    border: 1px solid var(--border-color);
-    background: var(--surface);
-    color: var(--text-main);
+    border: 1px solid rgba(0, 180, 216, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: #F0F4F8;
     font-size: 15px;
     font-family: 'Inter', sans-serif;
     outline: none;
-    transition: border 0.2s;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.medical-input::placeholder {
+    color: rgba(144, 224, 239, 0.28);
 }
 
 .medical-input:focus {
-    border-color: #007AFF;
+    border-color: rgba(0, 180, 216, 0.4);
+    background: rgba(0, 180, 216, 0.06);
+    box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.08);
 }
 
 .medical-textarea {
     padding: 12px 16px;
     border-radius: 12px;
-    border: 1px solid var(--border-color);
-    background: var(--surface);
-    color: var(--text-main);
+    border: 1px solid rgba(0, 180, 216, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: #F0F4F8;
     font-size: 15px;
     font-family: 'Inter', sans-serif;
     resize: none;
     outline: none;
-    transition: border 0.2s;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.medical-textarea::placeholder {
+    color: rgba(144, 224, 239, 0.28);
 }
 
 .medical-textarea:focus {
-    border-color: #007AFF;
+    border-color: rgba(0, 180, 216, 0.4);
+    background: rgba(0, 180, 216, 0.06);
+    box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.08);
 }
 
 .ear-options {
@@ -100,25 +132,32 @@
     flex: 1;
     padding: 10px;
     border-radius: 12px;
-    border: 1px solid var(--border-color);
-    background: var(--surface);
-    color: var(--text-secondary);
+    border: 1px solid rgba(0, 180, 216, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(144, 224, 239, 0.55);
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.ear-btn:hover {
+    background: rgba(0, 180, 216, 0.07);
+    border-color: rgba(0, 180, 216, 0.2);
+    transform: translateY(-1px);
 }
 
 .ear-btn.active {
-    background: rgba(0, 122, 255, 0.1);
-    border-color: #007AFF;
-    color: #007AFF;
+    background: rgba(0, 180, 216, 0.12);
+    border-color: #00B4D8;
+    color: #00B4D8;
     font-weight: 600;
+    box-shadow: 0 0 14px rgba(0, 180, 216, 0.15);
 }
 
 .medical-footer {
     padding: 16px 24px 24px;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid rgba(0, 180, 216, 0.08);
 }
 
 .full-width {

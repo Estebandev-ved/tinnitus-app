@@ -27,6 +27,7 @@
     flex-direction: column;
     overflow-y: auto;
     scrollbar-width: none;
+    animation: clayEnter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .twin-modal::-webkit-scrollbar {

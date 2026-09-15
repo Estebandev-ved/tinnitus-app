@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, Moon, Zap, Activity, Save, ChevronLeft, ChevronRight, Smile, Meh, Frown } from 'lucide-react';
+import { X, Moon, Zap, Activity, Save, ChevronLeft, ChevronRight, Smile, Meh, Frown, CalendarCheck } from 'lucide-react';
 import { FirestoreService } from '../services/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
 import './DailyTracker.css';
-import dailyTrackerIllustration from '../assets/illustrations/daily_tracker.png';
 
 const WeekStrip = ({ logs = [] }) => {
   const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
@@ -125,7 +124,14 @@ const DailyTracker = ({ onClose, onSave }) => {
           </button>
         </header>
 
-        <img src={dailyTrackerIllustration} alt="" className="feature-illustration" />
+        {/* Hero animado — reemplaza la ilustración PNG */}
+        <div className="feature-hero-anim" aria-hidden="true">
+          <div className="fha-ring fha-r1" />
+          <div className="fha-ring fha-r2" />
+          <div className="fha-orb">
+            <CalendarCheck size={26} strokeWidth={1.8} />
+          </div>
+        </div>
 
         {/* Tab Switcher */}
         <div className="tracker-tabs">

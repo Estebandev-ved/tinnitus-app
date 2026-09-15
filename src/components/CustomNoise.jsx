@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Play, Square, Volume2, Waves, Activity } from 'lucide-react';
+import { X, Play, Square, Volume2, Waves, Activity, Scissors, Radio } from 'lucide-react';
 import { AudioEngine } from '../utils/audioEngine';
 import './CustomNoise.css';
 
@@ -17,6 +17,8 @@ const CustomNoise = ({ onClose, tinnitusFrequency }) => {
     const [volume, setVolume] = useState(0.5);
     const [modulation, setModulation] = useState(0); // 0 = off, >0 = pulse rate
     const [isPlaying, setIsPlaying] = useState(false);
+    // 'mask' = bandpass masker (refuerza la frecuencia) | 'notch' = band-stop (la suprime)
+    const [mode, setMode] = useState('notch');
 
     // Auto-stop on unmount
     useEffect(() => {
@@ -34,9 +36,30 @@ const CustomNoise = ({ onClose, tinnitusFrequency }) => {
 
     const activePreset = getCurrentPreset(frequency);
 
+    const playForMode = (freq, mod) => {
+        if (mode === 'notch') {
+            AudioEngine.playNotchedNoise(freq, mod);
+        } else {
+            AudioEngine.playCustomNoise(freq, mod);
+        }
+    };
+
     const applyAudio = (freq, mod) => {
         if (isPlaying) {
-            AudioEngine.playCustomNoise(freq, mod);
+            playForMode(freq, mod);
+            AudioEngine.setVolume('custom', volume);
+        }
+    };
+
+    const handleModeChange = (newMode) => {
+        if (newMode === mode) return;
+        setMode(newMode);
+        if (isPlaying) {
+            if (newMode === 'notch') {
+                AudioEngine.playNotchedNoise(frequency, modulation);
+            } else {
+                AudioEngine.playCustomNoise(frequency, modulation);
+            }
             AudioEngine.setVolume('custom', volume);
         }
     };
@@ -64,7 +87,7 @@ const CustomNoise = ({ onClose, tinnitusFrequency }) => {
             AudioEngine.stop('custom');
             setIsPlaying(false);
         } else {
-            AudioEngine.playCustomNoise(frequency, modulation);
+            playForMode(frequency, modulation);
             AudioEngine.setVolume('custom', volume);
             setIsPlaying(true);
         }
@@ -116,6 +139,26 @@ const CustomNoise = ({ onClose, tinnitusFrequency }) => {
                             Frecuencia objetivo: {defaultFreq} Hz
                         </div>
                     )}
+
+                    {/* Mode selector: mask vs notch */}
+                    <div className="mode-selector">
+                        <button
+                            className={`mode-btn ${mode === 'notch' ? 'active' : ''}`}
+                            onClick={() => handleModeChange('notch')}
+                        >
+                            <Scissors size={16} />
+                            <span className="mode-title">Suprimir (Notch)</span>
+                            <span className="mode-desc">Elimina la banda del zumbido</span>
+                        </button>
+                        <button
+                            className={`mode-btn ${mode === 'mask' ? 'active' : ''}`}
+                            onClick={() => handleModeChange('mask')}
+                        >
+                            <Radio size={16} />
+                            <span className="mode-title">Enmascarar</span>
+                            <span className="mode-desc">Cubre el zumbido con ruido</span>
+                        </button>
+                    </div>
 
                     {/* Presets */}
                     <div className="preset-grid">

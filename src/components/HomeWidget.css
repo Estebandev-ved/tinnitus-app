@@ -8,3 +8,9 @@
 .widget-play-btn { background: #5856D6; border: none; border-radius: 50%; width: 40px; height: 40px; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 0 10px rgba(88,86,214,0.4); }
 .widget-expanded-content { margin-top: 15px; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;}
 .install-widget-btn { margin-top: 10px; width: 100%; padding: 10px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: white; font-weight: 500; cursor: pointer; }
+
+.streak-ring-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; }
+.streak-ring { display: block; }
+.streak-ring-bg { fill: none; stroke: rgba(255,255,255,0.15); stroke-width: 3; }
+.streak-ring-fg { fill: none; stroke: #FF9F45; stroke-width: 3; stroke-linecap: round; }
+.streak-ring-flame { position: absolute; pointer-events: none; }

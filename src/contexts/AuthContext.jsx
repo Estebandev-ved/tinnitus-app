@@ -19,8 +19,8 @@ export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Mock Admin Detection (Replace with real Claims later)
-    const isAdmin = currentUser?.email === 'admin@tinnitoff.com';
+    // Admin detection is now role-based (fetched from backend after login)
+    const isAdmin = currentUser?.role === 'admin';
 
     function signup(email, password) {
         return createUserWithEmailAndPassword(auth, email, password);

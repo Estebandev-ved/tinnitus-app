@@ -1,24 +1,44 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap');
 
 :root {
-  /* Premium Neurological & Calm Medical Palette */
-  --primary: #00E5FF;       /* Cyan/Teal - Calm, Modern, Health */
-  --primary-light: rgba(0, 229, 255, 0.15);
-  --primary-dark: #00A6CC;
-  --accent: #B072FF;        /* Soft Violet - Mindfulness, Neurology */
-  --accent-light: rgba(176, 114, 255, 0.15);
-  
-  --background: #030614;    /* Deepest space blue - premium depth */
-  --surface: #0B132B;
-  --surface-raised: #111D3B;
-  
-  --text-main: #F0F4F8;
-  --text-secondary: #9BA4B5;
-  --text-muted: #5F6C85;
-  --white: #FFFFFF;
-  --error: #FF3B30;
-  --success: #34C759;
-  --warning: #FFCC00;
+  /* ═══════════════════════════════════════════════════
+     DESIGN SYSTEM — TinnitOff Oceanic Clinical Dark
+     Referencia: Calm + Monzo + BetterHelp + Cardiology clinics
+     Base: Deep Navy #06080F · Teal #00B4D8 · Ocean #0096C7
+  ═══════════════════════════════════════════════════ */
+
+  /* Brand Colors */
+  --brand-teal:        #00B4D8;
+  --brand-teal-light:  #48CAE4;
+  --brand-teal-dim:    rgba(0, 180, 216, 0.55);
+  --brand-ocean:       #0096C7;
+  --brand-deep:        #0077B6;
+  --brand-glow:        rgba(0, 180, 216, 0.18);
+
+  /* Primary — Teal oceánico */
+  --primary:           #00B4D8;
+  --primary-light:     rgba(0, 180, 216, 0.15);
+  --primary-dark:      #0096C7;
+
+  /* Accent — Deep ocean */
+  --accent:            #48CAE4;
+  --accent-light:      rgba(72, 202, 228, 0.15);
+
+  /* Backgrounds — Deep dark navy */
+  --background:        #06080F;
+  --surface:           #0D1117;
+  --surface-raised:    #111820;
+
+  /* Text */
+  --text-main:         #F0F4F8;
+  --text-secondary:    rgba(144, 224, 239, 0.75);
+  --text-muted:        rgba(144, 224, 239, 0.38);
+  --white:             #FFFFFF;
+
+  /* Status */
+  --error:             #FF6B6B;
+  --success:           #2DD4BF;
+  --warning:           #FBBF24;
 
   /* Spacing */
   --spacing-xs: 4px;
@@ -27,19 +47,53 @@
   --spacing-lg: 24px;
   --spacing-xl: 32px;
 
-  /* Premium Glassmorphism & Volume */
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(0, 229, 255, 0.2);
-  
-  --glass: rgba(11, 19, 43, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-border-highlight: rgba(0, 229, 255, 0.2);
+  /* Border Radii */
+  --clay-radius-xl:  24px;
+  --clay-radius-lg:  16px;
+  --clay-radius-md:  12px;
+  --clay-radius-sm:  8px;
+  --clay-radius-xs:  6px;
 
-  /* Card */
-  --card-bg: rgba(11, 19, 43, 0.5);
-  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --border-color: rgba(255, 255, 255, 0.05);
+  /* Glassmorphism surfaces */
+  --glass:                  rgba(255, 255, 255, 0.04);
+  --glass-border:           rgba(0, 180, 216, 0.12);
+  --glass-border-highlight: rgba(72, 202, 228, 0.22);
+
+  --card-bg:     rgba(13, 17, 23, 0.88);
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --border-color: rgba(0, 180, 216, 0.08);
+
+  /* Clay surfaces (glass dark) */
+  --clay-bg-dark:    rgba(255, 255, 255, 0.045);
+  --clay-bg-surface: rgba(255, 255, 255, 0.07);
+
+  /* Shadows */
+  --shadow-sm:   0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-md:   0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 24px rgba(0, 180, 216, 0.25);
+
+  --clay-shadow-card:
+    0 12px 32px rgba(0, 0, 0, 0.4),
+    0 4px 10px rgba(0, 0, 0, 0.2);
+
+  --clay-shadow-card-hover:
+    0 20px 48px rgba(0, 0, 0, 0.55),
+    0 6px 14px rgba(0, 180, 216, 0.08);
+
+  --clay-shadow-btn:
+    0 6px 16px rgba(0, 150, 199, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.2);
+
+  --clay-shadow-btn-hover:
+    0 10px 24px rgba(0, 150, 199, 0.45),
+    0 3px 6px rgba(0, 0, 0, 0.25);
+
+  --clay-shadow-btn-pressed:
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 3px rgba(0, 0, 0, 0.4);
+
+  --clay-shadow-nav:
+    0 -6px 20px rgba(0, 0, 0, 0.4);
 
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
@@ -48,22 +102,29 @@
   background-color: var(--background);
 }
 
-/* Dark Mode Override (deeper space black) */
+/* Dark Mode — identical to root (app is always dark by design) */
 .dark-mode {
-  --background: #010308;
-  --surface: #060B19;
-  --surface-raised: #0A1125;
-  --text-main: #E2E8F0;
-  --text-secondary: #8B949E;
-  --text-muted: #475569;
-  
-  --glass: rgba(6, 11, 25, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.04);
-  --glass-border-highlight: rgba(0, 229, 255, 0.15);
-  
-  --card-bg: rgba(6, 11, 25, 0.5);
-  --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-  --border-color: rgba(255, 255, 255, 0.03);
+  --background:     #06080F;
+  --surface:        #0D1117;
+  --surface-raised: #111820;
+  --text-main:      #F0F4F8;
+  --text-secondary: rgba(144, 224, 239, 0.75);
+  --text-muted:     rgba(144, 224, 239, 0.38);
+
+  --glass:            rgba(255, 255, 255, 0.04);
+  --glass-border:     rgba(0, 180, 216, 0.12);
+  --card-bg:          rgba(13, 17, 23, 0.88);
+  --card-shadow:      0 16px 36px rgba(0, 0, 0, 0.55);
+  --border-color:     rgba(0, 180, 216, 0.06);
+  --clay-bg-dark:     rgba(255, 255, 255, 0.04);
+  --clay-bg-surface:  rgba(255, 255, 255, 0.065);
+
+  --clay-shadow-card:
+    0 16px 36px rgba(0, 0, 0, 0.5),
+    0 4px 10px rgba(0, 0, 0, 0.25);
+  --clay-shadow-card-hover:
+    0 24px 48px rgba(0, 0, 0, 0.65),
+    0 6px 14px rgba(0, 180, 216, 0.1);
 }
 
 * {
@@ -77,7 +138,7 @@ body {
   flex-direction: column;
   min-height: 100vh;
   overflow-x: hidden;
-  background-color: var(--background);
+  background-color: #06080F;
   transition: background 0.3s ease, color 0.3s ease;
 }
 
@@ -85,7 +146,7 @@ h1,
 h2,
 h3 {
   font-family: 'Outfit', sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
 }
 
@@ -96,69 +157,90 @@ h3 {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: transparent;
+  background-color: var(--background);
   position: relative;
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5); /* Separate app container from desktop black */
+  box-shadow: 0 0 80px rgba(0, 180, 216, 0.04), 0 0 1px rgba(0,180,216,0.15);
 }
 
-/* Base Components */
+/* ─────────────────────────────────────────
+   Base Components — Claymorphism Edition
+   ───────────────────────────────────────── */
 .btn {
   padding: 14px 24px;
-  border-radius: 12px;
+  border-radius: var(--clay-radius-md);
   border: none;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  position: relative;
+  overflow: hidden;
 }
 
+/* Botón primario — Ocean Blue Clinical */
 .btn-primary {
-  background-color: var(--primary);
-  color: var(--white);
+  background: linear-gradient(135deg, #0096C7 0%, #0077B6 100%);
+  color: #FFFFFF;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  border-radius: var(--clay-radius-md);
+  box-shadow: 0 6px 20px rgba(0, 150, 199, 0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+  border: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 10px 28px rgba(0, 150, 199, 0.48), inset 0 1px 0 rgba(255,255,255,0.18);
+  background: linear-gradient(135deg, #00B4D8 0%, #0096C7 100%);
 }
 
 .btn-primary:active {
-  transform: scale(0.98);
-  background-color: var(--primary-dark);
+  transform: scale(0.97) translateY(1px);
+  box-shadow: 0 4px 12px rgba(0, 150, 199, 0.3);
+  background: linear-gradient(135deg, #0077B6 0%, #005F8F 100%);
+  transition: all 0.1s ease;
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--primary);
+  color: var(--text-main);
+  border-radius: var(--clay-radius-md);
 }
 
+/* ─── Tarjeta Glassmorphic Dark Ocean ─── */
 .card {
-  background: var(--card-bg);
-  border-radius: 24px;
+  background: var(--clay-bg-dark);
+  border-radius: var(--clay-radius-xl);
   padding: var(--spacing-lg);
-  box-shadow: var(--card-shadow), inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  box-shadow: var(--clay-shadow-card);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   position: relative;
   overflow: hidden;
 }
 
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--glass-border-highlight), transparent);
-  opacity: 0.5;
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--clay-shadow-card-hover);
+  border-color: rgba(0, 180, 216, 0.22);
 }
 
-/* Premium Glassmorphism */
+.card::before { content: ''; display: none; }
+
+/* ─── Glassmorphism Dark ─── */
 .glass {
-  background: var(--glass) !important;
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-md), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  background: var(--clay-bg-surface) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--clay-radius-lg) !important;
+  box-shadow: var(--clay-shadow-card);
 }
 
 /* ───── Animations ───── */
@@ -230,15 +312,17 @@ h3 {
   animation-delay: 0.4s;
 }
 
-/* Scale tap/press effect */
+/* ─── Efecto press — Arcilla blanda ─── */
 .press-effect {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.2s ease;
   cursor: pointer;
 }
 
 .press-effect:active {
-  transform: scale(0.96) !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3) !important;
+  transform: scale(0.93) translateY(1px) !important;
+  box-shadow: var(--clay-shadow-btn-pressed) !important;
+  animation: clayPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 /* Subtle hover lift */
@@ -276,7 +360,7 @@ h3 {
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(10, 132, 255, 0.4), rgba(90, 200, 250, 0.2), rgba(10, 132, 255, 0.1));
+  background: linear-gradient(135deg, rgba(10, 132, 255, 0.4), rgba(90, 200, 250, 0.2), rgba(44, 62, 68, 0.08));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -296,7 +380,7 @@ h3 {
 }
 
 .gradient-border-animated::before {
-  background: conic-gradient(from var(--border-angle, 0deg), rgba(10, 132, 255, 0.5), rgba(90, 200, 250, 0.3), rgba(10, 132, 255, 0.1), rgba(90, 200, 250, 0.3), rgba(10, 132, 255, 0.5));
+  background: conic-gradient(from var(--border-angle, 0deg), rgba(10, 132, 255, 0.5), rgba(90, 200, 250, 0.3), rgba(44, 62, 68, 0.08), rgba(90, 200, 250, 0.3), rgba(10, 132, 255, 0.5));
   animation: borderRotate 4s linear infinite;
 }
 
@@ -549,11 +633,22 @@ h3 {
 
 .animated-bg {
   background: 
-    radial-gradient(circle at 15% 50%, rgba(0, 229, 255, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 85% 30%, rgba(176, 114, 255, 0.08) 0%, transparent 50%),
-    linear-gradient(135deg, var(--background) 0%, #050A15 50%, var(--surface) 100%);
+    radial-gradient(ellipse 70% 50% at 50% 10%, rgba(0, 150, 199, 0.14) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(0, 180, 216, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 10% 90%, rgba(0, 119, 182, 0.1) 0%, transparent 60%),
+    linear-gradient(135deg, #06080F 0%, #0D1117 50%, #06080F 100%);
   background-size: 200% 200%;
-  animation: gradientShift 15s ease infinite;
+  animation: gradientShift 25s ease infinite;
+}
+
+.dark-mode .animated-bg {
+  background: 
+    radial-gradient(ellipse 70% 50% at 50% 10%, rgba(0, 150, 199, 0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(0, 180, 216, 0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 10% 90%, rgba(0, 119, 182, 0.12) 0%, transparent 60%),
+    linear-gradient(135deg, #06080F 0%, #0D1117 50%, #06080F 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 25s ease infinite;
 }
 
 /* ───── Custom Scrollbar ───── */
@@ -566,22 +661,22 @@ h3 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(10, 132, 255, 0.2);
+  background: rgba(44, 62, 68, 0.15);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(10, 132, 255, 0.4);
+  background: rgba(44, 62, 68, 0.3);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(10, 132, 255, 0.2) transparent;
+  scrollbar-color: rgba(44, 62, 68, 0.15) transparent;
 }
 
 /* ───── Typography Refinements ───── */
 .text-gradient {
-  background: linear-gradient(135deg, #0A84FF, #5AC8FA);
+  background: linear-gradient(135deg, #2C3E44, #5E4E6D);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -621,10 +716,103 @@ h3 {
   width: auto;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 4px 20px rgba(10, 132, 255, 0.25));
-  opacity: 0.9;
+  filter: drop-shadow(0 4px 20px rgba(44, 62, 68, 0.15));
+  opacity: 0.95;
   animation: illustrationFloat 4s ease-in-out infinite;
 }
+
+/* ═══ FEATURE HERO ANIMADO — reemplazo de PNGs ═══
+   Orbe con anillos de pulso reutilizable en cualquier pantalla.
+   Uso: <div class="feature-hero-anim"><div class="fha-ring fha-r1"/>
+        <div class="fha-ring fha-r2"/><div class="fha-orb"><Icon/></div></div> */
+.feature-hero-anim {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  margin: 12px auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: illustrationFloat 4.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.fha-orb {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.2) 0%, transparent 45%),
+    linear-gradient(135deg, #00B4D8 0%, #0077B6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  z-index: 2;
+  box-shadow:
+    0 0 24px rgba(0, 180, 216, 0.45),
+    0 8px 20px rgba(0, 0, 0, 0.4),
+    inset 0 1px 5px rgba(255, 255, 255, 0.25);
+  animation: fhaBreath 3s ease-in-out infinite;
+}
+
+@keyframes fhaBreath {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+}
+
+.fha-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 180, 216, 0.45);
+  transform: translate(-50%, -50%);
+  animation: fhaRingExpand 2.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  pointer-events: none;
+}
+
+.fha-r1 { animation-delay: 0s; }
+.fha-r2 { animation-delay: 1.4s; }
+
+@keyframes fhaRingExpand {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.75);
+    opacity: 0;
+  }
+}
+
+/* Variantes de color para diferentes secciones */
+.feature-hero-anim.hero-purple .fha-orb {
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.2) 0%, transparent 45%),
+    linear-gradient(135deg, #A78BFA 0%, #7C5CE0 100%);
+  box-shadow: 0 0 24px rgba(167, 139, 250, 0.45), 0 8px 20px rgba(0, 0, 0, 0.4), inset 0 1px 5px rgba(255, 255, 255, 0.25);
+}
+.feature-hero-anim.hero-purple .fha-ring { border-color: rgba(167, 139, 250, 0.45); }
+
+.feature-hero-anim.hero-teal .fha-orb {
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.2) 0%, transparent 45%),
+    linear-gradient(135deg, #2DD4BF 0%, #0D9488 100%);
+  box-shadow: 0 0 24px rgba(45, 212, 191, 0.45), 0 8px 20px rgba(0, 0, 0, 0.4), inset 0 1px 5px rgba(255, 255, 255, 0.25);
+}
+.feature-hero-anim.hero-teal .fha-ring { border-color: rgba(45, 212, 191, 0.45); }
+
+.feature-hero-anim.hero-warm .fha-orb {
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.2) 0%, transparent 45%),
+    linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+  box-shadow: 0 0 24px rgba(251, 191, 36, 0.4), 0 8px 20px rgba(0, 0, 0, 0.4), inset 0 1px 5px rgba(255, 255, 255, 0.25);
+}
+.feature-hero-anim.hero-warm .fha-ring { border-color: rgba(251, 191, 36, 0.4); }
 
 @keyframes illustrationFloat {
 
@@ -645,5 +833,63 @@ h3 {
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid rgba(10, 132, 255, 0.3);
-  box-shadow: 0 0 12px rgba(10, 132, 255, 0.2);
+  box-shadow: 0 0 12px rgba(223, 213, 230, 0.45);
+}
+
+/* Avatar animado del asistente (reemplaza el PNG) */
+.chat-avatar-anim {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.22) 0%, transparent 45%),
+    linear-gradient(135deg, #00B4D8 0%, #0077B6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  box-shadow: 0 0 14px rgba(0, 180, 216, 0.4), inset 0 1px 3px rgba(255, 255, 255, 0.25);
+  animation: fhaBreath 3.5s ease-in-out infinite;
+}
+
+.avatar-status-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #2DD4BF;
+  border: 2px solid #06080F;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.5); }
+  50% { box-shadow: 0 0 0 4px rgba(45, 212, 191, 0); }
+}
+
+/* ═══════════════════════════════════════════
+   🧱 CLAYMORPHISM MICRO-ANIMATIONS
+   ═══════════════════════════════════════════ */
+
+/* Micro-bounce al soltar botón — simula rebote de arcilla */
+@keyframes clayPop {
+  0%   { transform: scale(0.93); }
+  50%  { transform: scale(1.04); }
+  75%  { transform: scale(0.99); }
+  100% { transform: scale(1); }
+}
+
+/* Entrada suave de tarjeta clay con micro-bounce */
+@keyframes clayEnter {
+  0%   { opacity: 0; transform: translateY(16px) scale(0.96); }
+  60%  { opacity: 1; transform: translateY(-4px) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.clay-enter {
+  animation: clayEnter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }

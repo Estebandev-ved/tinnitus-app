@@ -188,7 +188,7 @@
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #00E5FF 0%, #5856D6 80%, #000B1A 100%);
+  background: radial-gradient(circle at 35% 35%, #DFD5E6 0%, #5856D6 80%, #000B1A 100%);
   box-shadow: 0 0 45px rgba(0, 229, 255, 0.4), inset -10px -10px 30px rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
@@ -265,7 +265,7 @@
 
 .grounding-text {
   font-size: 0.95rem;
-  color: #E8EDF4;
+  color: var(--text-main);
   line-height: 1.5;
   font-weight: 500;
   margin: 0;
@@ -293,7 +293,7 @@
   font-size: 1.1rem;
   font-weight: 700;
   font-family: monospace;
-  color: #00E5FF;
+  color: #DFD5E6;
 }
 
 .pulse-wind {
@@ -353,7 +353,7 @@
 }
 
 .btn-finish-rescue {
-  background: linear-gradient(135deg, #00E5FF 0%, #007AFF 100%);
+  background: linear-gradient(135deg, #DFD5E6 0%, #8C789B 100%);
   color: #030614;
   border: none;
   padding: 16px 40px;

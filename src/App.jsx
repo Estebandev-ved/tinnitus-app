@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Mic, Trophy, Heart, Brain, BookOpen, Volume2, Calendar, MessageSquare, ChevronRight, Wind, Sliders, Lightbulb, Flame, TrendingDown, Moon, Sun, Bell, Download, Users, Globe, ScanFace, Headphones, Cpu, AlertTriangle } from 'lucide-react';
+import { Shield, Mic, Trophy, Heart, Brain, BookOpen, Volume2, Calendar, MessageSquare, ChevronRight, Wind, Sliders, Lightbulb, Flame, TrendingDown, Moon, Sun, Bell, Download, Users, Globe, ScanFace, Headphones, Cpu, AlertTriangle, Home, User, Sparkles, Waves, AudioLines } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { haptic } from './utils/haptics';
 import { RescueMode } from './components/mechanics/RescueMode';
 import { SideQuestsWidget } from './components/SideQuestsWidget';
 import { FirestoreService } from './services/firestoreService';
 import { generateDoctorReport } from './utils/reportGenerator';
 import { useLanguage } from './contexts/LanguageContext';
 import { Device } from '@capacitor/device';
-import AdminDashboard from './components/AdminDashboard';
+import ErrorBoundary from './components/MobileErrorBoundary';
 import LandingPage from './components/LandingPage';
 import './App.css';
-
-// Illustration imports
-import splashIllustration from './assets/illustrations/corte2.png';
 
 // Component Imports
 import FrequencyMatcher from './components/FrequencyMatcher';
@@ -23,6 +22,7 @@ import CrisisPrediction from "./components/CrisisPrediction";
 import GuidedSessions from "./components/GuidedSessions";
 import DailyTracker from './components/DailyTracker';
 import AIChat from './components/AIChat';
+import AssistantHub from './components/AssistantHub';
 import SoundLibrary from './components/SoundLibrary';
 import Education from './components/Education';
 import BreathingGuide from './components/BreathingGuide';
@@ -32,16 +32,25 @@ import MedicalDisclaimer from './components/MedicalDisclaimer';
 import MedicalProfile from './components/MedicalProfile';
 import Community from './components/Community';
 import Login from './components/Login';
-import ProgressNotes from './components/ProgressNotes';
+import ProgressHub from './components/ProgressHub';
 import UserProfile from './components/UserProfile';
 import FacialMonitor from './components/FacialMonitor';
 import SpatialAudio from './components/SpatialAudio';
 import DigitalTwin from './components/EnhancedDigitalTwin';
+import DashboardHome from './components/DashboardHome';
+import THIQuestionnaire from './components/THIQuestionnaire';
+import PlansScreen from './components/PlansScreen';
+import PremiumLock from './components/PremiumLock';
+import WeeklyPlanView from './components/WeeklyPlanView';
+import { WeeklyPlanProvider } from './contexts/WeeklyPlanContext';
+import { usePlan } from './contexts/PlanContext';
+import { PLAN_PREMIUM } from './config/plans';
 
 // CSS Imports (Side Effects)
 import './components/FrequencyMatcher.css';
 import './components/DailyTracker.css';
 import './components/AIChat.css';
+import './components/AssistantHub.css';
 import './components/SoundLibrary.css';
 import './components/Education.css';
 import './components/BreathingGuide.css';
@@ -50,11 +59,16 @@ import './components/Onboarding.css';
 import './components/MedicalProfile.css';
 import './components/Community.css';
 import './components/Login.css';
-import './components/ProgressNotes.css';
+import './components/ProgressHub.css';
 import './components/UserProfile.css';
 import './components/FacialMonitor.css';
 import './components/SpatialAudio.css';
 import './components/DigitalTwin.css';
+import './components/DashboardHome.css';
+import './components/THIQuestionnaire.css';
+import './components/PlansScreen.css';
+import './components/PremiumLock.css';
+import './components/WeeklyPlanView.css';
 
 
 const SplashScreen = ({ onFinish }) => {
@@ -65,15 +79,100 @@ const SplashScreen = ({ onFinish }) => {
         <Globe size={20} />
         <span>{language.toUpperCase()}</span>
       </div>
-      <div className="logo-container">
-        <img src={splashIllustration} alt="TinnitOff" className="splash-illustration" />
-        <h1 className="brand-name">{t('welcome_title')}</h1>
-        <p className="brand-tagline">{t('welcome_tagline')}</p>
+      {/* Partículas flotantes de fondo */}
+      <div className="splash-particles" aria-hidden="true">
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className={`splash-particle sp-${i + 1}`} />
+        ))}
       </div>
-      <button className="btn btn-primary start-btn" onClick={onFinish}>
+
+      <div className="logo-container">
+        {/* Logo animado: orbe sonoro con anillos de pulso */}
+        <div className="splash-logo-stage" aria-hidden="true">
+          <div className="splash-pulse-ring spr-1" />
+          <div className="splash-pulse-ring spr-2" />
+          <div className="splash-pulse-ring spr-3" />
+          <div className="splash-orb">
+            <AudioLines size={44} className="splash-orb-icon" strokeWidth={1.8} />
+          </div>
+          {/* Ondas laterales tipo marca */}
+          <div className="splash-side-waves left">
+            <span className="ssw ssw-1" />
+            <span className="ssw ssw-2" />
+            <span className="ssw ssw-3" />
+          </div>
+          <div className="splash-side-waves right">
+            <span className="ssw ssw-1" />
+            <span className="ssw ssw-2" />
+            <span className="ssw ssw-3" />
+          </div>
+        </div>
+
+        <h1 className="brand-name splash-title-enter">{t('welcome_title')}</h1>
+        <p className="brand-tagline splash-tagline-enter">{t('welcome_tagline')}</p>
+
+        {/* Barras de ecualizador decorativas */}
+        <div className="splash-eq" aria-hidden="true">
+          {[...Array(9)].map((_, i) => (
+            <span key={i} className="splash-eq-bar" style={{ animationDelay: `${i * 0.12}s` }} />
+          ))}
+        </div>
+      </div>
+      <button className="btn btn-primary start-btn splash-btn-enter press-effect" onClick={onFinish}>
         {t('start_btn')} <ChevronRight size={20} />
       </button>
     </div>
+  );
+};
+
+
+const NAV_ITEMS = [
+  { id: 'dashboard', label: 'Inicio', icon: Home },
+  { id: 'chat', label: 'Asistente', icon: MessageSquare },
+  { id: 'library', label: 'Terapia', icon: Headphones },
+  { id: 'education', label: 'Aprende', icon: BookOpen },
+  { id: 'notes', label: 'Progreso', icon: Calendar },
+  { id: 'profile', label: 'Perfil', icon: User },
+];
+
+const BottomNav = ({ activeSection, onNavigate }) => {
+  return (
+    <motion.nav
+      className="bottom-nav"
+      initial={{ y: 80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+    >
+      {NAV_ITEMS.map((item) => {
+        const Icon = item.icon;
+        const isActive = activeSection === item.id;
+        return (
+          <button
+            key={item.id}
+            className={`nav-item ${isActive ? 'active' : ''}`}
+            onClick={() => { haptic(12); onNavigate(item.id); }}
+            aria-label={item.label}
+          >
+            {isActive && (
+              <motion.span
+                layoutId="nav-pill"
+                className="nav-pill"
+                transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+              />
+            )}
+            <Icon size={20} className="nav-icon" />
+            <span className="nav-label">{item.label}</span>
+            {isActive && (
+              <motion.span
+                layoutId="nav-dot"
+                className="nav-dot"
+                transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+              />
+            )}
+          </button>
+        );
+      })}
+    </motion.nav>
   );
 };
 
@@ -94,12 +193,16 @@ const DAILY_TIPS = [
 
 function App() {
   const { t } = useLanguage();
+  const { can } = usePlan();
   const [user, setUser] = useState(null); // Auth State
   const [step, setStep] = useState('splash');
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard'); // SPA view switcher instead of modals stack
   const [matchedFrequency, setMatchedFrequency] = useState(null);
+  const [lastTHI, setLastTHI] = useState(null);
   const [showGuide, setShowGuide] = useState(true);
+
+
 
   // Dark Mode
   const [darkMode, setDarkMode] = useState(() => {
@@ -171,10 +274,31 @@ function App() {
         email: userData.email,
         displayName: userData.displayName,
         photoURL: userData.photoURL || null,
-        role: userData.role || (userData.email === 'admin@tinnitoff.com' ? 'admin' : 'user')
+        role: userData.role || 'user'
       });
     } catch (e) {
       console.error("Error saving root user metadata:", e);
+    }
+
+    // Reflejar el usuario de Firebase en el backend (panel administrativo)
+    try {
+      const { ClinicalService } = await import('./services/backend/clinicalService');
+      const backendUser = await ClinicalService.syncPatient(userData.uid, {
+        email: userData.email,
+        username: userData.displayName || userData.email,
+      });
+      if (backendUser?.role) {
+        const backendRole = backendUser.role === 'ROLE_ADMIN' ? 'admin' : 'user';
+        setUser((prev) => ({ ...prev, role: backendRole }));
+        await FirestoreService.saveUserMetadata(userData.uid, {
+          email: userData.email,
+          displayName: userData.displayName,
+          photoURL: userData.photoURL || null,
+          role: backendRole
+        });
+      }
+    } catch (e) {
+      console.warn('Error sincronizando paciente al backend:', e);
     }
 
     // Save device telemetry on successful login
@@ -211,6 +335,10 @@ function App() {
       if (lastAudio) {
         setMatchedFrequency(lastAudio);
       }
+      const thi = await FirestoreService.getLastTHI(userData.uid);
+      if (thi) {
+        setLastTHI(thi);
+      }
       await loadHomeData(userData.uid);
     } catch (e) {
       console.error("Error loading data:", e);
@@ -229,10 +357,24 @@ function App() {
 
   const handleCompleteMatcher = async (data) => {
     setMatchedFrequency(data);
-    setActiveSection('dashboard');
     if (user) {
-      await FirestoreService.saveAudiometry(user.uid, data);
-      alert(`¡Medición de tinnitus guardada correctamente en tu perfil médico!`);
+      await FirestoreService.saveAudiometry(user.uid, data, { email: user.email, username: user.displayName || user.email });
+    }
+    // Orden cronológico: tras medir la frecuencia, presentar el test THI
+    setActiveSection('thi');
+  };
+
+  const handleCompleteTHI = async (result, navigateToPlan = false) => {
+    setLastTHI(result);
+    if (user) {
+      try {
+        await FirestoreService.saveTHIResult(user.uid, result, { email: user.email, username: user.displayName || user.email });
+      } catch (e) {
+        console.error('Error saving THI result:', e);
+      }
+    }
+    if (navigateToPlan) {
+      setActiveSection('weekly_plan');
     }
   };
 
@@ -260,7 +402,7 @@ function App() {
         if (result) {
           setStreakData(result);
           setStreak(result.count || 0);
-          alert('¡Racha recuperada! 🎉');
+          alert('¡Racha recuperada!');
         }
       } catch (e) {
         console.error('Error recovering streak:', e);
@@ -309,8 +451,10 @@ function App() {
     );
   }
 
+  const showBottomNav = ['dashboard', 'chat', 'library', 'education', 'notes', 'profile', 'weekly_plan'].includes(activeSection);
+
   return (
-    <div className="app-container animated-bg">
+    <div className={`app-container animated-bg ${showBottomNav ? 'has-bottom-nav' : ''}`}>
       {/* Floating Particles */}
       <div className="particles-container">
         <div className="particle" />
@@ -324,11 +468,33 @@ function App() {
       </div>
 
       {/* RENDER THE ACTIVE VIEW INSTEAD OF STACKING OVERLAYS */}
-      {activeSection === 'matcher' && (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeSection}
+          className="screen-transition"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -14 }}
+          transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+        >
+        {activeSection === 'matcher' && (
         <FrequencyMatcher
           onComplete={handleCompleteMatcher}
           onCancel={() => setActiveSection('dashboard')}
         />
+      )}
+
+      {activeSection === 'thi' && (
+        <THIQuestionnaire
+          onClose={() => setActiveSection('dashboard')}
+          onComplete={handleCompleteTHI}
+          previousTHI={lastTHI}
+          matchedFrequency={matchedFrequency}
+        />
+      )}
+
+      {activeSection === 'weekly_plan' && (
+        <WeeklyPlanView onBack={() => setActiveSection('dashboard')} />
       )}
 
       {activeSection === 'tracker' && (
@@ -339,9 +505,10 @@ function App() {
       )}
 
       {activeSection === 'chat' && (
-        <AIChat
+        <AssistantHub
           onClose={() => setActiveSection('dashboard')}
           tinnitusFrequency={matchedFrequency}
+          onNavigate={(section) => setActiveSection(section)}
         />
       )}
 
@@ -349,6 +516,8 @@ function App() {
         <SoundLibrary
           onClose={() => setActiveSection('dashboard')}
           isAdmin={user?.role === 'admin'}
+          tinnitusFrequency={matchedFrequency}
+          onUpgrade={() => setActiveSection('plans')}
         />
       )}
 
@@ -365,10 +534,24 @@ function App() {
       )}
 
       {activeSection === 'custom_noise' && (
-        <CustomNoise
-          onClose={() => setActiveSection('dashboard')}
-          tinnitusFrequency={matchedFrequency}
-        />
+        can('create_sounds') ? (
+          <CustomNoise
+            onClose={() => setActiveSection('dashboard')}
+            tinnitusFrequency={matchedFrequency}
+          />
+        ) : (
+          <PremiumLock
+            title="Crea tus propios sonidos"
+            description="La Terapia Acústica para diseñar tu propio sonido con notch y modulación es una función Premium."
+            requiredPlan={PLAN_PREMIUM}
+            onUpgrade={() => setActiveSection('plans')}
+            onClose={() => setActiveSection('dashboard')}
+          />
+        )
+      )}
+
+      {activeSection === 'plans' && (
+        <PlansScreen onClose={() => setActiveSection('dashboard')} />
       )}
 
       {activeSection === 'medical' && (
@@ -384,7 +567,7 @@ function App() {
       )}
 
       {activeSection === 'notes' && (
-        <ProgressNotes
+        <ProgressHub
           onClose={() => setActiveSection('dashboard')}
           openTherapy={(action) => {
             if (action === 'sound_brown') {
@@ -393,6 +576,7 @@ function App() {
               setActiveSection('breathing');
             }
           }}
+          lastTHI={lastTHI}
         />
       )}
 
@@ -406,6 +590,7 @@ function App() {
           onOpenMedical={() => {
             setActiveSection('medical');
           }}
+          onOpenPlans={() => setActiveSection('plans')}
         />
       )}
 
@@ -484,399 +669,37 @@ function App() {
         />
       )}
 
-      {activeSection === 'admin_dashboard' && (
-        <AdminDashboard
-          onClose={() => setActiveSection('dashboard')}
+      {/* DASHBOARD RENDER PATH */}
+      {activeSection === 'dashboard' && (
+        <DashboardHome
+          user={user}
+          streak={streak}
+          dailyTip={dailyTip}
+          matchedFrequency={matchedFrequency}
+          lastTHI={lastTHI}
+          onNavigate={(section) => setActiveSection(section)}
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
         />
       )}
 
-      {/* DASHBOARD RENDER PATH */}
-      {activeSection === 'dashboard' && (
-        <>
-          <header className="app-header">
-            <div className="user-profile">
-              <div className="avatar" onClick={() => setActiveSection('profile')} style={{ cursor: 'pointer' }}>
-                {user?.photoURL ? (
-                  <img src={user.photoURL} alt="Profile" className="avatar-img" />
-                ) : (
-                  user?.role === 'admin' ? 'AD' : (user?.displayName ? user.displayName.charAt(0).toUpperCase() : 'U')
-                )}
-              </div>
-              <div onClick={() => setActiveSection('profile')} style={{ cursor: 'pointer' }}>
-                <h3>{t('greeting', { name: user?.displayName ? user.displayName.split(' ')[0] : (user?.role === 'admin' ? 'Admin' : 'Usuario') })}</h3>
-                <p>
-                  {user?.role === 'admin'
-                    ? t('greeting_admin')
-                    : t('greeting_user')}
-                </p>
-              </div>
-              <button className="dark-toggle" onClick={() => setDarkMode(!darkMode)} aria-label="Toggle dark mode">
-                {darkMode ? <Sun size={22} color="#FFD60A" /> : <Moon size={22} color="#007AFF" />}
-              </button>
-            </div>
-          </header>
+        </motion.div>
+      </AnimatePresence>
 
-          {/* Reminder Banner */}
-          {(() => {
-            const today = new Date().toISOString().split('T')[0];
-            const todayLogged = weeklyLogs.some(log => {
-              const logDate = log.date ? log.date.split('T')[0] : '';
-              return logDate === today;
-            });
-            if (!todayLogged && !reminderDismissed && step === 'home') {
-              return (
-                <div className="reminder-banner">
-                  <Bell size={16} color="#007AFF" />
-                  <span onClick={() => setActiveSection('tracker')}>¿Ya registraste tu día? <strong>Registrar ahora →</strong></span>
-                  <button className="reminder-close" onClick={() => setReminderDismissed(true)}>✕</button>
-                </div>
-              );
-            }
-            return null;
-          })()}
-
-          <main className="app-main">
-            
-            {/* Banner de Emergencia SOS */}
-            <section className="sos-banner card press-effect" onClick={() => setActiveSection('rescue')} style={{
-              background: 'linear-gradient(135deg, rgba(255, 59, 48, 0.15) 0%, rgba(255, 45, 85, 0.05) 100%)',
-              border: '1px solid rgba(255, 59, 48, 0.3)',
-              padding: '16px',
-              borderRadius: '20px',
-              marginBottom: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '16px',
-              cursor: 'pointer'
-            }}>
-              <div style={{
-                width: '44px', height: '44px', borderRadius: '50%',
-                background: 'rgba(255, 59, 48, 0.2)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#FF3B30', flexShrink: 0
-              }}>
-                <AlertTriangle size={24} className="icon-glow" style={{ filter: 'drop-shadow(0 0 8px #FF3B30)' }} />
-              </div>
-              <div style={{ textAlign: 'left' }}>
-                <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: '#FF3B30' }}>🚨 ¿Molestia muy fuerte hoy?</h4>
-                <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)' }}>Pulsa aquí para activar el enmascarador SOS y calmar la tensión.</p>
-              </div>
-            </section>
-            
-            {/* Admin Section */}
-            {(user?.role === 'admin' || user?.email === 'admin@tinnitoff.com') && (
-              <section className="admin-banner highlight-card" style={{ background: 'linear-gradient(135deg, #1e1e24 0%, #0d0d12 100%)', border: '1px solid rgba(0, 229, 255, 0.25)', color: 'white', padding: '20px', borderRadius: '20px', marginBottom: '24px' }}>
-                <div className="card-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Shield size={24} color="#00E5FF" className="icon-glow" style={{ filter: 'drop-shadow(0 0 6px #00E5FF)' }} />
-                  <span style={{ fontWeight: '800', letterSpacing: '0.5px' }}>Modo Administrador Activo</span>
-                </div>
-                <p style={{ marginTop: 8, fontSize: 13, opacity: 0.8, lineHeight: '1.4' }}>
-                  Tienes permisos de administrador. Puedes gestionar la biblioteca de sonidos, analizar la telemetría de dispositivos de usuarios, controlar versiones del APK y ver estadísticas de descarga.
-                </p>
-                <div style={{ display: 'flex', gap: '12px', marginTop: 14 }}>
-                  <button className="btn btn-ghost light" style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer' }} onClick={() => setActiveSection('library')}>
-                    Gestionar Sonidos
-                  </button>
-                  <button className="btn btn-primary" style={{ flex: 1, background: 'linear-gradient(135deg, #00e5ff 0%, #007aff 100%)', border: 'none', boxShadow: '0 4px 12px rgba(0, 229, 255, 0.25)', cursor: 'pointer' }} onClick={() => setActiveSection('admin_dashboard')}>
-                    Panel de Control Global
-                  </button>
-                </div>
-              </section>
-            )}
-
-            {/* Highlights Section */}
-            <section className="highlights">
-              <div className="highlight-card primary">
-                <div className="card-header">
-                  <Volume2 size={24} />
-                  <span>Nivel Actual</span>
-                </div>
-                <div className="card-content">
-                  <span className="big-value">
-                    {matchedFrequency ? matchedFrequency.frequency : '--'}
-                  </span>
-                  <span className="unit">
-                    {matchedFrequency ? `Hz (${matchedFrequency.type === 'pure' ? 'Pito' : matchedFrequency.type === 'low' ? 'Motor' : 'Ruido'} - ${matchedFrequency.ear === 'left' ? 'Izquierdo' : matchedFrequency.ear === 'right' ? 'Derecho' : 'Ambos'})` : 'dB estimados'}
-                  </span>
-                </div>
-                <button
-                  className="btn btn-ghost light"
-                  onClick={() => setActiveSection('matcher')}
-                >
-                  {matchedFrequency ? 'Medir de nuevo' : 'Medir mi Tinnitus'}
-                </button>
-              </div>
-            </section>
-
-            
-            {/* Guía de Inicio Rápido */}
-            <section className="guide-section" style={{ marginBottom: 24 }}>
-              <div className="card guide-card" style={{ border: '1px solid rgba(0, 229, 255, 0.15)', background: 'linear-gradient(180deg, rgba(0, 229, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%), var(--card-bg)' }}>
-                <div className="guide-header" onClick={() => setShowGuide(!showGuide)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <Lightbulb size={24} color="#00E5FF" className="icon-glow" />
-                    <div style={{ textAlign: 'left' }}>
-                      <h4 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: 'var(--text-main)' }}>💡 Guía de Inicio Rápido</h4>
-                      <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)' }}>¿Cómo usar TinnitOff para aliviar tu acúfeno?</p>
-                    </div>
-                  </div>
-                  <ChevronRight size={20} style={{ transform: showGuide ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease', color: 'var(--text-muted)' }} />
-                </div>
-                
-                {showGuide && (
-                  <div className="guide-content animate-fade" style={{ marginTop: 20, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 16 }}>
-                    <div className="guide-step" style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                      <div className="guide-step-number" style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--primary-light)', border: '1px solid var(--primary)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: 14, flexShrink: 0 }}>1</div>
-                      <div className="guide-step-text">
-                        <h5 style={{ margin: '0 0 4px 0', fontSize: 14, fontWeight: 600, color: 'var(--text-main)' }}>Paso 1: Mide tu Tinnitus (Hz)</h5>
-                        <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.4 }}>Usa la herramienta <strong>Mide tu Tinnitus</strong>. Ajusta el volumen y el tono hasta que escuches un sonido idéntico al de tu tinnitus. Esto calibra tu terapia.</p>
-                      </div>
-                    </div>
-                    
-                    <div className="guide-step" style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                      <div className="guide-step-number" style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(176, 114, 255, 0.15)', border: '1px solid var(--accent)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: 14, flexShrink: 0 }}>2</div>
-                      <div className="guide-step-text">
-                        <h5 style={{ margin: '0 0 4px 0', fontSize: 14, fontWeight: 600, color: 'var(--text-main)' }}>Paso 2: Realiza tu Terapia Diaria</h5>
-                        <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.4 }}>Escucha la <strong>Terapia 3D</strong> o el <strong>Ruido Personalizado</strong> durante 15-20 minutos al día usando auriculares. Esta terapia genera un sonido neutralizador que reentrena tu cerebro para ignorar el zumbido.</p>
-                      </div>
-                    </div>
-                    
-                    <div className="guide-step" style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                      <div className="guide-step-number" style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(52, 199, 89, 0.15)', border: '1px solid var(--success)', color: 'var(--success)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: 14, flexShrink: 0 }}>3</div>
-                      <div className="guide-step-text">
-                        <h5 style={{ margin: '0 0 4px 0', fontSize: 14, fontWeight: 600, color: 'var(--text-main)' }}>Paso 3: Monitorea tus Síntomas</h5>
-                        <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.4 }}>Registra tu estado diariamente con el <strong>Registro Diario</strong> o el <strong>Monitor Facial</strong>. Con esto, la Inteligencia Artificial aprenderá tu patrón y podrá predecir posibles crisis.</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </section>
-            
-            <section className="daily-actions">
-              {step === 'home' && (
-                <div style={{marginBottom: 20}}>
-                  <HomeWidget />
-                  <SideQuestsWidget />
-                </div>
-              )}
-              <h3 className="text-gradient">Acciones Diarias</h3>
-              
-              {/* Terapias y Sonido */}
-              <div className="category-section">
-                <div className="category-header">
-                  <h4 className="category-title"><Volume2 size={20} color="#FF2D55" /> Terapias y Sonido</h4>
-                  <p className="category-desc">Herramientas acústicas para reducir la percepción del tinnitus.</p>
-                </div>
-                <div className="actions-grid stagger-children">
-                  <div className="action-item card press-effect gradient-border" onClick={() => setActiveSection('spatial')}>
-                    <Headphones size={24} color="#30B0C7" className="icon-glow" />
-                    <span>Terapia 3D</span>
-                  </div>
-                  <div className="action-item card press-effect" onClick={() => setActiveSection('library')}>
-                    <Volume2 size={24} color="#FF2D55" className="icon-glow" />
-                    <span>{t('action_library')}</span>
-                  </div>
-                  <div className="action-item card press-effect" onClick={() => setActiveSection('custom_noise')}>
-                    <Sliders size={24} color="#007AFF" className="icon-glow" />
-                    <span>{t('action_noise')}</span>
-                  </div>
-                  <div className="action-item card press-effect" onClick={() => setActiveSection('matcher')}>
-                    <Sliders size={24} color="#FF9500" className="icon-glow" />
-                    <span>{t('action_matcher')}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Monitoreo y Progreso */}
-              <div className="category-section">
-                <div className="category-header">
-                  <h4 className="category-title"><TrendingDown size={20} color="#34C759" /> Monitoreo y Progreso</h4>
-                  <p className="category-desc">Lleva un registro de tus síntomas y observa tu avance.</p>
-                </div>
-                <div className="actions-grid stagger-children">
-                  <div className="action-item card press-effect" onClick={() => setActiveSection('tracker')}>
-                    <Calendar size={24} color="#34C759" className="icon-glow-success" />
-                    <span>{t('action_tracker')}</span>
-                  </div>
-                  <div className="action-item card press-effect gradient-border" onClick={() => setActiveSection('voice_diary')}>
-                    <Mic size={24} color="#FF2D55" className="icon-glow" />
-                    <span>Diario de Voz</span>
-                  </div>
-                  <div className="action-item card press-effect" onClick={() => setActiveSection('notes')}>
-                    <MessageSquare size={24} color="#007AFF" className="icon-glow" />
-                    <span>{t('action_notes')}</span>
-                  </div>
-                  <div className="action-item card press-effect gradient-border" onClick={() => setActiveSection('achievements')}>
-                    <Trophy size={24} color="#FFD700" className="icon-glow" />
-                    <span>Mis Logros</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Relajación y Ejercicios */}
-              <div className="category-section">
-                <div className="category-header">
-                  <h4 className="category-title"><Wind size={20} color="#30B0C7" /> Relajación y Ejercicios</h4>
-                  <p className="category-desc">Ejercicios para disminuir el estrés y la tensión física.</p>
-                </div>
-                <div className="actions-grid stagger-children">
-                  <div className="action-item card press-effect" onClick={() => setActiveSection('breathing')}>
-                    <Wind size={24} color="#30B0C7" className="icon-glow" />
-                    <span>{t('action_breathing')}</span>
-                  </div>
-                  <div className="action-item card press-effect" onClick={() => setActiveSection('guided_sessions')}>
-                    <BookOpen size={24} color="#34C759" className="icon-glow" />
-                    <span>Programa 30D</span>
-                  </div>
-                  <div className="action-item card press-effect gradient-border" onClick={() => setActiveSection('facial')}>
-                    <ScanFace size={24} color="#AF52DE" className="icon-glow" />
-                    <span>Monitor Facial IA</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Asistencia Inteligente y Comunidad */}
-              <div className="category-section">
-                <div className="category-header">
-                  <h4 className="category-title"><Brain size={20} color="#5856D6" /> Asistencia y Comunidad</h4>
-                  <p className="category-desc">Acompañamiento impulsado por IA y apoyo comunitario.</p>
-                </div>
-                <div className="actions-grid stagger-children">
-                  <div className="action-item card press-effect gradient-border" onClick={() => setActiveSection('twin')}>
-                    <Cpu size={24} color="#5856D6" className="icon-glow" />
-                    <span>Gemelo Digital (IA)</span>
-                  </div>
-                  <div className="action-item card press-effect" onClick={() => setActiveSection('chat')}>
-                    <MessageSquare size={24} color="#5856D6" className="icon-glow" />
-                    <span>{t('action_chat')}</span>
-                  </div>
-                  <div className="action-item card press-effect" onClick={() => setActiveSection('crisis_prediction')}>
-                    <Brain size={24} color="#5856D6" className="icon-glow" />
-                    <span>Predicción ML</span>
-                  </div>
-                  <div className="action-item card press-effect" onClick={() => setActiveSection('community')}>
-                    <Users size={24} color="#FF9500" className="icon-glow-warning" />
-                    <span>Community</span>
-                  </div>
-                  <div className="action-item card press-effect" onClick={() => setActiveSection('caregiver')}>
-                    <Heart size={24} color="#FF2D55" className="icon-glow" />
-                    <span>Cuidador</span>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Tip del Día */}
-            <section className="tip-section">
-              <div className="tip-card press-effect">
-                <div className="tip-header">
-                  <Lightbulb size={18} color="#0A84FF" className="icon-glow" />
-                  <span>Tip del Día</span>
-                </div>
-                <p className="tip-text">{dailyTip}</p>
-              </div>
-            </section>
-
-            {/* Racha */}
-            <section className="streak-section">
-              <div className="streak-card">
-                <div className="streak-fire">
-                  <Flame size={28} color="#007AFF" />
-                </div>
-                <div className="streak-info">
-                  <span className="streak-count">{streak}</span>
-                  <span className="streak-label">{streak === 1 ? 'día' : 'días'} consecutivos</span>
-                </div>
-                <div className="streak-right">
-                  {streakData?.lostCount > 0 ? (
-                    <button className="recover-btn" onClick={handleRecoverStreak}>
-                      Recuperar ({streakData.lostCount})
-                    </button>
-                  ) : (
-                    <span className="streak-msg">
-                      {streak >= 7 ? '🏆' : streak >= 3 ? '💪' : '🌱'}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </section>
-
-            {/* Tu Progreso */}
-            <section className="progress-section">
-              <div className="progress-header-row">
-                <h3>Tu Progreso</h3>
-                <button className="export-btn" onClick={exportPDF}>
-                  <Download size={14} /> PDF
-                </button>
-              </div>
-              <div className="progress-card">
-                <div className="progress-row">
-                  <TrendingDown size={20} color="#007AFF" />
-                  <div className="progress-info">
-                    <span className="progress-title">Intensidad Semanal</span>
-                    <span className="progress-subtitle">
-                      {weeklyLogs.length > 0
-                        ? `${weeklyLogs.length} registros esta semana`
-                        : 'Registra tu diario para ver datos reales'}
-                    </span>
-                  </div>
-                </div>
-                <div className="progress-bars">
-                  {(() => {
-                    const days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-                    const dayData = {};
-                    weeklyLogs.forEach(log => {
-                      const logDate = log.date ? new Date(log.date) : (log.createdAt?.toDate ? log.createdAt.toDate() : new Date());
-                      const dayIdx = (logDate.getDay() + 6) % 7; // Mon=0
-                      dayData[dayIdx] = log.tinnitusLevel || 0;
-                    });
-                    return days.map((day, i) => (
-                      <div key={day} className="bar-col">
-                        <div className="bar-track">
-                          <div
-                            className="bar-fill"
-                            style={{
-                              height: dayData[i] !== undefined ? `${dayData[i]}%` : '0%',
-                              opacity: dayData[i] !== undefined ? 1 : 0.2
-                            }}
-                          ></div>
-                        </div>
-                        <span className="bar-label">{day}</span>
-                      </div>
-                    ));
-                  })()}
-                </div>
-              </div>
-            </section>
-          </main>
-
-          {/* Botón Rojo SOS Global */}
-          <button 
-            onClick={() => setActiveSection('rescue')}
-            style={{
-              position: 'fixed', bottom: 80, right: 20, zIndex: 100, 
-              background: 'linear-gradient(135deg, #FF3B30 0%, #FF2D55 100%)', color: 'white', border: 'none', 
-              borderRadius: '50%', width: 56, height: 56, 
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 4px 15px rgba(255, 59, 48, 0.4)', cursor: 'pointer',
-              animation: 'pulse 2s infinite'
-            }}
-          >
-            <AlertTriangle size={24} />
-          </button>
-
-          <nav className="bottom-nav">
-            <div className="nav-item" onClick={() => setActiveSection('library')}><Volume2 size={24} /></div>
-            <div className="nav-item" onClick={() => setActiveSection('tracker')}><Calendar size={24} /></div>
-            <div className="nav-item" onClick={() => setActiveSection('chat')}><MessageSquare size={24} /></div>
-            <div className="nav-item" onClick={() => setActiveSection('community')}><Users size={24} /></div>
-            <div className="nav-item" onClick={() => setActiveSection('education')}><BookOpen size={24} /></div>
-          </nav>
-        </>
+      {/* PERSISTENT BOTTOM NAVIGATION TAB BAR */}
+      {showBottomNav && (
+        <BottomNav activeSection={activeSection} onNavigate={setActiveSection} />
       )}
     </div>
   );
 }
 
-export default App;
+export default function AppWithProviders() {
+  return (
+    <ErrorBoundary>
+      <WeeklyPlanProvider>
+        <App />
+      </WeeklyPlanProvider>
+    </ErrorBoundary>
+  );
+}

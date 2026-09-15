@@ -1,0 +1,244 @@
+/* ==========================================================================
+   QUICK START GUIDE — Dashboard Onboarding Widget
+   ========================================================================== */
+
+.qsg-container {
+  background: linear-gradient(135deg, rgba(13, 17, 23, 0.95) 0%, rgba(6, 8, 15, 0.98) 100%);
+  border: 1px solid rgba(0, 180, 216, 0.18);
+  border-radius: 20px;
+  padding: 1.25rem;
+  animation: qsgFadeIn 0.4s ease-out;
+}
+
+@keyframes qsgFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header */
+.qsg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.qsg-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.qsg-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(0, 180, 216, 0.15), rgba(0, 119, 182, 0.25));
+  border: 1px solid rgba(0, 180, 216, 0.25);
+  color: #00B4D8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.qsg-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #FFF;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.qsg-subtitle {
+  font-size: 0.75rem;
+  color: rgba(144, 224, 239, 0.6);
+  margin: 0;
+}
+
+/* Progress dots */
+.qsg-progress-pill {
+  display: flex;
+  gap: 5px;
+}
+
+.qsg-progress-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.3s ease;
+}
+
+.qsg-progress-dot.done {
+  background: #2DD4BF;
+  border-color: #2DD4BF;
+  box-shadow: 0 0 6px rgba(45, 212, 191, 0.4);
+}
+
+/* Steps list */
+.qsg-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.qsg-step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 14px;
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+.qsg-step.current {
+  background: rgba(0, 180, 216, 0.06);
+  border: 1px solid rgba(0, 180, 216, 0.15);
+  cursor: pointer;
+}
+
+.qsg-step.current:hover {
+  background: rgba(0, 180, 216, 0.1);
+}
+
+.qsg-step.done {
+  opacity: 0.65;
+}
+
+.qsg-step.locked {
+  opacity: 0.35;
+}
+
+/* Step indicator circle */
+.qsg-step-indicator {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1.5px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.qsg-step.done .qsg-step-indicator {
+  transform: scale(0.9);
+}
+
+/* Step content */
+.qsg-step-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.qsg-step-num {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(144, 224, 239, 0.45);
+}
+
+.qsg-step-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #FFF;
+  margin: 0.1rem 0 0.15rem;
+  line-height: 1.2;
+}
+
+.qsg-step.done .qsg-step-title {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.qsg-step-desc {
+  font-size: 0.73rem;
+  color: rgba(144, 224, 239, 0.55);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.qsg-step.locked .qsg-step-desc {
+  color: rgba(144, 224, 239, 0.25);
+}
+
+/* Action button */
+.qsg-step-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(0, 180, 216, 0.1);
+  border: 1px solid rgba(0, 180, 216, 0.2);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.qsg-step.current:hover .qsg-step-action {
+  background: rgba(0, 180, 216, 0.2);
+  transform: translateX(2px);
+}
+
+/* Done label */
+.qsg-step-done-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Completed State ── */
+.qsg-completed {
+  border-color: rgba(45, 212, 191, 0.25);
+  background: linear-gradient(135deg, rgba(45, 212, 191, 0.06) 0%, rgba(13, 17, 23, 0.95) 100%);
+}
+
+.qsg-completed-inner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.qsg-completed-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+  background: rgba(45, 212, 191, 0.12);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  color: #2DD4BF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.qsg-completed-text h3 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #2DD4BF;
+  margin: 0 0 0.2rem 0;
+}
+
+.qsg-completed-text p {
+  font-size: 0.8rem;
+  color: rgba(144, 224, 239, 0.6);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 380px) {
+  .qsg-step-desc {
+    display: none;
+  }
+
+  .qsg-step {
+    padding: 0.6rem;
+  }
+}

@@ -15,18 +15,18 @@ const BreathingGuide = ({ onClose }) => {
     const [phases, setPhases] = useState(DEFAULT_PHASES); // Optional: could be dynamically changed
     const timerRef = useRef(null);
 
+    function stopMeditation() {
+        setIsRunning(false);
+        setCurrentPhaseIndex(null);
+        if (timerRef.current) clearTimeout(timerRef.current);
+        stopBreathAudio();
+    }
+
     useEffect(() => {
         return () => {
             stopMeditation();
         };
     }, []);
-
-    const stopMeditation = () => {
-        setIsRunning(false);
-        setCurrentPhaseIndex(null);
-        if (timerRef.current) clearTimeout(timerRef.current);
-        stopBreathAudio();
-    };
 
     const runPhase = (index) => {
         if (!isRunning) return; // Prevent next phase if stopped

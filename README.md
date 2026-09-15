@@ -26,22 +26,27 @@ A comprehensive tinnitus (ringing in the ears) management web application design
 
 ## Tech Stack
 
-- **Frontend**: React with Vite
+- **Frontend**: React 19 + Vite, Capacitor (Android/iOS)
 - **3D Graphics**: React Three Fiber, Three.js
 - **Audio Processing**: Web Audio API
 - **Charts**: Recharts
 - **Animations**: Framer Motion
 - **Icons**: Lucide React
-- **Backend**: Firebase (Authentication, Firestore)
-- **AI Services**: Azure AI
+- **Auth & realtime data**: Firebase (Authentication, Firestore)
+- **Backend API**: Spring Boot 3.2 (Java 21) + PostgreSQL, containerized with Docker and served behind Nginx
+- **AI Services**: Azure OpenAI
 - **Face Detection**: face-api.js
 - **Maps**: react-simple-maps, d3-geo
+- **Monitoring**: Prometheus + Grafana
+
+See [`backend/`](backend) for the API source and [`DEPLOYMENT.md`](DEPLOYMENT.md) for the full production setup (Docker Compose, Nginx, monitoring, backups).
 
 ## Prerequisites
 
 - Node.js (version 16 or higher)
 - npm or yarn
 - Firebase project setup
+- Java 21 + Maven (for the backend, optional for frontend-only development)
 - Azure account for AI services (optional, for full functionality)
 
 ## Installation
@@ -57,14 +62,14 @@ A comprehensive tinnitus (ringing in the ears) management web application design
    npm install
    ```
 
-3. Configure Firebase:
+3. Configure environment variables:
+   - Copy `.env.example` to `.env` and fill in your Firebase and Azure config (see the file for what's required on the frontend vs. the backend)
+
+4. Configure Firebase:
    - Create a Firebase project at https://console.firebase.google.com/
    - Enable Authentication and Firestore
-   - Copy your Firebase config to `src/firebase.js`
 
-4. Configure Azure (optional):
-   - Set up Azure AI services
-   - Add API keys to your environment variables
+5. (Optional) Run the backend locally — see `backend/` and `DEPLOYMENT.md`.
 
 ## Running the App
 
@@ -111,7 +116,7 @@ Contributions are welcome! Please follow these steps:
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contact
 
@@ -119,5 +124,4 @@ If you have questions or need support, please consult a healthcare professional 
 
 ---
 
-*Remember: This app is a tool for self-management and should not replace professional medical care.*</content>
-<parameter name="filePath">C:\Users\Lenovo\Desktop\tinnitus-app\README.md
+*Remember: This app is a tool for self-management and should not replace professional medical care.*

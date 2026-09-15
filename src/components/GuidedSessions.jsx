@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Play, CheckCircle, Lock, Clock } from 'lucide-react';
+import { X, Play, CheckCircle, Lock, Clock, Sprout } from 'lucide-react';
 import { SessionPlayer } from '../components/SessionPlayer';
 import { useAuth } from '../contexts/AuthContext';
 import { FirestoreService } from '../services/firestoreService';
@@ -66,7 +66,7 @@ const GuidedSessions = ({ onClose, openBreathing }) => {
       <div className="gs-header">
         <h2>Programa 30 Días</h2>
         <div className="xp-badge" style={{background: 'rgba(52, 199, 89, 0.2)', color: '#34C759'}}>
-          🌱 {progress.totalXp} Ecos
+          <Sprout size={14} style={{ verticalAlign: '-2px' }} /> {progress.totalXp} Ecos
         </div>
         <button onClick={onClose} className="close-btn"><X /></button>
       </div>

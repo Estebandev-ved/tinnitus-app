@@ -1,5 +1,6 @@
 import { db } from '../firebase';
 import { collection, addDoc, query, where, getDocs, orderBy, limit, Timestamp, doc, setDoc, getDoc, deleteDoc, updateDoc, arrayUnion, increment } from 'firebase/firestore';
+import { PLAN_FREE, TRIAL_PLAN, TRIAL_DAYS } from '../config/plans';
 
 // Collection References
 const USERS_COLLECTION = 'users';
@@ -44,7 +45,7 @@ export const FirestoreService = {
 
 
     // Save Audiometry Result
-    async saveAudiometry(userId, data) {
+    async saveAudiometry(userId, data, meta = {}) {
         try {
             const audioRef = collection(db, USERS_COLLECTION, userId, 'audiometry');
             await addDoc(audioRef, {
@@ -54,6 +55,8 @@ export const FirestoreService = {
                 ear: data.ear || 'both',
                 measuredAt: Timestamp.now()
             });
+            const { ClinicalService } = await import('./backend/clinicalService');
+            ClinicalService.syncAudiometry(userId, data, meta);
         } catch (e) {
             console.error("Error saving audiometry: ", e);
             throw e;
@@ -74,6 +77,108 @@ export const FirestoreService = {
         } catch (e) {
             console.error("Error getting audiometry:", e);
             return null;
+        }
+    },
+
+    // --- Subscription / Plan ---
+    // Documento único en users/{uid}/meta/subscription
+    // { plan, trialPlan, trialEndsAt, trialUsed, createdAt, updatedAt }
+
+    async getSubscription(userId) {
+        try {
+            const ref = doc(db, USERS_COLLECTION, userId, 'meta', 'subscription');
+            const snap = await getDoc(ref);
+            return snap.exists() ? snap.data() : null;
+        } catch (e) {
+            console.error('Error getting subscription:', e);
+            return null;
+        }
+    },
+
+    // Devuelve la suscripción; si el usuario es nuevo, le crea una prueba de 30 días.
+    async ensureSubscription(userId) {
+        try {
+            const ref = doc(db, USERS_COLLECTION, userId, 'meta', 'subscription');
+            const snap = await getDoc(ref);
+            if (snap.exists()) return snap.data();
+
+            const trialEndsAt = Timestamp.fromMillis(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000);
+            const data = {
+                plan: PLAN_FREE,
+                trialPlan: TRIAL_PLAN,
+                trialEndsAt,
+                trialUsed: true,
+                createdAt: Timestamp.now(),
+            };
+            await setDoc(ref, data);
+            return data;
+        } catch (e) {
+            console.error('Error ensuring subscription:', e);
+            return { plan: PLAN_FREE, trialEndsAt: null };
+        }
+    },
+
+    // Cambia el plan pagado del usuario (cuando se conecte el pago real se llama aquí).
+    async setUserPlan(userId, plan) {
+        try {
+            const ref = doc(db, USERS_COLLECTION, userId, 'meta', 'subscription');
+            await setDoc(ref, { plan, updatedAt: Timestamp.now() }, { merge: true });
+            return true;
+        } catch (e) {
+            console.error('Error setting user plan:', e);
+            return false;
+        }
+    },
+
+    // --- THI (Tinnitus Handicap Inventory) ---
+
+    // Save a THI questionnaire result
+    async saveTHIResult(userId, result, meta = {}) {
+        try {
+            const thiRef = collection(db, USERS_COLLECTION, userId, 'thi_scores');
+            await addDoc(thiRef, {
+                total: result.total,
+                grade: result.grade,
+                functional: result.functional,
+                emotional: result.emotional,
+                catastrophic: result.catastrophic,
+                answers: result.answers,
+                createdAt: Timestamp.now()
+            });
+            const { ClinicalService } = await import('./backend/clinicalService');
+            ClinicalService.syncThi(userId, result, meta);
+        } catch (e) {
+            console.error("Error saving THI result: ", e);
+            throw e;
+        }
+    },
+
+    // Get the most recent THI result
+    async getLastTHI(userId) {
+        try {
+            const thiRef = collection(db, USERS_COLLECTION, userId, 'thi_scores');
+            const q = query(thiRef, orderBy('createdAt', 'desc'), limit(1));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+                return querySnapshot.docs[0].data();
+            }
+            return null;
+        } catch (e) {
+            console.error("Error getting THI result:", e);
+            return null;
+        }
+    },
+
+    // Get THI history (newest first) for evolution tracking
+    async getTHIHistory(userId, n = 10) {
+        try {
+            const thiRef = collection(db, USERS_COLLECTION, userId, 'thi_scores');
+            const q = query(thiRef, orderBy('createdAt', 'desc'), limit(n));
+            const querySnapshot = await getDocs(q);
+            return querySnapshot.docs.map(d => d.data());
+        } catch (e) {
+            console.error("Error getting THI history:", e);
+            return [];
         }
     },
 
@@ -466,7 +571,7 @@ export const ExtendedFirestoreService = {
   async getCaregiverPatients(caregiverUid) { return []; },
   // Agent 5
   async savePrediction(userId, data) {
-      try { await addDoc(collection(db, USERS_COLLECTION, userId, 'predictions'), {...data, createdAt: Timestamp.now()}); } catch (e) {}
+      try { await addDoc(collection(db, USERS_COLLECTION, userId, 'predictions'), {...data, createdAt: Timestamp.now()}); } catch (e) { /* ignore */ }
   },
   // Agent 6
   async saveSessionProgress(userId, day, steps, xp) {
@@ -532,7 +637,7 @@ export const ExtendedFirestoreService = {
   // Medidas de Seguridad: Validación de referencias y conteo atómico mediante 'increment'.
   async logDownloadAttribution(referrer, userAgent, platform) {
     try {
-      const sanitizedReferrer = (referrer || 'directo').replace(/[^a-zA-Z0-9_\-]/g, '').substring(0, 50);
+      const sanitizedReferrer = (referrer || 'directo').replace(/[^a-zA-Z0-9_-]/g, '').substring(0, 50);
       const logsRef = collection(db, 'download_logs');
       await addDoc(logsRef, {
         referrer: sanitizedReferrer,

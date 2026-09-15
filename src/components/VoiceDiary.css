@@ -74,7 +74,7 @@
 
 .ai-core {
   width: 80px; height: 80px;
-  background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+  background: linear-gradient(135deg, #8C789B 0%, #5856D6 100%);
   border-radius: 50%;
   z-index: 10;
   display: flex; justify-content: center; align-items: center;

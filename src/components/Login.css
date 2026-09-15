@@ -1,222 +1,413 @@
-.login-container {
-    padding: 24px;
+/* ═══════════════════════════════════════════════════
+   LOGIN — Estética Clínica Premium
+   Inspirada en: Calm + Monzo + BetterHelp + Hearing clinics
+   Paleta: Oceánico oscuro (#06080F) + Teal (#00B4D8 / #48CAE4)
+═══════════════════════════════════════════════════ */
+
+/* ── Pantalla completa ── */
+.login-screen {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 80vh;
-}
-
-.login-card {
-    background: rgba(17, 29, 50, 0.85);
-    padding: 32px 24px;
-    border-radius: 24px;
+    min-height: 100vh;
     width: 100%;
-    max-width: 400px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-    border: 1px solid rgba(10, 132, 255, 0.1);
-}
-
-.login-card.expanded {
-    max-width: 420px;
-}
-
-.login-header {
-    text-align: center;
-    margin-bottom: 32px;
-}
-
-.logo-circle {
-    width: 64px;
-    height: 64px;
-    background: rgba(10, 132, 255, 0.15);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 16px;
-    box-shadow: 0 4px 12px rgba(10, 132, 255, 0.2);
-}
-
-.login-illustration {
-    width: 140px;
-    height: auto;
-    margin: 0 auto 16px;
-    display: block;
-    border-radius: 16px;
-    filter: drop-shadow(0 6px 20px rgba(0, 122, 255, 0.2));
-}
-
-.login-header h2 {
-    font-size: 24px;
-    color: #E8EDF4;
-    margin-bottom: 8px;
-}
-
-.login-header p {
-    color: #8899B0;
-    font-size: 15px;
-    margin: 0;
-}
-
-.auth-form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.input-group {
+    background:
+        radial-gradient(ellipse 70% 55% at 50% 8%, rgba(0, 150, 199, 0.14) 0%, transparent 70%),
+        #06080F;
+    overflow-x: hidden;
     position: relative;
 }
 
-.input-icon {
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #5A6D85;
+/* ═══════════════════════════════════════════════════
+   HERO — Zona de ilustración sonar
+═══════════════════════════════════════════════════ */
+.login-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px 0;
+    position: relative;
+    flex-shrink: 0;
 }
 
-.input-group input {
+/* SVG sonar */
+.sonar-svg {
     width: 100%;
-    padding: 14px 16px 14px 48px;
-    border: 1px solid rgba(10, 132, 255, 0.15);
-    border-radius: 12px;
-    font-size: 16px;
-    background: rgba(11, 20, 38, 0.6);
-    color: #E8EDF4;
-    transition: all 0.2s;
+    max-width: 340px;
+    height: auto;
 }
 
-.input-group input:focus {
-    outline: none;
-    border-color: #0A84FF;
-    background: rgba(11, 20, 38, 0.9);
-    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.15);
+/* Anillos del sonar — animación de respiración lenta */
+.sonar-ring {
+    transform-origin: 180px 168px;
+    animation: sonar-breathe 4s ease-in-out infinite;
+}
+.sonar-ring-1 { animation-delay: 0s;    animation-duration: 3.8s; }
+.sonar-ring-2 { animation-delay: 0.3s;  animation-duration: 4.2s; }
+.sonar-ring-3 { animation-delay: 0.6s;  animation-duration: 4.6s; }
+.sonar-ring-4 { animation-delay: 0.9s;  animation-duration: 5s;   }
+.sonar-ring-5 { animation-delay: 1.2s;  animation-duration: 5.4s; }
+
+@keyframes sonar-breathe {
+    0%, 100% { opacity: 0.5; transform: scale(0.97); }
+    50%       { opacity: 1;   transform: scale(1.03); }
 }
 
-.full-width {
-    width: 100%;
-    margin-top: 8px;
-    height: 50px;
+/* Línea de barrido — giro continuo */
+.sonar-sweep {
+    transform-origin: 180px 168px;
+    animation: sonar-sweep 6s linear infinite;
 }
 
-.auth-switch {
-    margin-top: 24px;
-    text-align: center;
+@keyframes sonar-sweep {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
 }
 
-.auth-switch p {
-    color: #8899B0;
-    font-size: 14px;
+/* Núcleo central — pulso */
+.sonar-core {
+    animation: core-pulse 2.5s ease-in-out infinite;
+}
+.sonar-core-ring {
+    animation: core-pulse 2.5s ease-in-out infinite;
+    animation-delay: 0.3s;
 }
 
-.link-btn {
-    background: none;
-    border: none;
-    color: #007AFF;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 14px;
-    padding: 0 4px;
+@keyframes core-pulse {
+    0%, 100% { r: 5;  opacity: 1;   }
+    50%       { r: 7;  opacity: 0.7; }
 }
 
-.link-btn:hover {
-    text-decoration: underline;
+/* Partículas flotantes */
+.sonar-particle {
+    animation: particle-float 3s ease-in-out infinite;
+}
+.p1 { animation-delay: 0s;   animation-duration: 3.1s; }
+.p2 { animation-delay: 0.5s; animation-duration: 3.5s; }
+.p3 { animation-delay: 1.0s; animation-duration: 4s;   }
+.p4 { animation-delay: 1.5s; animation-duration: 3.2s; }
+.p5 { animation-delay: 0.8s; animation-duration: 3.8s; }
+.p6 { animation-delay: 1.2s; animation-duration: 3.4s; }
+
+@keyframes particle-float {
+    0%, 100% { transform: translateY(0)   scale(1);   }
+    50%       { transform: translateY(-4px) scale(1.2); }
 }
 
-.mock-credentials {
-    margin-top: 32px;
-    background: rgba(11, 20, 38, 0.6);
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 11px;
-    color: #8899B0;
-    text-align: center;
+/* Líneas de onda horizontal */
+.sonar-wave-line {
+    animation: wave-drift 8s ease-in-out infinite;
+}
+@keyframes wave-drift {
+    0%, 100% { transform: translateX(0);   opacity: 0.25; }
+    50%       { transform: translateX(4px); opacity: 0.4;  }
 }
 
-.mock-credentials code {
-    display: block;
-    font-family: monospace;
-    margin-top: 4px;
-    color: #333;
-}
-
-.error-alert {
-    background: rgba(255, 69, 58, 0.15);
-    color: #FF453A;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 13px;
+/* ── Marca / Logotipo ── */
+.login-brand {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 20px;
-    border: 1px solid rgba(255, 69, 58, 0.2);
+    margin-top: 20px;
 }
 
-/* Google & Divider */
-.divider {
+.login-brand-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #48CAE4, #00B4D8);
+    box-shadow: 0 0 10px rgba(0, 180, 216, 0.7);
+    flex-shrink: 0;
+}
+
+.login-brand-name {
+    font-size: 26px;
+    font-weight: 700;
+    color: #FFFFFF;
+    letter-spacing: -0.5px;
+    font-family: 'Outfit', 'Inter', sans-serif;
+}
+
+.login-tagline {
+    margin: 6px 0 0;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(144, 224, 239, 0.65);
+    letter-spacing: 0.3px;
+    text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════
+   FORM AREA — Tarjeta glassmorphic
+═══════════════════════════════════════════════════ */
+.login-form-area {
+    margin-top: 28px;
+    flex: 1;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid rgba(0, 180, 216, 0.12);
+    border-radius: 28px 28px 0 0;
+    padding: 32px 24px 40px;
+    position: relative;
+    box-shadow:
+        0 -12px 40px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(72, 202, 228, 0.08);
+}
+
+/* Manija visual (drag indicator) */
+.login-form-area::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    background: rgba(0, 180, 216, 0.25);
+    border-radius: 2px;
+}
+
+/* ── Header del form ── */
+.login-form-header {
+    margin-bottom: 24px;
+}
+
+.login-form-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin: 0 0 4px;
+    letter-spacing: -0.3px;
+}
+
+.login-form-header p {
+    font-size: 14px;
+    color: rgba(144, 224, 239, 0.55);
+    margin: 0;
+}
+
+/* ── Error ── */
+.login-error {
     display: flex;
     align-items: center;
-    text-align: center;
-    margin: 16px 0;
-    color: #aaa;
-    font-size: 12px;
+    gap: 8px;
+    background: rgba(255, 69, 58, 0.1);
+    border: 1px solid rgba(255, 69, 58, 0.2);
+    color: #FF6B6B;
+    font-size: 13px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    margin-bottom: 18px;
 }
 
-.divider::before,
-.divider::after {
-    content: '';
-    flex: 1;
-    border-bottom: 1px solid rgba(10, 132, 255, 0.1);
+/* ── Formulario ── */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.divider span {
-    padding: 0 10px;
+/* ── Input wrapper ── */
+.lf-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
-.google-btn {
-    background: rgba(11, 20, 38, 0.6);
-    color: #E8EDF4;
-    border: 1px solid rgba(10, 132, 255, 0.15);
+.lf-icon {
+    position: absolute;
+    left: 15px;
+    color: rgba(72, 202, 228, 0.5);
+    pointer-events: none;
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+.lf-input-wrap input {
+    width: 100%;
+    height: 50px;
+    padding: 0 46px 0 44px;
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 13px;
+    font-size: 15px;
+    font-weight: 400;
+    color: #FFFFFF;
+    caret-color: #48CAE4;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+}
+
+.lf-input-wrap input::placeholder {
+    color: rgba(255, 255, 255, 0.28);
+    font-weight: 400;
+}
+
+.lf-input-wrap input:focus {
+    outline: none;
+    background: rgba(0, 180, 216, 0.07);
+    border-color: rgba(0, 180, 216, 0.45);
+    box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+}
+
+/* Datepicker en dark */
+.lf-input-wrap input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.6) sepia(1) saturate(2) hue-rotate(170deg);
+    cursor: pointer;
+}
+
+/* ── Botón show/hide password ── */
+.lf-eye-btn {
+    position: absolute;
+    right: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(72, 202, 228, 0.45);
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    transition: color 0.2s;
+    z-index: 1;
+}
+.lf-eye-btn:hover { color: rgba(72, 202, 228, 0.85); }
+
+/* ── Botón principal ── */
+.lf-btn-primary {
+    width: 100%;
+    height: 52px;
+    margin-top: 6px;
+    background: linear-gradient(135deg, #0096C7 0%, #0077B6 100%);
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #FFFFFF;
+    cursor: pointer;
+    letter-spacing: 0.2px;
+    box-shadow:
+        0 6px 20px rgba(0, 150, 199, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    height: 50px;
+}
+
+.lf-btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #00B4D8 0%, #0096C7 100%);
+    box-shadow:
+        0 10px 28px rgba(0, 150, 199, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
+}
+
+.lf-btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(0, 150, 199, 0.3);
+}
+
+.lf-btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ── Spinner de carga ── */
+.lf-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #FFFFFF;
+    border-radius: 50%;
+    animation: lf-spin 0.7s linear infinite;
+}
+
+@keyframes lf-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Separador ── */
+.lf-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0;
+}
+
+.lf-divider span {
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.lf-divider p {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.28);
+    white-space: nowrap;
+    margin: 0;
+    letter-spacing: 0.3px;
+}
+
+/* ── Botón Google ── */
+.lf-btn-google {
     width: 100%;
-    margin-top: 0;
+    height: 50px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
 }
 
-.google-btn:hover {
-    background: rgba(10, 132, 255, 0.1);
+.lf-btn-google:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.22);
+    transform: translateY(-1px);
 }
 
-/* Dark Mode */
-.dark-mode .login-card {
-    background: rgba(10, 16, 32, 0.9);
-    border-color: rgba(10, 132, 255, 0.08);
+.lf-btn-google:active:not(:disabled) {
+    transform: translateY(0);
 }
 
-.dark-mode .login-header h2 {
-    color: #E6EDF3;
+.lf-btn-google:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-.dark-mode .input-group input {
-    background: rgba(5, 10, 18, 0.8);
-    border-color: rgba(10, 132, 255, 0.1);
-    color: #E6EDF3;
+/* ── Switch login/registro ── */
+.lf-switch {
+    margin-top: 22px;
+    text-align: center;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.32);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
-.dark-mode .input-group input:focus {
-    background: rgba(5, 10, 18, 0.95);
-    border-color: #0A84FF;
+.lf-switch-btn {
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #48CAE4;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s;
 }
 
-.dark-mode .google-btn {
-    background: rgba(5, 10, 18, 0.8);
-    border-color: rgba(10, 132, 255, 0.08);
-    color: #E6EDF3;
+.lf-switch-btn:hover {
+    color: #90E0EF;
+    text-decoration: underline;
 }

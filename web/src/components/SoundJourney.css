@@ -1,0 +1,123 @@
+/* SoundJourney.css
+   A deliberately fixed dark "cinematic" band, independent of the site's
+   light/dark theme toggle — the same convention already used by the
+   holographic 3D visuals elsewhere in the product. */
+
+.sound-journey {
+  position: relative;
+  background: #07060d;
+}
+
+.sound-journey-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(140, 120, 155, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 70%, rgba(0, 190, 220, 0.07) 0%, transparent 50%),
+    #07060d;
+}
+
+.sj-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.sj-canvas canvas { display: block; }
+
+.sj-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    rgba(7, 6, 13, 0.82) 0%,
+    rgba(7, 6, 13, 0.55) 32%,
+    rgba(7, 6, 13, 0.05) 62%,
+    transparent 100%
+  );
+}
+
+.sj-copy {
+  position: absolute;
+  z-index: 2;
+  left: clamp(20px, 6vw, 80px);
+  bottom: clamp(90px, 14vh, 160px);
+  max-width: 440px;
+  color: #f5f3fa;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+.sj-eyebrow {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.sj-copy h1,
+.sj-copy h3 {
+  font-size: clamp(22px, 3.4vw, 30px);
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  margin: 0 0 12px 0;
+  font-weight: 800;
+  color: #fff;
+}
+.sj-copy p {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: #b6b1cc;
+  margin: 0;
+}
+.sj-copy p + p { margin-top: 9px; }
+
+.sj-progress {
+  position: absolute;
+  z-index: 2;
+  right: clamp(16px, 4vw, 40px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sj-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+.sj-dot.active {
+  background: var(--dot-color, #00e8ff);
+  box-shadow: 0 0 10px var(--dot-color, #00e8ff);
+  transform: scale(1.35);
+}
+
+.sj-scrollhint {
+  position: absolute;
+  z-index: 2;
+  left: clamp(20px, 6vw, 80px);
+  bottom: clamp(28px, 5vh, 48px);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+.sj-arrow { display: inline-block; animation: sjBob 1.8s ease-in-out infinite; }
+@keyframes sjBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sj-arrow { animation: none; }
+}
+
+@media (max-width: 720px) {
+  .sj-copy { max-width: calc(100% - 40px); bottom: 110px; }
+  .sj-progress { flex-direction: row; right: 50%; transform: translateX(50%); top: auto; bottom: 66px; }
+}

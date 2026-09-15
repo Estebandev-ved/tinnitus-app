@@ -1,0 +1,257 @@
+/* ═══════════════════════════════════════════════════
+   PLANS SCREEN — Oceanic Clinical Dark
+   Inspirado en: DashboardHome card style
+═══════════════════════════════════════════════════ */
+
+.plans-container {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 250;
+    background:
+        radial-gradient(ellipse 60% 35% at 50% 0%, rgba(0, 150, 199, 0.11) 0%, transparent 58%),
+        var(--background, #06080F);
+    display: flex;
+    flex-direction: column;
+    color: var(--text-main);
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+.plans-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 180, 216, 0.08);
+    flex-shrink: 0;
+}
+
+.plans-header h2 {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 800;
+    color: #F0F4F8;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.3px;
+}
+
+.plans-back-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(144, 224, 239, 0.65);
+    border-radius: 10px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.plans-back-btn:hover {
+    background: rgba(0, 180, 216, 0.12);
+    color: #48CAE4;
+}
+
+.plans-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 18px 40px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 180, 216, 0.12) transparent;
+}
+
+.plans-scroll::-webkit-scrollbar { width: 3px; }
+.plans-scroll::-webkit-scrollbar-thumb {
+    background: rgba(0, 180, 216, 0.18);
+    border-radius: 3px;
+}
+
+.plans-trial-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(251, 191, 36, 0.12);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    color: #FBBF24;
+    font-size: 0.85rem;
+    margin-bottom: 14px;
+}
+
+.plans-trial-banner strong {
+    color: #F0F4F8;
+}
+
+.plans-intro {
+    text-align: center;
+    color: rgba(144, 224, 239, 0.55);
+    font-size: 0.9rem;
+    margin: 0 0 18px;
+    line-height: 1.45;
+}
+
+.plan-card {
+    position: relative;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 180, 216, 0.09);
+    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.plan-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(0, 180, 216, 0.24);
+    box-shadow: 0 8px 24px rgba(0, 180, 216, 0.08), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.plan-card.highlight {
+    border-color: var(--plan-color);
+    box-shadow: 0 0 40px -16px var(--plan-color);
+}
+
+.plan-card.current {
+    border-color: var(--plan-color);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.plan-ribbon {
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--plan-color);
+    color: #04121A;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.plan-card-head {
+    margin-bottom: 14px;
+}
+
+.plan-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--plan-color);
+}
+
+.plan-name-row h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+}
+
+.plan-tagline {
+    display: block;
+    color: rgba(144, 224, 239, 0.45);
+    font-size: 0.82rem;
+    margin-top: 2px;
+}
+
+.plan-price {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-top: 10px;
+    font-family: 'Outfit', sans-serif;
+    color: #F0F4F8;
+}
+
+.plan-price small {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(144, 224, 239, 0.38);
+}
+
+.plan-features {
+    list-style: none;
+    margin: 0 0 18px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.plan-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.86rem;
+    color: rgba(144, 224, 239, 0.75);
+    line-height: 1.35;
+}
+
+.plan-features li svg {
+    color: var(--plan-color);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.plan-features li.not-included {
+    color: rgba(144, 224, 239, 0.28);
+}
+
+.plan-features li.not-included svg {
+    color: rgba(255, 90, 90, 0.5);
+}
+
+.plan-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.plan-btn.choose-btn {
+    background: var(--plan-color);
+    color: #04121A;
+    box-shadow: 0 6px 18px rgba(0, 150, 199, 0.3);
+}
+
+.plan-btn.choose-btn:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(0, 150, 199, 0.4);
+}
+
+.plan-btn.current-btn {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(144, 224, 239, 0.38);
+    cursor: default;
+}
+
+.plan-btn.free-btn {
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(144, 224, 239, 0.38);
+    cursor: default;
+}
+
+.plan-btn:disabled {
+    cursor: default;
+}
+
+.plans-note {
+    text-align: center;
+    color: rgba(144, 224, 239, 0.28);
+    font-size: 0.75rem;
+    margin: 6px 0 0;
+}

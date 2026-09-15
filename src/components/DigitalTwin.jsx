@@ -4,7 +4,6 @@ import { FirestoreService } from '../services/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
 import HolographicEar from './HolographicEar';
 import './DigitalTwin.css';
-import digitalTwinIllustration from '../assets/illustrations/digital_twin.png';
 
 const DigitalTwin = ({ onClose, onActionSelect }) => {
     const { currentUser } = useAuth();
@@ -131,7 +130,13 @@ const DigitalTwin = ({ onClose, onActionSelect }) => {
                     <button className="close-btn" onClick={onClose}><X size={24} /></button>
                 </header>
 
-                <img src={digitalTwinIllustration} alt="" className="feature-illustration" />
+                <div className="feature-hero-anim" aria-hidden="true">
+                    <div className="fha-ring fha-r1" />
+                    <div className="fha-ring fha-r2" />
+                    <div className="fha-orb">
+                        <Cpu size={26} strokeWidth={1.8} />
+                    </div>
+                </div>
 
                 <div className="twin-content">
                     {loading ? (

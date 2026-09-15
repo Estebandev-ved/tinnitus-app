@@ -20,24 +20,24 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(17, 29, 50, 0.8);
-    border: 1px solid rgba(10, 132, 255, 0.15);
+    background: var(--clay-bg-dark);
+    border: 1px solid rgba(44, 62, 68, 0.12);
     padding: 8px 16px;
     border-radius: 100px;
     font-size: 13px;
     font-weight: 500;
-    color: #E8EDF4;
+    color: var(--text-main);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
 }
 
 .stat-pill.glow {
     border-color: rgba(10, 132, 255, 0.3);
-    box-shadow: 0 0 16px rgba(10, 132, 255, 0.15);
+    box-shadow: 0 0 16px rgba(44, 62, 68, 0.12);
 }
 
 .stat-pill strong {
-    color: #0A84FF;
+    color: var(--primary-dark);
 }
 
 /* Map Container */
@@ -79,7 +79,7 @@
     font-weight: 600;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
     paint-order: stroke;
-    stroke: rgba(11, 20, 38, 0.9);
+    stroke: var(--surface-raised);
     stroke-width: 3px;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -117,7 +117,7 @@
     align-items: center;
     gap: 6px;
     font-size: 12px;
-    color: #5A6D85;
+    color: var(--text-muted);
 }
 
 .legend-dot {
@@ -128,7 +128,7 @@
 }
 
 .legend-dot.active {
-    background: #0A84FF;
+    background: var(--primary-dark);
     box-shadow: 0 0 8px rgba(10, 132, 255, 0.5);
 }
 
@@ -137,14 +137,14 @@
     text-align: center;
     font-size: 13px;
     line-height: 1.6;
-    color: #5A6D85;
+    color: var(--text-muted);
     padding: 0 16px;
     margin-top: 4px;
 }
 
 .map-footer p {
     margin: 0;
-    background: rgba(17, 29, 50, 0.5);
+    background: var(--clay-bg-dark);
     padding: 12px 16px;
     border-radius: 12px;
     border: 1px solid rgba(10, 132, 255, 0.06);

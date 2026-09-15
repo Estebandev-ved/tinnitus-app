@@ -42,7 +42,7 @@
 }
 
 .wizard-progress-bar.active {
-  background: #007AFF;
+  background: #8C789B;
   box-shadow: 0 0 10px rgba(0, 122, 255, 0.6);
   height: 6px;
   transform: translateY(-1px);
@@ -142,7 +142,7 @@
 .btn-wizard-next:hover {
   transform: translateY(-2px) scale(1.02);
   box-shadow: 0 12px 25px rgba(0, 122, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+  background: linear-gradient(135deg, #8C789B 0%, #5856D6 100%);
 }
 
 .btn-wizard-next:active {
@@ -178,7 +178,7 @@
 
 .quiz-btn.selected {
   background: rgba(0, 122, 255, 0.15);
-  border-color: #007AFF;
+  border-color: #8C789B;
   color: #FFFFFF;
   box-shadow: 0 0 20px rgba(0, 122, 255, 0.2);
 }

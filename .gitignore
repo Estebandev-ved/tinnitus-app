@@ -33,3 +33,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+serviceAccount.json
+# Firebase service account (secreto)
+firebase/
+
+# Backups
+backups/
+
+# SSL certificates
+nginx/ssl/*.pem
+nginx/ssl/*.key
+

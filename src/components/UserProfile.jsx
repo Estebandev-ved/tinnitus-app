@@ -1,15 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, User, Phone, Calendar, Mail, Camera, LogOut, FileText, ChevronRight, Shield } from 'lucide-react';
+import { X, User, Phone, Calendar, Mail, Camera, LogOut, FileText, ChevronRight, Shield, Crown } from 'lucide-react';
 import PrivacyPolicy from './PrivacyPolicy';
 import { useAuth } from '../contexts/AuthContext';
+import { usePlan } from '../contexts/PlanContext';
+import { PLANS } from '../config/plans';
 import { FirestoreService } from '../services/firestoreService';
 import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { updateProfile } from 'firebase/auth';
 import './UserProfile.css';
 
-const UserProfile = ({ onClose, onOpenDoctorReport, onOpenMedical }) => {
+const UserProfile = ({ onClose, onOpenDoctorReport, onOpenMedical, onOpenPlans }) => {
     const { currentUser, logout } = useAuth();
+    const { effectivePlan, trialActive, trialDaysLeft } = usePlan();
+    const planInfo = PLANS[effectivePlan] || PLANS.free;
     const [loading, setLoading] = useState(true);
     const [showPrivacy, setShowPrivacy] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -189,6 +193,18 @@ const UserProfile = ({ onClose, onOpenDoctorReport, onOpenMedical }) => {
                             {saving ? 'Guardando...' : 'Guardar Cambios'}
                         </button>
                     </div>
+
+                    {/* Plan / Subscription banner */}
+                    <button className="plan-banner" onClick={onOpenPlans} style={{ '--plan-color': planInfo.color }}>
+                        <div className="plan-banner-left">
+                            <div className="plan-banner-icon"><Crown size={20} /></div>
+                            <div className="plan-banner-text">
+                                <span className="plan-banner-label">Tu plan</span>
+                                <strong>{planInfo.name}{trialActive ? ` · Prueba (${trialDaysLeft}d)` : ''}</strong>
+                            </div>
+                        </div>
+                        <span className="plan-banner-cta">Ver planes <ChevronRight size={16} /></span>
+                    </button>
 
                     {/* Actions Section */}
                     <div className="profile-actions">

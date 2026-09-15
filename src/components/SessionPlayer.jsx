@@ -41,7 +41,7 @@ export const SessionPlayer = ({ sessionData, onClose, onComplete }) => {
 
       <div style={{ flex: 1, overflow: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {currentStep.type === 'nevera' && <NeveraMechanic onComplete={handleNext} />}
-        {currentStep.type === 'mezclador' && <MezcladorMechanic onComplete={handleNext} />}
+        {currentStep.type === 'mezclador' && <MezcladorMechanic onComplete={handleNext} onClose={onClose} />}
         {currentStep.type === 'linterna' && <LinternaMechanic onComplete={handleNext} />}
         {currentStep.type === 'monstruo' && <MonstruoMechanic onComplete={handleNext} />}
         {currentStep.type === 'periferica' && <PerifericaMechanic onComplete={handleNext} />}

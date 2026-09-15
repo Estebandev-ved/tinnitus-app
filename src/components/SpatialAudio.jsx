@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Play, Square, Headphones, Info } from 'lucide-react';
+import { X, Play, Square, Headphones, Info, Orbit } from 'lucide-react';
 import './SpatialAudio.css';
-import spatialAudioIllustration from '../assets/illustrations/spatial_audio.png';
 
 const SpatialAudio = ({ onClose, initialFrequency = 4000, initialType = 'pure' }) => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -177,7 +176,13 @@ const SpatialAudio = ({ onClose, initialFrequency = 4000, initialType = 'pure' }
                     <button className="close-btn" onClick={onClose}><X size={24} /></button>
                 </header>
 
-                <img src={spatialAudioIllustration} alt="" className="feature-illustration" />
+                <div className="feature-hero-anim hero-purple" aria-hidden="true">
+                    <div className="fha-ring fha-r1" />
+                    <div className="fha-ring fha-r2" />
+                    <div className="fha-orb">
+                        <Orbit size={26} strokeWidth={1.8} />
+                    </div>
+                </div>
 
                 <div className="spatial-content">
                     <div className="warning-banner">

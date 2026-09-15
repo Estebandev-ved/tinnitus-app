@@ -1,0 +1,12 @@
+apiVersion: 1
+
+providers:
+  - name: 'TinnitOff'
+    orgId: 1
+    folder: 'TinnitOff'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    options:
+      path: /etc/grafana/provisioning/dashboards
+      foldersFromFilesStructure: false

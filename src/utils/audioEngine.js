@@ -4,10 +4,49 @@ export const AudioEngine = {
     audioContext: null,
     activeSounds: new Map(), // Stores { source, gainNode } by soundId
 
+    // Notched sound therapy state: removes a band (~1 octave) around the tinnitus frequency
+    notch: { frequency: null, enabled: false },
+
     init() {
         if (!this.audioContext) {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         }
+    },
+
+    // Configure the notch (band-stop) applied to library sounds.
+    // frequency: tinnitus center frequency in Hz; enabled: whether to carve it out.
+    setNotch(frequency, enabled) {
+        this.notch = {
+            frequency: frequency ? Number(frequency) : this.notch.frequency,
+            enabled: !!enabled
+        };
+    },
+
+    // Build a band-stop (notch) filter chain centered on `freq`.
+    // A single 'notch' biquad only nulls exactly at the center, so we cascade
+    // a few stages to deepen the suppression across the band.
+    // bandwidthOctaves: 1 octave (Q≈1.41) by default; 0.5 octave (Q≈2.87) is narrower.
+    // Returns { input, output } so callers can splice it into a chain.
+    createNotchChain(freq, bandwidthOctaves = 1, stages = 3) {
+        // Q for a given bandwidth in octaves: Q = sqrt(2^BW) / (2^BW - 1)
+        const bw = Math.pow(2, bandwidthOctaves);
+        const Q = Math.sqrt(bw) / (bw - 1);
+
+        let input = null;
+        let prev = null;
+        for (let i = 0; i < stages; i++) {
+            const filter = this.audioContext.createBiquadFilter();
+            filter.type = 'notch';
+            filter.frequency.value = freq;
+            filter.Q.value = Q;
+            if (!input) {
+                input = filter;
+            } else {
+                prev.connect(filter);
+            }
+            prev = filter;
+        }
+        return { input, output: prev };
     },
 
     stop(soundId) {
@@ -80,6 +119,14 @@ export const AudioEngine = {
             filter.gain.value = -10;
             sourceNode.connect(filter);
             finalNode = filter;
+        }
+
+        // Insert notch (band-stop) around the tinnitus frequency when enabled.
+        // All library sounds here are broadband noise, so this carves out the band.
+        if (this.notch.enabled && this.notch.frequency) {
+            const { input, output } = this.createNotchChain(this.notch.frequency);
+            finalNode.connect(input);
+            finalNode = output;
         }
 
         // Connect chain
@@ -182,6 +229,61 @@ export const AudioEngine = {
             this.activeSounds.set('custom', { source: sourceNode, gainNode: masterGainNode, lfo: lfo });
         } else {
             filter.connect(masterGainNode);
+            this.activeSounds.set('custom', { source: sourceNode, gainNode: masterGainNode });
+        }
+
+        sourceNode.start();
+    },
+
+    // Notched Sound Therapy: broadband noise with a band-stop notch REMOVING the
+    // tinnitus frequency (the scientific inverse of the bandpass masker above).
+    playNotchedNoise(frequency, modulationRate = 0) {
+        this.init();
+
+        if (this.activeSounds.has('custom')) {
+            this.stop('custom');
+        }
+
+        const masterGainNode = this.audioContext.createGain();
+        masterGainNode.gain.value = 0.5;
+        masterGainNode.connect(this.audioContext.destination);
+
+        const bufferSize = this.audioContext.sampleRate * 2;
+        const buffer = this.audioContext.createBuffer(1, bufferSize, this.audioContext.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+
+        const sourceNode = this.audioContext.createBufferSource();
+        sourceNode.buffer = buffer;
+        sourceNode.loop = true;
+
+        // Broadband noise -> notch chain removing the tinnitus band
+        const { input: notchIn, output: notchOut } = this.createNotchChain(frequency);
+        sourceNode.connect(notchIn);
+
+        if (modulationRate > 0) {
+            const lfo = this.audioContext.createOscillator();
+            lfo.type = 'sine';
+            lfo.frequency.value = modulationRate;
+
+            const lfoGain = this.audioContext.createGain();
+            lfoGain.gain.value = 0.5;
+
+            const baseGain = this.audioContext.createGain();
+            baseGain.gain.value = 0.5;
+
+            lfo.connect(lfoGain);
+            lfoGain.connect(baseGain.gain);
+
+            notchOut.connect(baseGain);
+            baseGain.connect(masterGainNode);
+
+            lfo.start();
+            this.activeSounds.set('custom', { source: sourceNode, gainNode: masterGainNode, lfo: lfo });
+        } else {
+            notchOut.connect(masterGainNode);
             this.activeSounds.set('custom', { source: sourceNode, gainNode: masterGainNode });
         }
 

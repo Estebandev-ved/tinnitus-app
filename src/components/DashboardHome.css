@@ -1,0 +1,527 @@
+/* ═══════════════════════════════════════════════════
+   DASHBOARD HOME — Oceanic Clinical Dark
+   Inspirado en: Calm + ReSound Relief (Tarjetas grandes premium)
+═══════════════════════════════════════════════════ */
+
+.dh-container {
+    padding: 20px 18px 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    background-color: var(--background);
+    position: relative;
+    overflow: hidden;
+}
+
+/* ── Header ── */
+.dh-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 4px;
+    position: relative;
+    z-index: 2;
+}
+
+.dh-profile-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dh-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0096C7, #0077B6);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dh-avatar:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 18px rgba(0, 180, 216, 0.5);
+}
+
+.dh-avatar:active {
+    transform: scale(0.94);
+}
+
+.dh-greeting-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.dh-greeting-sub {
+    font-size: 12px;
+    color: rgba(144, 224, 239, 0.55);
+}
+
+.dh-username {
+    font-size: 18px;
+    font-weight: 700;
+    color: #F0F4F8;
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.3px;
+}
+
+/* Header actions */
+.dh-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dh-streak-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 180, 216, 0.08);
+    border: 1px solid rgba(0, 180, 216, 0.18);
+    padding: 6px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.dh-streak-badge:hover {
+    background: rgba(0, 180, 216, 0.15);
+    transform: translateY(-1px);
+}
+
+.dh-flame {
+    color: #FF9F45;
+    filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.6));
+    animation: flame-pulse 1.5s infinite alternate;
+}
+
+.dh-streak-count {
+    font-size: 14px;
+    font-weight: 700;
+    color: #F0F4F8;
+    font-family: 'Outfit', sans-serif;
+}
+
+@keyframes flame-pulse {
+    0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(251,191,36,0.3)); }
+    100% { transform: scale(1.15); filter: drop-shadow(0 0 8px rgba(251,191,36,0.8)); }
+}
+
+.dh-theme-toggle {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(144, 224, 239, 0.6);
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.dh-theme-toggle:hover {
+    background: rgba(0, 180, 216, 0.1);
+    color: #48CAE4;
+}
+
+/* ── Tip Banner ── */
+.dh-tip-banner {
+    display: flex;
+    gap: 12px;
+    background: rgba(0, 180, 216, 0.05);
+    border: 1px solid rgba(0, 180, 216, 0.12);
+    padding: 12px 14px;
+    border-radius: 14px;
+    align-items: flex-start;
+}
+
+.dh-tip-icon {
+    color: #00B4D8;
+    margin-top: 2px;
+    animation: tipSparkle 3s ease-in-out infinite;
+}
+
+@keyframes tipSparkle {
+    0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.8; }
+    50% { transform: rotate(12deg) scale(1.15); opacity: 1; }
+}
+
+.dh-tip-body {
+    flex: 1;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.dh-tip-body strong {
+    color: #F0F4F8;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.dh-tip-body p {
+    margin: 0;
+    color: rgba(144, 224, 239, 0.65);
+}
+
+/* ── SOS Card Section ── */
+.dh-sos-section {
+    width: 100%;
+}
+
+.dh-sos-card {
+    background: linear-gradient(135deg, rgba(255, 59, 48, 0.15) 0%, rgba(255, 69, 58, 0.05) 100%);
+    border: 1.5px solid rgba(255, 69, 58, 0.3);
+    border-radius: 18px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s ease;
+    box-shadow: 0 6px 20px rgba(255, 69, 58, 0.1);
+    animation: sosBorderPulse 3s ease-in-out infinite;
+}
+
+@keyframes sosBorderPulse {
+    0%, 100% { border-color: rgba(255, 69, 58, 0.3); box-shadow: 0 6px 20px rgba(255, 69, 58, 0.1); }
+    50% { border-color: rgba(255, 69, 58, 0.55); box-shadow: 0 6px 26px rgba(255, 69, 58, 0.22); }
+}
+
+.dh-sos-glow {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at 10% 20%, rgba(255, 69, 58, 0.2), transparent 50%);
+    pointer-events: none;
+}
+
+.dh-sos-icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(255, 69, 58, 0.15);
+    border: 1px solid rgba(255, 69, 58, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FF453A;
+    box-shadow: 0 0 12px rgba(255, 69, 58, 0.3);
+    flex-shrink: 0;
+    animation: sosIconBeat 2s ease-in-out infinite;
+}
+
+@keyframes sosIconBeat {
+    0%, 100% { transform: scale(1); }
+    12% { transform: scale(1.1); }
+    24% { transform: scale(1); }
+}
+
+.dh-sos-content h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dh-sos-title-icon {
+    color: #FF453A;
+    flex-shrink: 0;
+}
+
+.dh-sos-content p {
+    margin: 0;
+    font-size: 12px;
+    color: rgba(255, 107, 107, 0.7);
+    line-height: 1.3;
+}
+
+.dh-sos-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(255, 69, 58, 0.2);
+    border-color: rgba(255, 69, 58, 0.45);
+}
+
+.dh-sos-card:active {
+    transform: scale(0.98);
+}
+
+/* ── Grid Section ── */
+.dh-grid-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dh-section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #F0F4F8;
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+}
+
+/* Grid of Cards (Large Apps) */
+.dh-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.dh-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 180, 216, 0.09);
+    border-radius: 18px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(8px);
+}
+
+.dh-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(0, 180, 216, 0.3);
+    background: rgba(0, 180, 216, 0.05);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35), 0 0 16px rgba(0, 180, 216, 0.08);
+}
+
+.dh-card:hover .dh-card-icon {
+    background: rgba(0, 180, 216, 0.18);
+    border-color: rgba(0, 180, 216, 0.4);
+    transform: scale(1.08);
+    box-shadow: 0 0 14px rgba(0, 180, 216, 0.3);
+}
+
+.dh-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dh-card-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: rgba(0, 180, 216, 0.06);
+    border: 1px solid rgba(0, 180, 216, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00B4D8;
+    transition: all 0.2s;
+}
+
+/* Badges */
+.dh-card-badge {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2.5px 7px;
+    border-radius: 8px;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+}
+
+.dh-card-badge.chat-badge {
+    background: rgba(0, 180, 216, 0.15);
+    color: #48CAE4;
+    border: 1px solid rgba(0, 180, 216, 0.25);
+}
+
+.dh-card-badge.hz-badge {
+    background: rgba(45, 212, 191, 0.15);
+    color: #2DD4BF;
+    border: 1px solid rgba(45, 212, 191, 0.25);
+}
+
+/* Body Info */
+.dh-card-body h4 {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #F0F4F8;
+    font-family: 'Outfit', sans-serif;
+}
+
+.dh-card-body p {
+    margin: 0;
+    font-size: 11px;
+    color: rgba(144, 224, 239, 0.45);
+    line-height: 1.4;
+}
+
+/* Hover effects */
+.dh-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.045);
+    border-color: rgba(0, 180, 216, 0.24);
+    box-shadow: 0 8px 24px rgba(0, 180, 216, 0.08), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.dh-card:hover .dh-card-icon {
+    background: rgba(0, 180, 216, 0.15);
+    color: #48CAE4;
+    box-shadow: 0 0 10px rgba(0, 180, 216, 0.3);
+}
+
+.dh-card:active {
+    transform: scale(0.97);
+}
+
+/* Responsiveness */
+@media (max-width: 360px) {
+    .dh-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Animated Header Wave ── */
+.dh-header-wave {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.9;
+}
+
+.dh-header-wave svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.dh-wave-path {
+    animation: dhWaveDrift 6s ease-in-out infinite;
+    transform-origin: center;
+}
+
+@keyframes dhWaveDrift {
+    0%, 100% { transform: translateY(0) scaleY(1); opacity: 0.85; }
+    50%      { transform: translateY(6px) scaleY(1.12); opacity: 1; }
+}
+
+.dh-plan-banner {
+    position: relative;
+    overflow: hidden;
+}
+
+/* ── Sección de contenido publicado (visible para todos) ── */
+.dh-content-section {
+    margin: 18px 0 6px;
+}
+
+.dh-content-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 0 4px;
+}
+
+.dh-content-head .dh-section-title {
+    margin: 0;
+}
+
+.dh-content-more {
+    background: none;
+    border: none;
+    color: #48CAE4;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    padding: 4px 2px;
+}
+
+.dh-content-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dh-content-card {
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.dh-content-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(0, 180, 216, 0.24);
+}
+
+.dh-content-type {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #2DD4BF;
+    background: rgba(45, 212, 191, 0.12);
+    border: 1px solid rgba(45, 212, 191, 0.22);
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+}
+
+.dh-content-card h4 {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #F0F4F8;
+    font-family: 'Outfit', sans-serif;
+}
+
+.dh-content-card p {
+    margin: 0;
+    font-size: 12px;
+    color: rgba(144, 224, 239, 0.55);
+    line-height: 1.45;
+}
+
+/* ── Tarjeta de novedad (sutil pero legible) ── */
+.dh-content-card--muted {
+    opacity: 0.92;
+    background: rgba(72, 202, 228, 0.05);
+    border: 1px solid rgba(72, 202, 228, 0.18);
+}
+
+.dh-content-card--muted .dh-content-type {
+    color: #48CAE4;
+    background: rgba(72, 202, 228, 0.12);
+    border: 1px solid rgba(72, 202, 228, 0.22);
+}
+
+.dh-content-card--muted h4 {
+    color: #E2E8F0;
+}
+
+.dh-content-card--muted p {
+    color: rgba(226, 232, 240, 0.5);
+}

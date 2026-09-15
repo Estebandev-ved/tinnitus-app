@@ -1,186 +1,321 @@
-.achievements-modal { 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    right: 0; 
-    bottom: 0; 
-    background: rgba(3, 6, 20, 0.95); 
-    backdrop-filter: blur(16px);
-    z-index: 9999; 
-    display: flex; 
-    flex-direction: column; 
-    padding: 24px; 
-    color: var(--text-main); 
+/* ═══════════════════════════════════════════════════
+   ACHIEVEMENTS — Oceanic Clinical Dark
+   Inspirado en: Duolingo × Calm × ReSound (tono clínico gentil)
+═══════════════════════════════════════════════════ */
+
+.achievements-modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+        radial-gradient(ellipse 70% 40% at 50% 0%, rgba(0, 150, 199, 0.1) 0%, transparent 60%),
+        #06080F;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    color: var(--text-main);
+    overflow: hidden;
 }
 
-.ach-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 24px; 
+/* ── Header ── */
+.ach-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid rgba(0, 180, 216, 0.08);
+    flex-shrink: 0;
 }
 
 .ach-header h2 {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
     font-family: 'Outfit', sans-serif;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    background: linear-gradient(135deg, #F0F4F8 0%, #48CAE4 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin: 0;
+    letter-spacing: -0.3px;
 }
 
-.ach-grid { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 16px; 
-    overflow-y: auto; 
-    padding-bottom: 24px; 
-    scrollbar-width: none;
+/* ── Streak banner ── */
+.ach-streak-banner {
+    margin: 0 24px 16px;
+    padding: 14px 18px;
+    background: rgba(0, 180, 216, 0.07);
+    border: 1px solid rgba(0, 180, 216, 0.18);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
-.ach-grid::-webkit-scrollbar {
-    display: none;
+.ach-streak-flame {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, rgba(0, 150, 199, 0.2), rgba(0, 180, 216, 0.1));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00B4D8;
+    box-shadow: 0 0 16px rgba(0, 180, 216, 0.25);
+    animation: flame-glow 2s ease-in-out infinite alternate;
+    flex-shrink: 0;
 }
 
-.ach-card { 
-    background: rgba(255, 255, 255, 0.02); 
-    border: 1px solid var(--glass-border);
-    border-radius: 20px; 
-    padding: 20px; 
-    display: flex; 
-    align-items: center; 
-    gap: 20px; 
+@keyframes flame-glow {
+    0%   { box-shadow: 0 0 10px rgba(0, 180, 216, 0.2); }
+    100% { box-shadow: 0 0 24px rgba(0, 180, 216, 0.45); }
+}
+
+.ach-streak-text {
+    flex: 1;
+}
+
+.ach-streak-count {
+    font-size: 18px;
+    font-weight: 800;
+    color: #F0F4F8;
+    font-family: 'Outfit', sans-serif;
+    display: block;
+    letter-spacing: -0.3px;
+}
+
+.ach-streak-sub {
+    font-size: 12px;
+    color: rgba(144, 224, 239, 0.55);
+    margin-top: 2px;
+    display: block;
+}
+
+/* ── Grid de logros ── */
+.ach-grid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    padding: 0 24px 24px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 180, 216, 0.15) transparent;
+}
+
+.ach-grid::-webkit-scrollbar { width: 3px; }
+.ach-grid::-webkit-scrollbar-thumb {
+    background: rgba(0, 180, 216, 0.2);
+    border-radius: 3px;
+}
+
+/* ── Section label ── */
+.ach-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(144, 224, 239, 0.35);
+    margin: 8px 0 4px;
+}
+
+/* ── Tarjeta de logro ── */
+.ach-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 180, 216, 0.08);
+    border-radius: 18px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
     position: relative;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    backdrop-filter: blur(8px);
 }
 
+/* Icono del logro */
 .ach-emoji-wrapper {
     position: relative;
-    width: 64px;
-    height: 64px;
+    width: 56px;
+    height: 56px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(0, 180, 216, 0.1);
     flex-shrink: 0;
 }
 
 .ach-lock-overlay {
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+    inset: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(3, 6, 20, 0.6);
-    border-radius: 50%;
-    color: var(--text-secondary);
+    background: rgba(6, 8, 15, 0.65);
+    border-radius: 16px;
+    color: rgba(144, 224, 239, 0.3);
 }
 
+/* Info del logro */
 .ach-info {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-right: 120px; /* Safe space to prevent absolute button overlap */
+    min-width: 0;
 }
 
-.ach-info h3 { 
-    margin: 0 0 6px 0; 
-    font-size: 17px; 
-    font-weight: 700; 
-    color: var(--text-main);
-    font-family: 'Outfit', sans-serif;
-}
-
-.ach-desc { 
-    margin: 0 0 10px 0; 
-    font-size: 13px; 
-    color: var(--text-secondary); 
-    line-height: 1.5; 
-}
-
-.ach-reward {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
+.ach-info h3 {
+    margin: 0 0 4px;
+    font-size: 15px;
     font-weight: 700;
-    color: var(--accent); 
-    background: rgba(176, 114, 255, 0.1);
-    border: 1px solid rgba(176, 114, 255, 0.15);
-    padding: 6px 12px;
-    border-radius: 10px;
-    width: fit-content;
+    color: #F0F4F8;
+    font-family: 'Outfit', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Locked State */
-.ach-card.locked { 
-    opacity: 0.7; 
-}
-.ach-card.locked .ach-info h3 { color: var(--text-secondary); }
-.ach-card.locked .ach-reward {
-    color: var(--text-secondary);
-    background: rgba(255, 255, 255, 0.02);
-    border-color: var(--glass-border);
+.ach-desc {
+    margin: 0 0 8px;
+    font-size: 12px;
+    color: rgba(144, 224, 239, 0.5);
+    line-height: 1.4;
 }
 
-/* Success Effect (Unlocked State) */
-.ach-card.unlocked { 
-    border: 1px solid rgba(0, 229, 255, 0.3); 
-    box-shadow: 0 0 20px rgba(0, 229, 255, 0.08); 
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 229, 255, 0.03) 100%);
+/* Badge de recompensa */
+.ach-reward {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #48CAE4;
+    background: rgba(0, 180, 216, 0.08);
+    border: 1px solid rgba(0, 180, 216, 0.15);
+    padding: 4px 10px;
+    border-radius: 8px;
+}
+
+/* Progreso del logro (en progreso) */
+.ach-progress-bar-wrap {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.ach-progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0096C7, #00B4D8);
+    border-radius: 2px;
+    transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 0 8px rgba(0, 180, 216, 0.4);
+}
+
+/* Estado: Bloqueado */
+.ach-card.locked {
+    opacity: 0.55;
+}
+.ach-card.locked .ach-info h3 { color: rgba(144, 224, 239, 0.4); }
+
+/* Estado: Desbloqueado ✨ */
+.ach-card.unlocked {
+    border-color: rgba(0, 180, 216, 0.28);
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.04) 0%,
+        rgba(0, 180, 216, 0.04) 100%);
+    box-shadow: 0 0 20px rgba(0, 180, 216, 0.08), 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .ach-card.unlocked .ach-emoji-wrapper {
-    background: rgba(0, 229, 255, 0.08);
-    border-color: rgba(0, 229, 255, 0.3);
-    box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+    background: rgba(0, 180, 216, 0.1);
+    border-color: rgba(0, 180, 216, 0.3);
+    box-shadow: 0 0 18px rgba(0, 180, 216, 0.2);
 }
 
-.share-btn { 
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    display: flex; 
-    align-items: center; 
-    gap: 6px; 
-    background: rgba(0, 229, 255, 0.1); 
-    border: 1px solid rgba(0, 229, 255, 0.3);
-    padding: 8px 16px; 
-    border-radius: 12px; 
-    color: var(--primary); 
-    cursor: pointer; 
-    font-size: 12px;
+/* Botón compartir */
+.share-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0, 180, 216, 0.08);
+    border: 1px solid rgba(0, 180, 216, 0.2);
+    padding: 7px 12px;
+    border-radius: 10px;
+    color: #48CAE4;
+    cursor: pointer;
+    font-size: 11px;
     font-weight: 700;
     transition: all 0.2s ease;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
-
-.share-btn:hover { 
-    background: rgba(0, 229, 255, 0.2); 
+.share-btn:hover {
+    background: rgba(0, 180, 216, 0.16);
     transform: translateY(-1px);
 }
 
-/* Mobile Responsiveness for achievements */
+/* Botón cerrar */
+.close-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(144, 224, 239, 0.5);
+    border-radius: 10px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.close-btn:hover {
+    background: rgba(0, 180, 216, 0.1);
+    color: #48CAE4;
+}
+
+/* ── Desafíos activos ── */
+.ach-challenge-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 180, 216, 0.1);
+    border-radius: 16px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ach-challenge-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ach-challenge-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #F0F4F8;
+}
+
+.ach-challenge-counter {
+    font-size: 13px;
+    font-weight: 700;
+    color: #48CAE4;
+    font-family: 'Outfit', sans-serif;
+}
+
+/* Mobile */
 @media (max-width: 580px) {
     .ach-card {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-        padding: 16px;
+        padding: 14px;
+        gap: 12px;
     }
-    
-    .ach-info {
-        padding-right: 0 !important;
-        width: 100%;
-    }
-    
+    .ach-info { padding-right: 0; }
     .share-btn {
-        position: static;
-        width: 100%;
-        justify-content: center;
-        margin-top: 8px;
+        font-size: 10px;
+        padding: 6px 10px;
     }
 }

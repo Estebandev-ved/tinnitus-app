@@ -4,6 +4,8 @@ import { Capacitor } from '@capacitor/core';
 import { db } from '../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { Download, AlertTriangle, Cpu, X, HelpCircle } from 'lucide-react';
+import { releaseService } from '../services/backend/releaseService';
+import { isBackendConfigured } from '../services/backend/apiClient';
 import './UpdateManager.css';
 
 export default function UpdateManager({ children }) {
@@ -12,6 +14,21 @@ export default function UpdateManager({ children }) {
   const [apkUrl, setApkUrl] = useState('https://tinnitusoff-e61c4.web.app/download.html');
   const [latestVersion, setLatestVersion] = useState('1.1.0');
   const [currentVersion, setCurrentVersion] = useState('1.0.0');
+
+  function isOutdated(current, latest) {
+    if (!current || !latest) return false;
+
+    const currParts = current.split('.').map(Number);
+    const latParts = latest.split('.').map(Number);
+
+    for (let i = 0; i < Math.max(currParts.length, latParts.length); i++) {
+      const currVal = currParts[i] || 0;
+      const latVal = latParts[i] || 0;
+      if (currVal < latVal) return true;
+      if (currVal > latVal) return false;
+    }
+    return false;
+  }
 
   useEffect(() => {
     let unsubscribe = () => {};
@@ -35,62 +52,73 @@ export default function UpdateManager({ children }) {
           setCurrentVersion('1.1.0');
         }
 
-        // 2. Listen to real-time configuration changes from Firestore
+        // 2. Resolver la última versión/disponibilidad de actualización.
+        // Prioridad: Backend Spring Boot; fallback: Firestore.
+        const applyRelease = (cleanVersion, cleanUrl, forceUpdate) => {
+          setLatestVersion(cleanVersion);
+          setApkUrl(cleanUrl);
+
+          const isOutdatedVersion = isOutdated(version, cleanVersion);
+          if (isNative && isOutdatedVersion) {
+            if (forceUpdate) {
+              setUpdateRequired(true);
+              setShowOptionalUpdate(false);
+            } else {
+              setUpdateRequired(false);
+              const dismissed = sessionStorage.getItem('dismissed_update_v' + cleanVersion);
+              if (!dismissed) setShowOptionalUpdate(true);
+            }
+          } else {
+            setUpdateRequired(false);
+            setShowOptionalUpdate(false);
+          }
+        };
+
+        if (isBackendConfigured()) {
+          try {
+            const release = await releaseService.getLatest(isNative ? version : undefined);
+            if (release && release.version) {
+              let cleanVersion = '1.1.0';
+              if (/^\d+\.\d+\.\d+$/.test(release.version)) cleanVersion = release.version;
+              const downloadUrl = releaseService.getDownloadUrl(release.version);
+              applyRelease(cleanVersion, downloadUrl, Boolean(release.forceUpdate));
+              return;
+            }
+          } catch (e) {
+            console.warn('Backend release check falló, usando Firestore:', e);
+          }
+        }
+
+        // Fallback: escuchar cambios en tiempo real desde Firestore
         const configRef = doc(db, 'app_config', 'metadata');
         unsubscribe = onSnapshot(configRef, (docSnap) => {
           if (docSnap.exists()) {
             const { latest_version, download_url, force_update } = docSnap.data();
 
-            /**
-             * MEDIDAS DE SEGURIDAD IMPLEMENTADAS (Ciberseguridad OWASP):
-             * 1. Validación de Entradas: Saneamos la versión para asegurarnos de que sigue un formato semver válido.
-             * 2. Prevención de Redirección Abierta (Open Redirect): Validamos que la URL pertenezca a dominios oficiales autorizados.
-             */
             let cleanVersion = '1.1.0';
             if (latest_version && /^\d+\.\d+\.\d+$/.test(latest_version)) {
               cleanVersion = latest_version;
             }
-            setLatestVersion(cleanVersion);
 
             let cleanUrl = 'https://tinnitusoff-e61c4.web.app/download.html';
             try {
               if (download_url) {
                 const parsed = new URL(download_url);
-                if (parsed.protocol === 'https:' && 
-                    (parsed.hostname === 'tinnitusoff-e61c4.web.app' || 
+                if (parsed.protocol === 'https:' &&
+                    (parsed.hostname === 'tinnitusoff-e61c4.web.app' ||
                      parsed.hostname === 'github.com' ||
                      parsed.hostname === 'tinnitusoff.web.app')) {
                   cleanUrl = download_url;
                 }
               }
             } catch (e) {
-              console.error("URL de descarga no válida en Firestore. Usando URL por defecto segura.");
+              console.error('URL de descarga no válida en Firestore. Usando URL por defecto segura.');
             }
-            setApkUrl(cleanUrl);
 
-            // Comprobar si la versión está desactualizada
-            const isOutdatedVersion = isOutdated(version, cleanVersion);
-
-            // SOLO actuar si se está en plataforma nativa y la versión está desactualizada
-            if (isNative && isOutdatedVersion) {
-              if (force_update) {
-                setUpdateRequired(true);
-                setShowOptionalUpdate(false);
-              } else {
-                setUpdateRequired(false);
-                // Si es opcional, verificar si ya se descartó en esta sesión
-                const dismissed = sessionStorage.getItem('dismissed_update_v' + cleanVersion);
-                if (!dismissed) {
-                  setShowOptionalUpdate(true);
-                }
-              }
-            } else {
-              setUpdateRequired(false);
-              setShowOptionalUpdate(false);
-            }
+            applyRelease(cleanVersion, cleanUrl, Boolean(force_update));
           }
         }, (error) => {
-          console.error("Error watching app_config in real-time:", error);
+          console.error('Error watching app_config in real-time:', error);
         });
 
       } catch (error) {
@@ -101,22 +129,6 @@ export default function UpdateManager({ children }) {
     setupVersionCheck();
     return () => unsubscribe();
   }, []);
-
-  // Simple semantic version comparator (e.g. "1.0.0" vs "1.1.0")
-  const isOutdated = (current, latest) => {
-    if (!current || !latest) return false;
-    
-    const currParts = current.split('.').map(Number);
-    const latParts = latest.split('.').map(Number);
-    
-    for (let i = 0; i < Math.max(currParts.length, latParts.length); i++) {
-      const currVal = currParts[i] || 0;
-      const latVal = latParts[i] || 0;
-      if (currVal < latVal) return true;
-      if (currVal > latVal) return false;
-    }
-    return false;
-  };
 
   /**
    * Abre de forma segura el portal web de descarga en el navegador del sistema.

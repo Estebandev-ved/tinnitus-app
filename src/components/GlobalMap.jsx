@@ -5,18 +5,18 @@ import './GlobalMap.css';
 import geoData from "../assets/countries-110m.json";
 
 const mockActiveUsers = [
-    { name: "Maria", days: 23, flag: "🇨🇴", coordinates: [-74.07, 4.71] },
-    { name: "John", days: 5, flag: "🇺🇸", coordinates: [-100.0, 40.0] },
-    { name: "Luis", days: 45, flag: "🇪🇸", coordinates: [-3.70, 40.42] },
-    { name: "Akemi", days: 12, flag: "🇯🇵", coordinates: [139.69, 35.69] },
-    { name: "Diego", days: 8, flag: "🇦🇷", coordinates: [-58.38, -34.60] },
-    { name: "Sara", days: 1, flag: "🇲🇽", coordinates: [-99.13, 19.43] },
-    { name: "Alex", days: 100, flag: "🇬🇧", coordinates: [-0.13, 51.51] },
-    { name: "Emma", days: 14, flag: "🇦🇺", coordinates: [151.21, -33.87] },
-    { name: "Yuki", days: 30, flag: "🇰🇷", coordinates: [126.98, 37.57] },
-    { name: "Hans", days: 67, flag: "🇩🇪", coordinates: [13.41, 52.52] },
-    { name: "Ana", days: 19, flag: "🇧🇷", coordinates: [-43.17, -22.91] },
-    { name: "Omar", days: 3, flag: "🇪🇬", coordinates: [31.24, 30.04] },
+    { name: "Maria", days: 23, code: "CO", coordinates: [-74.07, 4.71] },
+    { name: "John", days: 5, code: "US", coordinates: [-100.0, 40.0] },
+    { name: "Luis", days: 45, code: "ES", coordinates: [-3.70, 40.42] },
+    { name: "Akemi", days: 12, code: "JP", coordinates: [139.69, 35.69] },
+    { name: "Diego", days: 8, code: "AR", coordinates: [-58.38, -34.60] },
+    { name: "Sara", days: 1, code: "MX", coordinates: [-99.13, 19.43] },
+    { name: "Alex", days: 100, code: "GB", coordinates: [-0.13, 51.51] },
+    { name: "Emma", days: 14, code: "AU", coordinates: [151.21, -33.87] },
+    { name: "Yuki", days: 30, code: "KR", coordinates: [126.98, 37.57] },
+    { name: "Hans", days: 67, code: "DE", coordinates: [13.41, 52.52] },
+    { name: "Ana", days: 19, code: "BR", coordinates: [-43.17, -22.91] },
+    { name: "Omar", days: 3, code: "EG", coordinates: [31.24, 30.04] },
 ];
 
 const GlobalMap = () => {
@@ -77,7 +77,7 @@ const GlobalMap = () => {
                         }
                     </Geographies>
 
-                    {mockActiveUsers.map(({ name, days, flag, coordinates }) => (
+                    {mockActiveUsers.map(({ name, days, code, coordinates }) => (
                         <Marker key={name} coordinates={coordinates}>
                             {/* Outer glow */}
                             <circle r={14} fill="url(#markerGlow)" />
@@ -92,7 +92,7 @@ const GlobalMap = () => {
                                 y={-16}
                                 className="marker-label"
                             >
-                                {flag} {name} ({days}d)
+                                {name} · {code} ({days}d)
                             </text>
                         </Marker>
                     ))}
@@ -113,7 +113,7 @@ const GlobalMap = () => {
 
             {/* Footer */}
             <div className="map-footer">
-                <p>🌍 No estás solo en esto. Miles de personas en todo el mundo están entrenando sus cerebros en este mismo momento.</p>
+                <p><Globe size={16} style={{ verticalAlign: '-3px', color: '#5A6D85' }} /> No estás solo en esto. Miles de personas en todo el mundo están entrenando sus cerebros en este mismo momento.</p>
             </div>
         </div>
     );

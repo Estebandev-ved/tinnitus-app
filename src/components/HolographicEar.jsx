@@ -1,5 +1,5 @@
 import React, { useRef, useMemo, Suspense } from 'react';
-import { Canvas, useFrame, extend } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Float, Html } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
@@ -54,7 +54,7 @@ const useHoloMaterials = () => {
 };
 
 /* ──────────── HoloTube: tube with wireframe + solid layers ──────────── */
-const HoloTube = ({ points, radius = 0.06, material, solidMaterial, segments = 64, solidOpacity }) => {
+const HoloTube = ({ points, radius = 0.06, material, solidMaterial, segments = 64 }) => {
     const curve = useMemo(
         () => new THREE.CatmullRomCurve3(points.map(p => new THREE.Vector3(...p))),
         [points]

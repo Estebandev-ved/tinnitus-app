@@ -3,6 +3,7 @@ import { MessageSquare, Zap, Lightbulb, Siren, ChevronLeft, Mic, Headphones, Bra
 import { useAuth } from '../contexts/AuthContext';
 import { FirestoreService } from '../services/firestoreService';
 import AIChat from './AIChat';
+import CrisisHelpButton from './CrisisHelpButton';
 import './AssistantHub.css';
 
 const ACTIONS = [
@@ -293,6 +294,9 @@ const AssistantHub = ({ onClose, tinnitusFrequency, onNavigate }) => {
                         <div className="sos-reminder">
                             <Shield size={16} />
                             <span>Si sientes dolor agudo o pérdida súbita de audición, acude a urgencias.</span>
+                        </div>
+                        <div style={{ marginTop: 12 }}>
+                            <CrisisHelpButton variant="card" />
                         </div>
                     </div>
                 );

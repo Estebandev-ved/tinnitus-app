@@ -314,7 +314,7 @@
         source:     { stringValue: source },
         platform:   { stringValue: getPlatform(ua) },
         browser:    { stringValue: getBrowser(ua) },
-        referrer:   { stringValue: document.referrer || 'direct' },
+        referrer:   { stringValue: (document.referrer || 'direct').substring(0, 500) },
         userAgent:  { stringValue: ua.substring(0, 200) }
       }
     });

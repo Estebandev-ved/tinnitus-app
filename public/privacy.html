@@ -3,83 +3,228 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Política de Privacidad — TinnitOff</title>
+  <title>Política de Privacidad / Privacy Policy — TinnitOff</title>
+  <!-- Generated from src/data/privacyPolicyContent.js (CMP-08). Draft: complete [BRACKETED] items. -->
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --navy: #0A1628; --teal: #00C2B8; --gray: #8a9bbf; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--navy); color: #fff; line-height: 1.7; }
-    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; border-bottom: 1px solid rgba(0,194,184,0.12); }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid rgba(0,194,184,0.12); gap: 12px; flex-wrap: wrap; }
     .logo { font-size: 18px; font-weight: 800; text-decoration: none; color: #fff; }
     .logo b { color: var(--teal); }
     .back { color: var(--teal); text-decoration: none; font-size: 14px; }
-    .container { max-width: 720px; margin: 0 auto; padding: 60px 24px; }
+    .switch button { background: none; border: 1px solid var(--teal); color: var(--teal); border-radius: 999px; padding: 8px 16px; min-height: 44px; font-size: 14px; cursor: pointer; margin-left: 8px; }
+    .switch button[aria-pressed="true"] { background: var(--teal); color: var(--navy); }
+    .container { max-width: 720px; margin: 0 auto; padding: 40px 24px; }
     h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
-    .date { color: var(--gray); font-size: 14px; margin-bottom: 48px; }
+    .date { color: var(--gray); font-size: 14px; margin-bottom: 8px; }
+    .draft { color: #FBBF24; font-size: 13px; margin-bottom: 40px; }
     h2 { font-size: 18px; font-weight: 700; margin: 36px 0 12px; color: var(--teal); }
-    p, li { font-size: 15px; color: #c8d4ea; }
+    p, li { font-size: 15px; color: #c8d4ea; margin-bottom: 8px; }
     ul { padding-left: 20px; margin-top: 8px; }
     li { margin-bottom: 6px; }
     strong { color: #fff; }
     a { color: var(--teal); }
+    .js .lang { display: none; }
+    .js .lang.active { display: block; }
     footer { text-align: center; padding: 40px 24px; font-size: 13px; color: var(--gray); border-top: 1px solid rgba(255,255,255,0.06); margin-top: 60px; }
   </style>
 </head>
 <body>
   <div class="topbar">
     <a class="logo" href="./landing.html">Tinnit<b>Off</b></a>
-    <a class="back" href="./landing.html">← Volver</a>
+    <div class="switch">
+      <button type="button" data-lang="es" aria-pressed="true">Español</button>
+      <button type="button" data-lang="en" aria-pressed="false">English</button>
+    </div>
+    <a class="back" href="./landing.html">← Volver / Back</a>
   </div>
   <div class="container">
+  <div class="lang" id="es" lang="es">
     <h1>Política de Privacidad</h1>
-    <p class="date">Última actualización: abril 2026</p>
+    <p class="date">Última actualización: 12 de octubre de 2026 (borrador pendiente de revisión legal)</p>
+    <p class="draft">Borrador: los textos entre [CORCHETES] deben ser completados por el titular de la app antes de publicar.</p>
 
-    <h2>1. Quiénes somos</h2>
-    <p>TinnitOff es una aplicación de apoyo terapéutico para personas con tinnitus (acúfenos). No somos un proveedor médico y nuestro servicio no sustituye la atención de un profesional de la salud.</p>
+    <h2>1. Quiénes somos y qué es esta app</h2>
+    <p>TinnitOff es una aplicación que te ayuda a manejar el tinnitus (acúfenos) y a habituarte a él mediante sonidos, seguimiento diario, ejercicios de respiración y un asistente de IA. Es responsabilidad de: [RAZON SOCIAL / TITULAR] ([JURISDICCION]). Contacto: [CORREO DE CONTACTO].</p>
+    <p>TinnitOff no es un dispositivo médico, no diagnostica ni trata enfermedades y no sustituye el consejo, diagnóstico ni tratamiento de un profesional de la salud. Ante cualquier duda sobre tu salud, consulta a tu médico.</p>
 
-    <h2>2. Datos que recopilamos</h2>
+    <h2>2. Tus datos de salud son sensibles</h2>
+    <p>Parte de lo que registras (nivel de tinnitus, estrés, sueño, estado de ánimo, perfil médico, audiometría) son datos de salud. Los tratamos como la información más delicada de la app: solo tú puedes leerlos con tu cuenta, y los usamos únicamente para mostrarte tu progreso y personalizar la app. No los vendemos. Esta app no declara cumplir certificaciones sanitarias específicas (como HIPAA) ni ha sido auditada por terceros a la fecha de este texto.</p>
+
+    <h2>3. Qué datos recopilamos</h2>
     <ul>
-      <li><strong>Cuenta:</strong> nombre y email (mediante Firebase Auth / Google Sign-In).</li>
-      <li><strong>Datos de salud:</strong> niveles de tinnitus, estrés y sueño que introduces manualmente.</li>
-      <li><strong>Perfil médico:</strong> información opcional (medicamentos, doctor, audiometría).</li>
-      <li><strong>Grabaciones de voz:</strong> procesadas localmente en tu dispositivo; no se envían a nuestros servidores.</li>
-      <li><strong>Cámara:</strong> usada solo para el Monitor Facial; el video no se almacena ni se transmite.</li>
-      <li><strong>Diagnóstico técnico:</strong> errores anónimos para mejorar la estabilidad.</li>
+      <li><strong>Cuenta:</strong> correo electrónico, nombre y foto (si inicias con Google o los indicas). Al registrarte con correo también puedes indicar teléfono y fecha de nacimiento, que se guardan en tu perfil. La contraseña la gestiona Firebase Authentication; nosotros nunca la vemos.</li>
+      <li><strong>Seguimiento diario:</strong> registros diarios (niveles de tinnitus, estrés y sueño, desencadenantes y notas), rachas, logros y progreso de programas.</li>
+      <li><strong>Audiometría y cuestionarios:</strong> resultados de la frecuencia de tu tinnitus y del cuestionario THI.</li>
+      <li><strong>Perfil médico (opcional):</strong> años con tinnitus, oído afectado, medicamentos, médico y notas que decidas escribir.</li>
+      <li><strong>Notas y diario de voz:</strong> notas de progreso y transcripciones del diario de voz con la respuesta de la app. El reconocimiento de voz lo realiza tu navegador o sistema operativo (por ejemplo, el servicio de voz de tu dispositivo); TinnitOff no guarda grabaciones de audio.</li>
+      <li><strong>Sonidos y mezclas:</strong> mezclas de sonido que guardas y predicciones de crisis calculadas en la app.</li>
+      <li><strong>Chat con el asistente:</strong> tu conversación con el asistente de IA (hasta los últimos 50 mensajes) se guarda en tu cuenta para que el asistente recuerde el contexto.</li>
+      <li><strong>Comunidad:</strong> tus publicaciones (con categoría y las respuestas y "me gusta" que reciban), que ven otras personas autenticadas; tus reportes de contenido; y la lista de personas y contenidos que bloqueas u ocultas (solo tú la ves).</li>
+      <li><strong>Dispositivo:</strong> modelo, fabricante, sistema operativo, versión, plataforma, un identificador del dispositivo y la última actividad, usados para el panel técnico y de estabilidad.</li>
+      <li><strong>En tu dispositivo:</strong> preferencias (idioma, tema, recordatorios, última sesión de sonido, mezclas guardadas, progreso local). Los recordatorios son notificaciones locales del teléfono.</li>
+    </ul>
+    <p>No usamos publicidad ni SDK de analítica de terceros dentro de la app. Si abres la página de descargas web, registramos de forma agregada el origen de la visita (referente, plataforma y tipo de navegador).</p>
+
+    <h2>4. Asistente de IA</h2>
+    <p>Las respuestas del asistente las genera Azure OpenAI (Microsoft), que actúa como proveedor que procesa el texto por encargo nuestro. La app nunca se conecta directamente a Azure: pasa por nuestro servidor, que guarda las claves, verifica tu sesión de Firebase antes de responder y limita el uso por usuario (mensajes por minuto, por día y volumen diario).</p>
+    <p>Qué se envía en cada consulta:</p>
+    <ul>
+      <li><strong>Tu mensaje y el historial reciente:</strong> (hasta 20 mensajes) tal como los escribiste. Evita escribir datos que no quieras compartir, como nombres, teléfonos o direcciones.</li>
+      <li><strong>Solo datos agregados de tu seguimiento:</strong> promedios de tinnitus, estrés y sueño, racha y número de registros, frecuencia medida, años con tinnitus y oído afectado.</li>
+    </ul>
+    <p>No se envían a la IA tu nombre, correo, médico, medicamentos, notas personales ni notas del diario. Si escribes un mensaje que sugiere autolesión, la app muestra líneas de ayuda y no envía ese texto a la IA.</p>
+    <p>Los contadores de uso del límite se guardan en la memoria de nuestro servidor, asociados a tu identificador de usuario, se reinician cada día UTC o al reiniciar el servidor y no se escriben en una base de datos. Nuestros registros técnicos no guardan el contenido de tus mensajes. Los plazos de conservación del texto por parte de Azure se rigen por las condiciones de Microsoft; [REVISAR configuración de retención de Azure].</p>
+    <p>El asistente es una ayuda orientativa, puede equivocarse y no da diagnósticos ni recetas. En una urgencia, llama al número de emergencias de tu país.</p>
+
+    <h2>5. Cámara, tensión facial y audio</h2>
+    <p>El Monitor de tensión facial usa la cámara solo si tú lo activas. El análisis se hace dentro de tu dispositivo: no se envían ni se guardan imágenes ni vídeo en nuestros servidores. Puedes cerrar la función en cualquier momento.</p>
+    <p>Los sonidos terapéuticos y las pruebas de frecuencia se generan en tu dispositivo. No enviamos audio tuyo a servidores.</p>
+
+    <h2>6. Comunidad y moderación</h2>
+    <p>Lo que publicas en la Comunidad puede ser visto por otras personas con sesión iniciada; se muestra como "Anónimo", pero no escribas datos que te identifiquen. Puedes reportar publicaciones o comentarios, y bloquear a una persona u ocultar contenido; esas listas son privadas. Los reportes se guardan para revisión de moderación y no son visibles para otros usuarios. La Comunidad no es un servicio de atención de salud ni de emergencias.</p>
+
+    <h2>7. Para qué usamos tus datos</h2>
+    <ul>
+      <li>Mostrarte tu historial, gráficas, rachas y logros.</li>
+      <li>Personalizar sonidos, ejercicios y las respuestas del asistente.</li>
+      <li>Generar reportes en PDF para tu médico, solo cuando tú lo pides.</li>
+      <li>Mantener la seguridad, moderar la Comunidad y mejorar la estabilidad de la app.</li>
     </ul>
 
-    <h2>3. Cómo usamos tus datos</h2>
+    <h2>8. Con quién compartimos tus datos</h2>
+    <p>No vendemos tus datos. Los procesan, por encargo nuestro, estos proveedores:</p>
     <ul>
-      <li>Personalizar terapias y recomendaciones de IA.</li>
-      <li>Mostrar tu historial de progreso y rachas.</li>
-      <li>Generar reportes PDF para tu médico (solo cuando tú lo solicitas).</li>
-      <li>Enviarte recordatorios de sesión (solo si los activas).</li>
+      <li><strong>Google Firebase:</strong> inicio de sesión, base de datos (Firestore) y almacenamiento de la foto de perfil.</li>
+      <li><strong>Microsoft Azure OpenAI:</strong> generación de las respuestas del asistente (ver sección 4).</li>
+      <li><strong>Nuestro servidor (backend):</strong> verifica tu sesión y aplica los límites del asistente.</li>
     </ul>
+    <p>También podríamos divulgar datos si una ley o autoridad competente lo exige.</p>
 
-    <h2>4. Con quién compartimos tus datos</h2>
-    <p><strong>No vendemos ni compartimos tus datos con terceros.</strong> Solo los usamos con:</p>
+    <h2>9. Cuánto tiempo conservamos tus datos</h2>
+    <p>Conservamos tus datos mientras tu cuenta esté activa. Al eliminarla, borramos tu cuenta de acceso, tus datos de salud, perfil, chat, notas, bloqueos, tus publicaciones de Comunidad y tu foto. Limitaciones actuales: las respuestas que dejaste en publicaciones de otras personas y los reportes de moderación que enviaste (que no están ligados a tu perfil visible) pueden permanecer; las copias de seguridad del proveedor pueden tardar en expirar. [DEFINIR plazos de retención de reportes y copias de seguridad].</p>
+
+    <h2>10. Tus derechos y cómo ejercerlos</h2>
     <ul>
-      <li><strong>Firebase (Google):</strong> almacenamiento seguro en la nube.</li>
-      <li><strong>Azure OpenAI (Microsoft):</strong> procesamiento del chat de IA. Solo se envía el texto del chat.</li>
+      <li><strong>Acceso:</strong> puedes ver tus datos en la app y descargar un reporte PDF.</li>
+      <li><strong>Rectificación:</strong> puedes corregir tu perfil y tus registros desde la app.</li>
+      <li><strong>Borrado:</strong> puedes eliminar tu cuenta y tus datos dentro de la app: Perfil &gt; "Eliminar mi cuenta" (pide confirmación). También borra los datos guardados en el dispositivo.</li>
+      <li><strong>Revocar permisos:</strong> puedes quitar los permisos de cámara y notificaciones en los ajustes de tu dispositivo.</li>
     </ul>
+    <p>Si no puedes entrar a la app o prefieres hacerlo por escrito, solicita la eliminación de tu cuenta y datos o cualquier otro derecho escribiendo a [CORREO DE CONTACTO] desde el correo con el que te registraste, indicando "Eliminar mi cuenta". Responderemos en un plazo razonable [DEFINIR plazo]. Según tu país, puedes tener derechos adicionales y presentar una queja ante la autoridad de protección de datos.</p>
 
-    <h2>5. Tus derechos (GDPR / LGPD)</h2>
-    <ul>
-      <li>Acceder, corregir o eliminar tus datos en cualquier momento desde tu perfil.</li>
-      <li>Exportar tus datos (botón PDF en la pantalla principal).</li>
-      <li>Revocar consentimiento y eliminar tu cuenta contactándonos.</li>
-    </ul>
+    <h2>11. Menores de edad</h2>
+    <p>TinnitOff está pensada para personas mayores de 18 años. Si eres menor, usa la app solo con el consentimiento y la supervisión de tu madre, padre o tutor. [PENDIENTE: la app aún no verifica la edad ni solicita consentimiento parental (tarea CMP-05); revisar antes de publicar]. Si crees que un menor nos dio datos sin autorización, escríbenos y los eliminaremos.</p>
 
-    <h2>6. Seguridad</h2>
-    <p>Tus datos están protegidos con cifrado en tránsito (HTTPS/TLS) y en reposo (Firebase Security Rules). Solo tú puedes acceder a tu propia información.</p>
+    <h2>12. Seguridad</h2>
+    <p>La comunicación con Firebase y con nuestro servidor usa conexiones cifradas (HTTPS/TLS). Las reglas de acceso de la base de datos están diseñadas para que cada persona solo pueda leer y modificar sus propios datos. Ningún sistema es infalible; si ocurre una brecha que te afecte, te avisaremos como exija la ley.</p>
 
-    <h2>7. Menores</h2>
-    <p>Esta app no está dirigida a menores de 13 años. No recopilamos datos de menores conscientemente.</p>
-
-    <h2>8. Cambios a esta política</h2>
-    <p>Te notificaremos dentro de la app si hacemos cambios significativos. La fecha de actualización siempre estará visible en la parte superior.</p>
-
-    <h2>9. Contacto</h2>
-    <p>Para cualquier pregunta sobre privacidad escríbenos a: <a href="mailto:privacy@tinnitoff.app">privacy@tinnitoff.app</a></p>
+    <h2>13. Cambios y contacto</h2>
+    <p>Si cambiamos esta política de forma importante, te lo avisaremos en la app y actualizaremos la fecha de arriba. Preguntas sobre privacidad: [CORREO DE CONTACTO].</p>
   </div>
-  <footer>© 2026 TinnitOff · <a href="./landing.html">Inicio</a></footer>
+  <div class="lang" id="en" lang="en">
+    <h1>Privacy Policy</h1>
+    <p class="date">Last updated: October 12, 2026 (draft pending legal review)</p>
+    <p class="draft">Draft: text in [BRACKETS] must be completed by the app owner before publishing.</p>
+
+    <h2>1. Who we are and what this app is</h2>
+    <p>TinnitOff is an app that helps you manage tinnitus and get used to it through sounds, daily tracking, breathing exercises and an AI assistant. The party responsible is: [RAZON SOCIAL / TITULAR] ([JURISDICCION]). Contact: [CORREO DE CONTACTO].</p>
+    <p>TinnitOff is not a medical device, does not diagnose or treat any condition, and does not replace the advice, diagnosis or treatment of a health professional. If you have any concern about your health, talk to your doctor.</p>
+
+    <h2>2. Your health data is sensitive</h2>
+    <p>Some of what you record (tinnitus level, stress, sleep, mood, medical profile, audiometry) is health data. We treat it as the most sensitive information in the app: only you can read it with your account, and we use it only to show your progress and personalize the app. We do not sell it. This app does not claim compliance with specific health certifications (such as HIPAA) and has not been audited by third parties as of this text.</p>
+
+    <h2>3. What data we collect</h2>
+    <ul>
+      <li><strong>Account:</strong> email, name and photo (if you sign in with Google or provide them). When you sign up with email you may also enter a phone number and date of birth, which are stored in your profile. Your password is handled by Firebase Authentication; we never see it.</li>
+      <li><strong>Daily tracking:</strong> daily logs (tinnitus, stress and sleep levels, triggers and notes), streaks, achievements and program progress.</li>
+      <li><strong>Audiometry and questionnaires:</strong> your tinnitus frequency results and THI questionnaire scores.</li>
+      <li><strong>Medical profile (optional):</strong> years with tinnitus, affected ear, medications, doctor and any notes you choose to write.</li>
+      <li><strong>Notes and voice diary:</strong> progress notes and voice diary transcripts with the app's reply. Speech recognition is performed by your browser or operating system (for example, your device's speech service); TinnitOff does not store audio recordings.</li>
+      <li><strong>Sounds and mixes:</strong> sound mixes you save and crisis predictions computed in the app.</li>
+      <li><strong>Assistant chat:</strong> your conversation with the AI assistant (up to the last 50 messages) is saved in your account so the assistant can remember context.</li>
+      <li><strong>Community:</strong> your posts (with category and any replies and likes they receive), visible to other signed-in people; your content reports; and the list of people and content you block or hide (only you see it).</li>
+      <li><strong>Device:</strong> model, manufacturer, operating system, version, platform, a device identifier and last activity, used for the technical and stability dashboard.</li>
+      <li><strong>On your device:</strong> preferences (language, theme, reminders, last sound session, saved mixes, local progress). Reminders are local phone notifications.</li>
+    </ul>
+    <p>We do not use advertising or third-party analytics SDKs inside the app. If you open the web download page, we record the visit source in aggregate (referrer, platform and browser type).</p>
+
+    <h2>4. AI assistant</h2>
+    <p>Assistant replies are generated by Azure OpenAI (Microsoft), which processes the text on our behalf. The app never connects directly to Azure: it goes through our server, which holds the keys, verifies your Firebase session before replying, and limits use per user (messages per minute, per day and daily volume).</p>
+    <p>What is sent with each request:</p>
+    <ul>
+      <li><strong>Your message and recent history:</strong> (up to 20 messages) exactly as you wrote them. Avoid typing information you do not want to share, such as names, phone numbers or addresses.</li>
+      <li><strong>Only aggregated tracking data:</strong> averages of tinnitus, stress and sleep, streak and number of logs, measured frequency, years with tinnitus and affected ear.</li>
+    </ul>
+    <p>Your name, email, doctor, medications, personal notes and diary notes are not sent to the AI. If you write a message suggesting self-harm, the app shows help lines and does not send that text to the AI.</p>
+    <p>Usage-limit counters are kept in our server's memory, tied to your user identifier, reset every UTC day or when the server restarts, and are not written to a database. Our technical logs do not store the content of your messages. How long Azure keeps text is governed by Microsoft's terms; [REVIEW Azure retention settings].</p>
+    <p>The assistant is general guidance, can make mistakes, and does not give diagnoses or prescriptions. In an emergency, call your country's emergency number.</p>
+
+    <h2>5. Camera, facial tension and audio</h2>
+    <p>The facial tension monitor uses the camera only if you turn it on. Analysis happens inside your device: no images or video are sent to or stored on our servers. You can close the feature at any time.</p>
+    <p>Therapeutic sounds and frequency tests are generated on your device. We do not send audio of you to servers.</p>
+
+    <h2>6. Community and moderation</h2>
+    <p>What you post in Community can be seen by other signed-in people; it is shown as "Anonymous", but do not write details that identify you. You can report posts or comments, and block a person or hide content; those lists are private. Reports are stored for moderation review and are not visible to other users. Community is not a health care or emergency service.</p>
+
+    <h2>7. What we use your data for</h2>
+    <ul>
+      <li>Show your history, charts, streaks and achievements.</li>
+      <li>Personalize sounds, exercises and assistant replies.</li>
+      <li>Generate PDF reports for your doctor, only when you ask.</li>
+      <li>Keep the app secure, moderate Community and improve stability.</li>
+    </ul>
+
+    <h2>8. Who we share your data with</h2>
+    <p>We do not sell your data. These providers process it on our behalf:</p>
+    <ul>
+      <li><strong>Google Firebase:</strong> sign-in, database (Firestore) and profile photo storage.</li>
+      <li><strong>Microsoft Azure OpenAI:</strong> generating assistant replies (see section 4).</li>
+      <li><strong>Our server (backend):</strong> verifies your session and applies assistant limits.</li>
+    </ul>
+    <p>We may also disclose data if required by law or a competent authority.</p>
+
+    <h2>9. How long we keep your data</h2>
+    <p>We keep your data while your account is active. When you delete it, we remove your sign-in account, health data, profile, chat, notes, blocks, your Community posts and your photo. Current limitations: replies you left on other people's posts and moderation reports you submitted (which are not linked to your visible profile) may remain; provider backups may take time to expire. [DEFINE retention periods for reports and backups].</p>
+
+    <h2>10. Your rights and how to use them</h2>
+    <ul>
+      <li><strong>Access:</strong> you can view your data in the app and download a PDF report.</li>
+      <li><strong>Correction:</strong> you can fix your profile and logs from the app.</li>
+      <li><strong>Deletion:</strong> you can delete your account and data inside the app: Profile &gt; "Delete my account" (asks for confirmation). It also erases data stored on the device.</li>
+      <li><strong>Withdraw permissions:</strong> you can remove camera and notification permissions in your device settings.</li>
+    </ul>
+    <p>If you cannot get into the app or prefer to do it in writing, request deletion of your account and data, or any other right, by emailing [CORREO DE CONTACTO] from the address you registered with, stating "Delete my account". We will reply within a reasonable time [DEFINE timeframe]. Depending on your country, you may have additional rights and may complain to your data protection authority.</p>
+
+    <h2>11. Minors</h2>
+    <p>TinnitOff is intended for people aged 18 or older. If you are under 18, use the app only with the consent and supervision of a parent or guardian. [PENDING: the app does not yet verify age or request parental consent (task CMP-05); review before publishing]. If you believe a minor gave us data without permission, write to us and we will delete it.</p>
+
+    <h2>12. Security</h2>
+    <p>Communication with Firebase and our server uses encrypted connections (HTTPS/TLS). Database access rules are designed so each person can only read and modify their own data. No system is infallible; if a breach affects you, we will notify you as required by law.</p>
+
+    <h2>13. Changes and contact</h2>
+    <p>If we make significant changes to this policy, we will tell you in the app and update the date above. Privacy questions: [CORREO DE CONTACTO].</p>
+  </div>
+  </div>
+  <footer>TinnitOff · <a href="./landing.html">Inicio / Home</a></footer>
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('tinnitoff_lang'); } catch (e) { /* ignore */ }
+      var nav = (navigator.language || 'es').slice(0, 2);
+      var initial = saved === 'en' || saved === 'es' ? saved : (nav === 'en' ? 'en' : 'es');
+      function setLang(l) {
+        document.documentElement.lang = l;
+        document.querySelectorAll('.lang').forEach(function (el) { el.classList.toggle('active', el.id === l); });
+        document.querySelectorAll('.switch button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lang === l)); });
+      }
+      document.querySelectorAll('.switch button').forEach(function (b) {
+        b.addEventListener('click', function () { setLang(b.dataset.lang); });
+      });
+      document.documentElement.classList.add("js");
+      setLang(initial);
+    })();
+  </script>
 </body>
 </html>

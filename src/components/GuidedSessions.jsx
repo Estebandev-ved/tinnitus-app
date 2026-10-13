@@ -6,7 +6,7 @@ import { FirestoreService } from '../services/firestoreService';
 import { sessionProgram } from '../data/sessionProgram';
 import './GuidedSessions.css';
 
-const GuidedSessions = ({ onClose, openBreathing }) => {
+const GuidedSessions = ({ onClose }) => {
   const { currentUser } = useAuth();
   const [progress, setProgress] = useState({ completedDays: [], totalXp: 0, lastCompletedDate: null });
   const [activeSession, setActiveSession] = useState(null);

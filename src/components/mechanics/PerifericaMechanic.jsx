@@ -16,6 +16,7 @@ export const PerifericaMechanic = ({ onComplete }) => {
       setTimeout(onComplete, 1000);
     }
     return () => clearTimeout(timeout);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- onComplete del padre no estable; el temporizador solo depende de score
   }, [score]);
 
   const handleTap = () => {

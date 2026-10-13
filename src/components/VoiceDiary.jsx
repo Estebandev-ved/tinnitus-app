@@ -39,7 +39,7 @@ const VoiceDiary = ({ onClose }) => {
     
     return () => {
       recognitionRef.current?.stop();
-      synthRef?.cancel();
+      window.speechSynthesis?.cancel();
     };
   }, []);
 

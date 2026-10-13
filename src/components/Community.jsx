@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { X, Send, Heart, MessageCircle, User, Plus, Trophy, MessageSquare, Map as MapIcon, Globe2, Sparkles, Lightbulb, BookOpen, HelpCircle, MessagesSquare } from 'lucide-react';
+import { X, Send, Heart, MessageCircle, User, Flag, UserX, Plus, Trophy, MessageSquare, Map as MapIcon, Globe2, Sparkles, Lightbulb, BookOpen, HelpCircle, MessagesSquare } from 'lucide-react';
 import { FirestoreService } from '../services/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
+import ModerationDialog from './ModerationDialog';
+import { filterVisiblePosts, replyKey, postKey } from '../utils/moderation';
 import GlobalMap from './GlobalMap';
 import './Community.css';
 
@@ -14,6 +17,7 @@ const CATEGORIES = [
 
 const Community = ({ onClose }) => {
     const { currentUser } = useAuth();
+    const { t } = useLanguage();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('forum'); // 'forum', 'map', 'leaders'
@@ -22,10 +26,57 @@ const Community = ({ onClose }) => {
     const [newPost, setNewPost] = useState({ text: '', category: 'tips' });
     const [expandedPost, setExpandedPost] = useState(null);
     const [replyText, setReplyText] = useState('');
+    const [moderation, setModeration] = useState({ blockedIds: [], hiddenKeys: [] });
+    const [modTarget, setModTarget] = useState(null); // { mode, post, reply? }
+    const [toast, setToast] = useState('');
+    const [showBlocked, setShowBlocked] = useState(false);
 
     useEffect(() => {
         loadPosts();
     }, []);
+
+    useEffect(() => {
+        if (!currentUser) return;
+        FirestoreService.getModerationState(currentUser.uid).then(setModeration);
+    }, [currentUser]);
+
+    useEffect(() => {
+        if (!toast) return undefined;
+        const id = setTimeout(() => setToast(''), 3500);
+        return () => clearTimeout(id);
+    }, [toast]);
+
+    const handleModerationConfirm = async (reason) => {
+        const { mode, post, reply } = modTarget;
+        const authorId = reply ? reply.authorId : post.authorId;
+        if (mode === 'report') {
+            const hideKey = reply ? replyKey(post.id, reply) : postKey(post.id);
+            await FirestoreService.reportContent(currentUser.uid, {
+                postId: post.id,
+                targetType: reply ? 'reply' : 'post',
+                targetAuthorId: authorId,
+                replyKey: reply ? hideKey : undefined,
+                reason,
+                hideKey,
+            });
+            setModeration(m => ({ ...m, hiddenKeys: [...m.hiddenKeys, hideKey] }));
+            setToast(t('mod_reported_toast'));
+        } else {
+            await FirestoreService.blockUser(currentUser.uid, authorId);
+            setModeration(m => ({ ...m, blockedIds: [...new Set([...m.blockedIds, authorId])] }));
+            setToast(t('mod_blocked_toast'));
+        }
+        setModTarget(null);
+    };
+
+    const handleUnblock = async (id) => {
+        try {
+            await FirestoreService.unblockUser(currentUser.uid, id);
+            setModeration(m => ({ ...m, blockedIds: m.blockedIds.filter(b => b !== id) }));
+        } catch (e) {
+            console.error('Error unblocking:', e);
+        }
+    };
 
     const loadPosts = async () => {
         try {
@@ -83,9 +134,10 @@ const Community = ({ onClose }) => {
         }
     };
 
+    const visiblePosts = filterVisiblePosts(posts, moderation.blockedIds, moderation.hiddenKeys);
     const filteredPosts = activeCategory === 'all'
-        ? posts
-        : posts.filter(p => p.category === activeCategory);
+        ? visiblePosts
+        : visiblePosts.filter(p => p.category === activeCategory);
 
     const getCategoryIcon = (cat) => {
         const found = CATEGORIES.find(c => c.key === cat);
@@ -108,7 +160,7 @@ const Community = ({ onClose }) => {
             <div className="comm-full-container">
                 <header className="comm-header">
                     <h2><Globe2 size={24} color="#30B0C7"/> Red Global de TinnitOff</h2>
-                    <button className="comm-close-btn" onClick={onClose}>
+                    <button className="comm-close-btn" onClick={onClose} aria-label={t('crisis_close')}>
                         <X size={20} />
                     </button>
                 </header>
@@ -143,6 +195,29 @@ const Community = ({ onClose }) => {
                                 })}
                             </div>
 
+                            {moderation.blockedIds.length > 0 && (
+                                <div className="mod-blocked">
+                                    <button className="action-btn-p mod-btn" style={{ minHeight: 44 }}
+                                        aria-expanded={showBlocked}
+                                        onClick={() => setShowBlocked(v => !v)}>
+                                        <UserX size={16} aria-hidden="true" /> {t('mod_blocked_manage', { count: moderation.blockedIds.length })}
+                                    </button>
+                                    {showBlocked && (
+                                        <ul className="mod-blocked-list">
+                                            {moderation.blockedIds.map((id, i) => (
+                                                <li key={id}>
+                                                    <span>{t('mod_blocked_person')} {i + 1}</span>
+                                                    <button className="action-btn-p mod-btn" style={{ minHeight: 44, minWidth: 44 }}
+                                                        onClick={() => handleUnblock(id)}>
+                                                        {t('mod_unblock')}
+                                                    </button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            )}
+
                             <div className="comm-posts-area">
                                 {loading ? (
                                     <div className="comm-empty">Cargando...</div>
@@ -172,6 +247,20 @@ const Community = ({ onClose }) => {
                                                 <button className="action-btn-p" onClick={() => setExpandedPost(expandedPost === post.id ? null : post.id)}>
                                                     <MessageCircle size={16} /> {post.replies?.length || 0} Comentarios
                                                 </button>
+                                                {post.authorId !== currentUser?.uid && (
+                                                    <>
+                                                        <button className="action-btn-p mod-btn" style={{ minHeight: 44, minWidth: 44 }}
+                                                            aria-label={t('mod_report_aria')}
+                                                            onClick={() => setModTarget({ mode: 'report', post })}>
+                                                            <Flag size={16} aria-hidden="true" /> {t('mod_report_action')}
+                                                        </button>
+                                                        <button className="action-btn-p mod-btn" style={{ minHeight: 44, minWidth: 44 }}
+                                                            aria-label={t('mod_block_aria')}
+                                                            onClick={() => setModTarget({ mode: 'block', post })}>
+                                                            <UserX size={16} aria-hidden="true" /> {t('mod_block_action')}
+                                                        </button>
+                                                    </>
+                                                )}
                                             </div>
 
                                             {expandedPost === post.id && (
@@ -180,6 +269,13 @@ const Community = ({ onClose }) => {
                                                         <div key={i} className="reply-bubble">
                                                             <span className="reply-author">{reply.authorName || 'Anónimo'}</span>
                                                             <p>{reply.text}</p>
+                                                            {reply.authorId && reply.authorId !== currentUser?.uid && (
+                                                                <button className="action-btn-p mod-btn" style={{ minHeight: 44, minWidth: 44 }}
+                                                                    aria-label={t('mod_reply_report_aria')}
+                                                                    onClick={() => setModTarget({ mode: 'report', post, reply })}>
+                                                                    <Flag size={14} aria-hidden="true" /> {t('mod_report_action')}
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     ))}
                                                     <div className="reply-input-wrapper">
@@ -249,6 +345,12 @@ const Community = ({ onClose }) => {
                         </div>
                     )}
                 </div>
+
+                {modTarget && (
+                    <ModerationDialog mode={modTarget.mode} onConfirm={handleModerationConfirm}
+                        onClose={() => setModTarget(null)} />
+                )}
+                {toast && <div className="mod-toast" role="status">{toast}</div>}
 
                 {showCompose && activeTab === 'forum' && (
                     <div className="compose-modal-overlay animate-fade">

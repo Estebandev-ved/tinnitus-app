@@ -297,7 +297,25 @@
 }
 
 .pulse-wind {
-  animation: breath ease-in-out infinite alternate 1.5s;
+  animation: rescue-breath 4s ease-in-out infinite alternate;
+}
+
+@keyframes rescue-breath {
+  from { transform: scale(1); opacity: 0.75; }
+  to { transform: scale(1.12); opacity: 1; }
+}
+
+.rescue-lumi-done {
+  width: 140px;
+  height: 140px;
+  margin-bottom: 24px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-wind,
+  .grounding-text { animation: none; }
+  .rescue-main-sphere,
+  .breathing-glow-ring { transition: none; }
 }
 
 /* Done/Success Screen */

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     Play, 
     Pause, 
@@ -120,7 +120,7 @@ const TIMER_OPTIONS = [
     { minutes: 90, label: '90 min', tag: 'Ciclo completo' }
 ];
 
-const SoundLibrary = ({ onClose, isAdmin, tinnitusFrequency, onUpgrade }) => {
+const SoundLibrary = ({ onClose, tinnitusFrequency, onUpgrade }) => {
     const { currentUser } = useAuth();
     const { can } = usePlan();
     const [sounds] = useState(INITIAL_SOUNDS);
@@ -148,12 +148,12 @@ const SoundLibrary = ({ onClose, isAdmin, tinnitusFrequency, onUpgrade }) => {
     const [showSleepInfo, setShowSleepInfo] = useState(false);
 
     // Night Mode Quick Drawer
-    const [showNightPanel, setShowNightPanel] = useState(false);
 
     useEffect(() => {
         if (currentUser) {
             loadMixes();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadMixes se redefine por render; recargar solo al cambiar el usuario
     }, [currentUser]);
 
     const loadMixes = async () => {

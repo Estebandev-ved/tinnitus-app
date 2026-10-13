@@ -20,11 +20,11 @@ function stopCurrent() {
         try {
             activeSource.stop();
             activeSource.disconnect();
-        } catch (e) { /* already stopped */ }
+        } catch { /* already stopped */ }
         activeSource = null;
     }
     if (activeGain) {
-        try { activeGain.disconnect(); } catch (e) { /* ok */ }
+        try { activeGain.disconnect(); } catch { /* ok */ }
         activeGain = null;
     }
 }

@@ -6,30 +6,66 @@ service cloud.firestore {
     // own user document) can read/write everything.
     // Seguridad: el rol de admin SIEMPRE se valida contra el documento del propio
     // usuario en Firestore — nunca contra un email o UID hardcodeado en las reglas.
+    //
+    // SEC-01: un usuario normal NUNCA puede asignarse ni cambiar su propio `role`.
+    //  - create: el campo `role` se omite o vale exactamente 'user'.
+    //  - update: el `role` resultante debe ser igual al almacenado (ausente == 'user').
+    //  - Solo un admin existente puede escribir cualquier valor de `role`.
     match /users/{userId} {
-      allow read, write: if request.auth != null && (
+      allow read: if request.auth != null && (
+        request.auth.uid == userId ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+      allow create: if request.auth != null && (
+        (request.auth.uid == userId &&
+          request.resource.data.get('role', 'user') == 'user') ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+      allow update: if request.auth != null && (
+        (request.auth.uid == userId &&
+          request.resource.data.get('role', 'user') == resource.data.get('role', 'user')) ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+      allow delete: if request.auth != null && (
         request.auth.uid == userId ||
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
       );
     }
-    // Rule for user subcollections (users/{uid}/anyCollection/anyDoc)
-    match /users/{userId}/{document=**} {
+    // Rule for user subcollections (users/{uid}/{collection}/{doc}/...).
+    // IMPORTANTE: en rules_version 2 `{document=**}` coincide con CERO o mas segmentos, asi que
+    // `/users/{userId}/{document=**}` tambien cubriria `/users/{userId}` y anularia la regla de
+    // arriba (las reglas allow se combinan con OR). Exigir un segmento `{sub}` evita ese bypass.
+    // El rol de autorizacion se lee solo de `users/{uid}` (nunca de subcolecciones).
+    match /users/{userId}/{sub}/{document=**} {
       allow read, write: if request.auth != null && (
         request.auth.uid == userId ||
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
       );
     }
 
-    // Download logs: anyone can write (anonymous attribution), only admin can read
+    // Download logs (SEC-02): escritura anonima SOLO create, con los campos exactos que envia
+    // FirestoreService.logDownloadAttribution (referrer, userAgent, platform, timestamp), tipos y
+    // tamanos acotados. Sin update/delete. Solo admin lee.
     match /download_logs/{logId} {
-      allow create: if true;
+      allow create: if request.resource.data.keys().hasOnly(['referrer', 'userAgent', 'platform', 'timestamp']) &&
+        request.resource.data.keys().hasAll(['referrer', 'timestamp']) &&
+        request.resource.data.referrer is string && request.resource.data.referrer.size() <= 100 &&
+        request.resource.data.get('userAgent', '') is string && request.resource.data.get('userAgent', '').size() <= 500 &&
+        request.resource.data.get('platform', '') is string && request.resource.data.get('platform', '').size() <= 100 &&
+        request.resource.data.timestamp is timestamp;
       allow read: if request.auth != null &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Download analytics: anyone can write/update, only admin can read
+    // Download analytics (SEC-02): contador por referrer. El cliente hace
+    // setDoc({clicksCount: increment(1)}, {merge:true}). Create: clicksCount == 1 (unico campo).
+    // Update: solo `clicksCount` cambia y sube exactamente +1. Sin delete. Solo admin lee.
     match /download_analytics/{analyticId} {
-      allow create, update: if true;
+      allow create: if analyticId.matches('[a-zA-Z0-9_-]{1,50}') &&
+        request.resource.data.keys().hasOnly(['clicksCount']) &&
+        request.resource.data.clicksCount == 1;
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['clicksCount']) &&
+        request.resource.data.clicksCount == resource.data.clicksCount + 1;
       allow read: if request.auth != null &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
@@ -64,11 +100,39 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Community posts: any authenticated user can read, owner can write
-    match /communityPosts/{postId} {
+    // Community posts: el cliente usa la coleccion `community_posts` (antes las reglas decian
+    // `communityPosts` y todo caia en la regla final de bloqueo).
+    // - read: cualquier autenticado. create: authorId == uid, campos acotados.
+    // - update: el autor todo; cualquier autenticado SOLO likes/likedBy/replies (toggleLike, addReply).
+    // - delete: solo el autor (tambien lo usa el borrado de cuenta).
+    match /community_posts/{postId} {
       allow read: if request.auth != null;
-      allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
-      allow update, delete: if request.auth != null && resource.data.authorId == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid &&
+        request.resource.data.keys().hasOnly(['text', 'category', 'authorId', 'authorName', 'likes', 'likedBy', 'replies', 'createdAt']) &&
+        request.resource.data.text is string && request.resource.data.text.size() <= 5000;
+      allow update: if request.auth != null && (
+        resource.data.authorId == request.auth.uid ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes', 'likedBy', 'replies'])
+      );
+      allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
+    }
+
+    // Content reports (CMP-03): solo create por usuario autenticado, con campos exactos y
+    // reporterId == uid. Sin lectura/update/delete desde el cliente (la revision es via consola/Admin SDK).
+    // Los bloqueos y el contenido ocultado de cada usuario viven en users/{uid}/blockedUsers y
+    // users/{uid}/hiddenContent, cubiertos por la regla de subcolecciones (solo el dueno/admin).
+    match /content_reports/{reportId} {
+      allow create: if request.auth != null &&
+        request.resource.data.keys().hasOnly(['reporterId', 'postId', 'targetType', 'targetAuthorId', 'replyKey', 'reason', 'createdAt']) &&
+        request.resource.data.keys().hasAll(['reporterId', 'postId', 'targetType', 'targetAuthorId', 'reason', 'createdAt']) &&
+        request.resource.data.reporterId == request.auth.uid &&
+        request.resource.data.postId is string && request.resource.data.postId.size() > 0 && request.resource.data.postId.size() <= 128 &&
+        request.resource.data.targetType in ['post', 'reply'] &&
+        request.resource.data.targetAuthorId is string && request.resource.data.targetAuthorId.size() <= 128 &&
+        request.resource.data.get('replyKey', '') is string && request.resource.data.get('replyKey', '').size() <= 300 &&
+        request.resource.data.reason in ['spam', 'harassment', 'harmful', 'misinformation', 'other'] &&
+        request.resource.data.createdAt is timestamp;
+      allow read, update, delete: if false;
     }
 
     // Sound library: any authenticated user can read, admins can write
@@ -77,16 +141,31 @@ service cloud.firestore {
       allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Caregiver links: only the patient or caregiver can access
+    // Caregiver links (SEC-03): solo paciente o cuidador. Ningun cliente actual escribe aqui.
+    // create: el autor debe ser patientId o caregiverId. update: no se puede cambiar la pareja.
     match /caregiverLinks/{linkId} {
-      allow read, write: if request.auth != null &&
+      allow read, delete: if request.auth != null &&
         (resource.data.patientId == request.auth.uid || resource.data.caregiverId == request.auth.uid);
-      allow create: if request.auth != null;
+      allow create: if request.auth != null &&
+        request.resource.data.patientId is string && request.resource.data.caregiverId is string &&
+        (request.resource.data.patientId == request.auth.uid || request.resource.data.caregiverId == request.auth.uid);
+      allow update: if request.auth != null &&
+        (resource.data.patientId == request.auth.uid || resource.data.caregiverId == request.auth.uid) &&
+        request.resource.data.patientId == resource.data.patientId &&
+        request.resource.data.caregiverId == resource.data.caregiverId;
     }
 
-    // Download events: anyone can write (anonymous tracking), only admin can read
+    // Download events (SEC-02): tracking anonimo desde public/download.html (REST, sin auth). Solo
+    // create con los campos que envia esa pagina; sin update/delete. Solo admin lee.
     match /download_events/{eventId} {
-      allow write: if true;
+      allow create: if request.resource.data.keys().hasOnly(['timestamp', 'source', 'platform', 'browser', 'referrer', 'userAgent']) &&
+        request.resource.data.keys().hasAll(['timestamp', 'source']) &&
+        request.resource.data.timestamp is timestamp &&
+        request.resource.data.source is string && request.resource.data.source.size() <= 100 &&
+        request.resource.data.get('platform', '') is string && request.resource.data.get('platform', '').size() <= 100 &&
+        request.resource.data.get('browser', '') is string && request.resource.data.get('browser', '').size() <= 100 &&
+        request.resource.data.get('referrer', '') is string && request.resource.data.get('referrer', '').size() <= 2048 &&
+        request.resource.data.get('userAgent', '') is string && request.resource.data.get('userAgent', '').size() <= 500;
       allow read: if request.auth != null &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }

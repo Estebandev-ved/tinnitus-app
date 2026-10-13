@@ -18,12 +18,12 @@ const ProgressNotes = ({ onClose, openTherapy }) => {
     const [newNote, setNewNote] = useState('');
     const [selectedMood, setSelectedMood] = useState('neutral');
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
     const [view, setView] = useState('list'); // 'list' | 'create' | 'ai-analysis'
     const [aiInsight, setAiInsight] = useState(null);
 
     useEffect(() => {
         loadNotes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadNotes se redefine por render; recargar solo al cambiar el usuario
     }, [currentUser]);
 
     const loadNotes = async () => {

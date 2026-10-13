@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { X, Heart, Wind, ShieldCheck, AlertCircle } from 'lucide-react';
+import { X, Heart, Wind, AlertCircle } from 'lucide-react';
 import { AudioEngine } from '../../utils/audioEngine';
 import { FirestoreService } from '../../services/firestoreService';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
+import Companion from '../Companion';
 import './RescueMode.css';
 
 const GROUNDING_MESSAGES = [
@@ -16,6 +18,7 @@ const GROUNDING_MESSAGES = [
 
 export const RescueMode = ({ onClose, matchedFrequency }) => {
   const { currentUser } = useAuth();
+  const { t } = useLanguage();
   const [step, setStep] = useState('input'); // input, breathing, done
   const [discomfort, setDiscomfort] = useState(7);
   const [phase, setPhase] = useState('Inhala');
@@ -161,11 +164,11 @@ export const RescueMode = ({ onClose, matchedFrequency }) => {
 
       {step === 'done' && (
         <div className="rescue-content done-view">
-          <div className="success-icon-container">
-            <ShieldCheck size={72} color="#00E5FF" className="glow-success" />
+          <div className="rescue-lumi-done">
+            <Companion state="celebrating" size={140} />
           </div>
           <h2 className="title-gradient">Bucle de Estrés Roto</h2>
-          <p className="success-subtitle">Has desactivado las señales de alarma en tu sistema auditivo. ¡Excelente trabajo!</p>
+          <p className="success-subtitle">{t('rescue_lumi_done')}</p>
           
           <div className="ecos-reward-badge">
             <span className="gift-emoji">🏆</span>

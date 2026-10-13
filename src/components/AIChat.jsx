@@ -1,9 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, ChevronLeft, ShieldCheck, Settings, Save, Play, Pause, Timer, XCircle, Mic, Volume2, VolumeX, Wind, ClipboardList, AlertTriangle, Brain, WifiOff } from 'lucide-react';
+import { Send, Bot, User, ChevronLeft, ShieldCheck, Settings, Play, Pause, Timer, XCircle, Mic, Volume2, VolumeX, Wind, ClipboardList, AlertTriangle, Brain, WifiOff } from 'lucide-react';
 import { FirestoreService } from '../services/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
-import { AzureService } from '../services/azureService';
+import { AzureService, AiProxyError } from '../services/azureService';
 import { AudioEngine } from '../utils/audioEngine';
+import { detectSelfHarm } from '../utils/crisisDetect';
+import { useLanguage } from '../contexts/LanguageContext';
+import CrisisResources from './CrisisResources';
+import CrisisHelpButton from './CrisisHelpButton';
 import './AIChat.css';
 
 const SMART_RESPONSES = {
@@ -137,6 +141,7 @@ const generateSmartResponse = (input) => {
 };
 
 const AIChat = ({ onClose, tinnitusFrequency, isDashboard = false, onNavigate }) => {
+    const { t } = useLanguage();
     const QUICK_CHIPS = [
         { label: "Medir Tinnitus", icon: Volume2, query: "Quiero medir mi tinnitus" },
         { label: "Relajarme / Respirar", icon: Wind, query: "Quiero relajarme con un ejercicio de respiración" },
@@ -222,12 +227,8 @@ const AIChat = ({ onClose, tinnitusFrequency, isDashboard = false, onNavigate })
         }
     };
 
-    // Azure Config State
-    const [azureConfig, setAzureConfig] = useState({
-        apiKey: '',
-        endpoint: import.meta.env.VITE_AZURE_ENDPOINT || '',
-        deployment: import.meta.env.VITE_AZURE_DEPLOYMENT || ''
-    });
+    // Modo del asistente: la IA corre en el servidor (proxy). El cliente no maneja claves.
+    const [aiMode, setAiMode] = useState(AzureService.isConfigured() ? 'ai' : 'basic');
 
     // Therapy Session State
     const [activeSession, setActiveSession] = useState(null); // { soundId, duration, timeLeft, isRunning }
@@ -322,20 +323,9 @@ const AIChat = ({ onClose, tinnitusFrequency, isDashboard = false, onNavigate })
         loadContext();
     }, [currentUser]);
 
-    // 2. Load API Key from LocalStorage (endpoint & deployment are hardcoded)
+    // 2. Limpieza de configuración heredada: la clave de Azure ya no vive en el dispositivo.
     useEffect(() => {
-        // Clear any stale config with wrong deployment
-        const savedConfig = localStorage.getItem('tinnitus_azure_config');
-        if (savedConfig) {
-            const parsed = JSON.parse(savedConfig);
-            const corrected = {
-                apiKey: parsed.apiKey || '',
-                endpoint: import.meta.env.VITE_AZURE_ENDPOINT || parsed.endpoint || '',
-                deployment: import.meta.env.VITE_AZURE_DEPLOYMENT || parsed.deployment || ''
-            };
-            localStorage.setItem('tinnitus_azure_config', JSON.stringify(corrected));
-            setAzureConfig(corrected);
-        }
+        try { localStorage.removeItem('tinnitus_azure_config'); } catch { /* sin acceso a storage */ }
     }, []);
 
     // 3. Timer Logic
@@ -357,23 +347,6 @@ const AIChat = ({ onClose, tinnitusFrequency, isDashboard = false, onNavigate })
     useEffect(() => {
         return () => AudioEngine.stop();
     }, []);
-
-    const saveConfig = () => {
-        // Always save with correct endpoint/deployment, user only changes apiKey
-        const configToSave = {
-            apiKey: azureConfig.apiKey,
-            endpoint: 'https://esteb-mdiel2ip-swedencentral.cognitiveservices.azure.com/',
-            deployment: 'gpt-5.2-chat'
-        };
-        localStorage.setItem('tinnitus_azure_config', JSON.stringify(configToSave));
-        setAzureConfig(configToSave);
-        setShowSettings(false);
-        setMessages(prev => [...prev, {
-            id: Date.now(),
-            sender: 'bot',
-            text: '¡Configuración actualizada! Ahora estoy conectado a tu cerebro de Azure AI. 🧠✨'
-        }]);
-    };
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -417,20 +390,40 @@ const AIChat = ({ onClose, tinnitusFrequency, isDashboard = false, onNavigate })
         const updatedMessages = [...messages, userMsg];
         setMessages(updatedMessages);
         setInputText('');
+
+        // Self-harm language: show support lines and never send the text to the AI.
+        if (detectSelfHarm(textToSend)) {
+            const crisisMsg = { id: Date.now() + 1, sender: 'bot', text: t('crisis_chat_reply'), crisis: true, timestamp: new Date().toISOString() };
+            const withCrisis = [...updatedMessages, crisisMsg];
+            setMessages(withCrisis);
+            persistMessages(withCrisis);
+            return;
+        }
+
         setIsTyping(true);
 
         let botResponse;
 
-        if (azureConfig.apiKey && azureConfig.endpoint && azureConfig.deployment) {
+        if (AzureService.isConfigured() && currentUser) {
             try {
-                // Pass full conversation history for memory
+                const idToken = await currentUser.getIdToken();
                 const fullContext = { ...contextData, tinnitusFrequency };
-                const aiResponse = await AzureService.sendMessage(userMsg.text, fullContext, azureConfig, messages);
+                const aiResponse = await AzureService.sendMessage(userMsg.text, fullContext, messages, idToken);
+                setAiMode('ai');
                 botResponse = { id: Date.now() + 1, sender: 'bot', text: aiResponse, timestamp: new Date().toISOString() };
             } catch (error) {
-                console.error("Azure Error:", error);
+                const kind = error instanceof AiProxyError ? error.kind : 'unavailable';
                 const fallback = generateSmartResponse(userMsg.text);
-                botResponse = { id: Date.now() + 1, sender: 'bot', text: `_Modo offline_ — ${fallback}`, timestamp: new Date().toISOString() };
+                let prefix;
+                if (kind === 'limit') {
+                    prefix = `${error.message} Mientras tanto, te dejo un consejo básico:`;
+                } else if (kind === 'unauthenticated') {
+                    prefix = 'Tu sesión expiró. Vuelve a iniciar sesión para usar el asistente completo. Consejo básico:';
+                } else {
+                    prefix = 'No pude conectar con el asistente ahora mismo (modo sin conexión). Consejo básico:';
+                }
+                if (kind !== 'limit') setAiMode('basic');
+                botResponse = { id: Date.now() + 1, sender: 'bot', text: `_${prefix}_ ${fallback}`, timestamp: new Date().toISOString() };
             }
         } else {
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -596,7 +589,7 @@ const AIChat = ({ onClose, tinnitusFrequency, isDashboard = false, onNavigate })
                     <h3>Asistente Clínico</h3>
                     <div className="badge">
                         <ShieldCheck size={12} />
-                        <span>{azureConfig.apiKey ? 'Modo: Azure AI' : 'Modo: Básico'}</span>
+                        <span>{aiMode === 'ai' ? 'Modo: IA' : 'Modo: Básico'}</span>
                     </div>
                 </div>
                 <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
@@ -625,36 +618,13 @@ const AIChat = ({ onClose, tinnitusFrequency, isDashboard = false, onNavigate })
 
             {showSettings && (
                 <div className="settings-panel animate-fade">
-                    <h4><Settings size={15} style={{ verticalAlign: '-2px', marginRight: 6 }} /> Configuración Azure AI</h4>
-                    <p>Conecta tu modelo GPT-4o / GPT-5.2</p>
-
-                    <label>Endpoint (URL)</label>
-                    <input
-                        type="text"
-                        placeholder="https://tu-recurso.openai.azure.com/"
-                        value={azureConfig.endpoint}
-                        onChange={e => setAzureConfig({ ...azureConfig, endpoint: e.target.value })}
-                    />
-
-                    <label>API Key</label>
-                    <input
-                        type="password"
-                        placeholder="Pegar llave aquí..."
-                        value={azureConfig.apiKey}
-                        onChange={e => setAzureConfig({ ...azureConfig, apiKey: e.target.value })}
-                    />
-
-                    <label>Nombre del Despliegue (Deployment)</label>
-                    <input
-                        type="text"
-                        placeholder="ej: gpt-tinnitoff"
-                        value={azureConfig.deployment}
-                        onChange={e => setAzureConfig({ ...azureConfig, deployment: e.target.value })}
-                    />
-
-                    <button className="btn btn-primary full-width" onClick={saveConfig} style={{ marginTop: '10px' }}>
-                        Guardar y Conectar <Save size={16} />
-                    </button>
+                    <h4><Settings size={15} style={{ verticalAlign: '-2px', marginRight: 6 }} /> Asistente de IA</h4>
+                    <p>
+                        La conexión con la IA la gestiona TinnitOff de forma segura: no necesitas configurar ninguna clave.
+                        A la IA solo se envían datos agregados (promedios de estrés, sueño y zumbido), sin tu nombre,
+                        correo ni notas personales. El asistente no diagnostica ni receta: ante síntomas nuevos o
+                        intensos, consulta a un profesional de salud.
+                    </p>
                 </div>
             )}
 
@@ -672,6 +642,11 @@ const AIChat = ({ onClose, tinnitusFrequency, isDashboard = false, onNavigate })
                                 }}>
                                     {renderMessageContent(msg)}
                                 </div>
+                                {msg.crisis && (
+                                    <div className="crisis-inline">
+                                        <CrisisResources compact />
+                                    </div>
+                                )}
                                 <button 
                                     onClick={() => speakText(msg.text)} 
                                     style={{
@@ -714,6 +689,10 @@ const AIChat = ({ onClose, tinnitusFrequency, isDashboard = false, onNavigate })
                 })}
             </div>
 
+            <div className="chat-crisis-row">
+                <CrisisHelpButton variant="link" />
+            </div>
+
             <footer className="chat-input-area">
                 <button 
                     className={`mic-btn ${isListening ? 'listening' : ''}`}
@@ -740,7 +719,7 @@ const AIChat = ({ onClose, tinnitusFrequency, isDashboard = false, onNavigate })
                 </button>
                 <input
                     type="text"
-                    placeholder={isListening ? "Escuchando tu voz..." : (azureConfig.apiKey ? "Pregunta a GPT... (Modo Avanzado)" : "Pide un consejo...")}
+                    placeholder={isListening ? "Escuchando tu voz..." : (aiMode === 'ai' ? "Pregunta al asistente..." : "Pide un consejo...")}
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}

@@ -12,7 +12,7 @@ const ITEMS = [
 
 export const NeveraMechanic = ({ onComplete }) => {
   const [index, setIndex] = useState(0);
-  const [score, setScore] = useState(0);
+  const [, setScore] = useState(0);
 
   const handleChoice = (isThreatChoice) => {
     const current = ITEMS[index];

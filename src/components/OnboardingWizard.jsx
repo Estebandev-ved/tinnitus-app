@@ -73,14 +73,12 @@ export default function OnboardingWizard({ user, onComplete, matchedFrequency: i
   const [showConfetti, setShowConfetti] = useState(false);
   const [permissionsRequested, setPermissionsRequested] = useState(false);
   
-  const stepRefs = useRef({});
   const progressRingRef = useRef(null);
 
   const currentStep = STEPS[currentStepIndex];
   const isFirstStep = currentStepIndex === 0;
   const isLastStep = currentStepIndex === STEPS.length - 1;
   const isStepComplete = completedSteps.has(currentStep.id);
-  const canProceed = isStepComplete || currentStep.id === 'welcome';
 
   useEffect(() => {
     const savedProgress = localStorage.getItem(`onboarding_progress_${user?.uid}`);
@@ -123,6 +121,7 @@ export default function OnboardingWizard({ user, onComplete, matchedFrequency: i
     } else {
       handleFinalComplete();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- handleFinalComplete se declara despues y cambia por render; anadirla recrea el callback en cada render
   }, [currentStepIndex]);
 
   const goToPrevStep = useCallback(() => {
@@ -269,7 +268,6 @@ export default function OnboardingWizard({ user, onComplete, matchedFrequency: i
           <THIQuestionnaire
             onClose={goToPrevStep}
             onComplete={handleTHIComplete}
-            previousTHI={thiResult}
             matchedFrequency={frequencyData}
             embedded={true}
           />

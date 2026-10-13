@@ -7,7 +7,7 @@ import '../Styles/dashboard.css';
 import '../Styles/responsive_breakpoints.css';
 
 export const DashboardLayout = () => {
-  const [metrics, setMetrics] = useState([
+  const [metrics] = useState([
     { id: 'm1', title: 'Tinnitus Level', value: '4/10', status: 'Improving', colorKey: 'low' },
     { id: 'm2', title: 'Sleep Quality', value: '7h 12m', status: 'Good', colorKey: 'good' },
     { id: 'm3', title: 'Streak', value: '14 Days', status: 'Active', colorKey: 'active' }

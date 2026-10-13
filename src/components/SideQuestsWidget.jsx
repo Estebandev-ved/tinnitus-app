@@ -15,7 +15,7 @@ export const SideQuestsWidget = () => {
       try {
         const parsed = JSON.parse(saved);
         if (parsed.date === today) return parsed.quests;
-      } catch (e) { /* ignore parse errors */ }
+      } catch { /* ignore parse errors */ }
     }
     return { water: false, med: false, posture: false };
   });
@@ -78,6 +78,7 @@ export const SideQuestsWidget = () => {
       if (!quests.posture) setPostureProgress(0);
     }
     return () => clearInterval(holdTimerRef.current);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- completeQuest se redefine por render; el temporizador solo debe reiniciarse con isHolding/quests.posture
   }, [isHolding, quests.posture]);
 
   return (

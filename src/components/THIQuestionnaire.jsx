@@ -49,11 +49,9 @@ export const getTHIGrade = (total) => {
     return { grade: 'Catastrófico', level: 5, color: '#FF3B30', desc: 'Impacto máximo; se recomienda valoración profesional.' };
 };
 
-const THIQuestionnaire = ({ onClose, onComplete, previousTHI, matchedFrequency }) => {
+const THIQuestionnaire = ({ onClose, onComplete, matchedFrequency }) => {
     const [answers, setAnswers] = useState({}); // { [n]: value }
     const [result, setResult] = useState(null);
-    // Freeze the previous score at mount so the delta doesn't reset to 0 after submit
-    const [baseline] = useState(previousTHI);
 
     const answeredCount = Object.keys(answers).length;
     const allAnswered = answeredCount === QUESTIONS.length;
@@ -83,11 +81,6 @@ const THIQuestionnaire = ({ onClose, onComplete, previousTHI, matchedFrequency }
     };
 
     const gradeInfo = useMemo(() => result ? getTHIGrade(result.total) : null, [result]);
-
-    // Comparación con test anterior para ver evolución
-    const delta = (result && baseline && typeof baseline.total === 'number')
-        ? result.total - baseline.total
-        : null;
 
     if (result && gradeInfo) {
         return (

@@ -1,117 +1,98 @@
-export const AzureService = {
+// Cliente del proxy de IA (backend). La clave de Azure vive SOLO en el servidor:
+// aquí nunca se maneja ninguna credencial de Azure. Se envía el ID token de Firebase
+// del usuario y el backend lo verifica, aplica límites de uso y llama a Azure.
+
+const BASE_URL = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/$/, '');
+const REQUEST_TIMEOUT_MS = 60000;
+
+export class AiProxyError extends Error {
     /**
-     * Sends a message to Azure OpenAI and gets a response.
-     * @param {string} userMessage - The user's input.
-     * @param {object} context - User context (stress, sleep, medical profile, etc.)
-     * @param {object} config - { apiKey, endpoint, deployment }
-     * @param {Array} conversationHistory - Previous messages for memory [{sender, text}]
+     * @param {'not_configured'|'unauthenticated'|'limit'|'unavailable'|'network'} kind
      */
-    async sendMessage(userMessage, context, config, conversationHistory = []) {
-        if (!config.apiKey || !config.endpoint || !config.deployment) {
-            throw new Error("Faltan credenciales de Azure.");
-        }
+    constructor(kind, message, retryAfterSeconds) {
+        super(message);
+        this.name = 'AiProxyError';
+        this.kind = kind;
+        this.retryAfterSeconds = retryAfterSeconds;
+    }
+}
 
-        // Clean Endpoint (remove trailing slash)
-        const cleanEndpoint = config.endpoint.replace(/\/+$/, "");
+// Solo datos agregados: sin nombre, email, médico, medicamentos ni notas libres (AI-07).
+export function buildMinimalContext(context) {
+    const num = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : undefined);
+    const med = context?.medicalProfile;
+    return {
+        avgStress: num(context?.avgStress),
+        avgTinnitus: num(context?.avgTinnitus),
+        avgSleep: num(context?.avgSleep),
+        streakCount: num(context?.streakCount),
+        totalLogs: num(context?.totalLogs),
+        tinnitusFrequency: num(Number(context?.tinnitusFrequency)),
+        years: med?.years ? String(med.years).slice(0, 40) : undefined,
+        ear: med?.ear ? String(med.ear).slice(0, 40) : undefined,
+    };
+}
 
-        // Build medical context
-        const medProfile = context?.medicalProfile;
-        const medContext = medProfile ? `
-        - Años con tinnitus: ${medProfile.years || 'No especificado'}
-        - Oído afectado: ${medProfile.ear || 'No especificado'}
-        - Medicamentos: ${medProfile.medications || 'Ninguno'}
-        - Doctor: ${medProfile.doctor || 'No especificado'}
-        - Notas personales: ${medProfile.notes || 'Ninguna'}` : '- Perfil médico: No completado';
+export const AzureService = {
+    isConfigured() {
+        return Boolean(BASE_URL);
+    },
 
-        // Build Progress Notes Context
-        const recentNotes = context?.recentNotes || [];
-        const notesContext = recentNotes.length > 0
-            ? recentNotes.map(n => `- (${new Date(n.timestamp).toLocaleDateString()}): [${n.mood}] ${n.text}`).join('\n')
-            : "No hay notas recientes.";
+    /**
+     * Envía un mensaje al asistente a través del proxy.
+     * @param {string} userMessage
+     * @param {object} context - contexto del usuario (se minimiza antes de enviar)
+     * @param {Array} conversationHistory - [{sender, text}]
+     * @param {string} idToken - ID token de Firebase del usuario actual
+     * @returns {Promise<string>} texto de respuesta
+     */
+    async sendMessage(userMessage, context, conversationHistory = [], idToken) {
+        if (!BASE_URL) throw new AiProxyError('not_configured', 'Backend de IA no configurado.');
+        if (!idToken) throw new AiProxyError('unauthenticated', 'Inicia sesión para usar el asistente.');
 
-        const systemPrompt = `
-        Eres 'TinnitOff AI', un asistente experto en Tinnitus.
-        Tu tono es empático, profesional, cercano y calmado.
-        Responde SIEMPRE en español.
-        
-        CONTEXTO DEL USUARIO (para tu referencia interna, NO lo menciones a menos que sea relevante):
-        - Promedio de Estrés (última semana): ${context?.avgStress ? context.avgStress.toFixed(0) : 'Desconocido'}/100
-        - Promedio de Zumbido: ${context?.avgTinnitus ? context.avgTinnitus.toFixed(0) : 'Desconocido'}/100
-        - Sueño promedio: ${context?.avgSleep ? context.avgSleep.toFixed(1) : 'Desconocido'} horas
-        - Racha de registro: ${context?.streakCount || 0} días consecutivos
-        - Total de registros esta semana: ${context?.totalLogs || 0}
-        - PERFIL ACUFENOMÉTRICO: ${context?.tinnitusFrequency ? context.tinnitusFrequency + ' Hz' : 'No realizado'}
-        ${medContext}
-
-        NOTAS RECIENTES DEL DIARIO DE PROGRESO:
-        ${notesContext}
-  
-        REGLAS DE CONVERSACIÓN (MUY IMPORTANTE — sigue este orden):
-        1. **PRIMERO CONVERSA**: Cuando el usuario te salude o hable casualmente ("hola", "qué tal", "cómo estás", etc.), responde de forma natural y amigable. Pregúntale cómo se siente, cómo ha estado su día, etc. NO le recetes nada ni le hables de terapias de inmediato.
-        2. **ESCUCHA ACTIVAMENTE**: Deja que el usuario hable. Hazle preguntas abiertas. Muestra interés genuino. Sé empático.
-        3. **RECOMIENDA SOLO CUANDO SEA APROPIADO**: Solo sugiere terapias de sonido, respiración o técnicas cuando:
-           - El usuario PIDA ayuda explícitamente ("qué me recomiendas", "necesito ayuda", "qué puedo hacer")
-           - El usuario describa síntomas claros ("me suena mucho", "no puedo dormir por el zumbido", "estoy muy estresado")
-           - La conversación natural lleve a ese punto después de varias interacciones
-        4. **NUNCA recetes en la primera respuesta** a un saludo casual.
-
-        INSTRUCCIONES CLÍNICAS (solo cuando vayas a recomendar):
-        1. Nunca des diagnósticos médicos definitivos. Usa "podría indicar" o "sugiere".
-        2. ADAPTACIÓN AL TONO cuando recetes:
-           - Si el usuario tiene tinnitus AGUDO (>3000Hz): Prioriza 'white' (Ruido Blanco) o 'rain' (Lluvia).
-           - Si es GRAVE (<1000Hz): Prioriza 'pink' (Ruido Rosa), 'ocean' (Olas) o 'fan' (Ventilador).
-        3. Para recetar sonido, usa ESTRICTAMENTE este formato al final del mensaje: (SOUND: id_sonido | minutos)
-           - IDs Disponibles: 'white', 'pink', 'rain', 'ocean', 'fan', 'cafe'.
-           - Ejemplo: "Te vendría bien relajarte con el sonido de lluvia. (SOUND: rain | 15)"
-        4. Para dirigir al usuario a una herramienta o sección de la aplicación, usa ESTRICTAMENTE uno de estos formatos de acción al final del mensaje cuando sea relevante:
-           - (ACTION: matcher) -> Si el usuario quiere medir su zumbido o necesitas calibrar su tinnitus.
-           - (ACTION: breathing) -> Si el usuario está estresado, tenso o quiere ejercicios de respiración.
-           - (ACTION: tracker) -> Si el usuario quiere guardar cómo se siente hoy o registrar sus síntomas diarios.
-           - (ACTION: rescue) -> Si el usuario sufre una crisis muy fuerte de zumbido o está desesperado (SOS).
-           - (ACTION: voice_diary) -> Si el usuario quiere grabar un diario de voz o hablar grabándose.
-           - Ejemplo: "Hagamos un ejercicio de respiración para bajar la tensión. (ACTION: breathing)"
-        5. Si el usuario tiene doctor registrado, puedes mencionarlo cuando sea relevante.
-        6. Sé conciso (máximo 3-4 frases).
-        7. Sé cálido y humano, como un amigo que también es profesional de salud.
-      `;
-
-        const url = `${cleanEndpoint}/openai/deployments/${config.deployment}/chat/completions?api-version=2024-04-01-preview`;
-
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+        let response;
         try {
-            const response = await fetch(url, {
+            response = await fetch(`${BASE_URL}/api/v1/ai/chat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'api-key': config.apiKey
+                    Authorization: `Bearer ${idToken}`,
                 },
+                signal: controller.signal,
                 body: JSON.stringify({
-                    messages: [
-                        { role: "system", content: systemPrompt },
-                        // Include conversation history for memory (last 20 messages max)
-                        ...conversationHistory.slice(-20).map(msg => ({
-                            role: msg.sender === 'user' ? 'user' : 'assistant',
-                            content: msg.text
-                        })),
-                        { role: "user", content: userMessage }
-                    ],
-                    max_completion_tokens: 16384,
-                    model: config.deployment
-                })
+                    message: userMessage,
+                    history: conversationHistory.slice(-20).map((m) => ({
+                        sender: m.sender === 'user' ? 'user' : 'bot',
+                        text: String(m.text || '').slice(0, 2000),
+                    })),
+                    context: buildMinimalContext(context),
+                }),
             });
-
-            if (!response.ok) {
-                const err = await response.json();
-                console.error("Azure Error Detail:", err);
-                const msg = err.error?.message || `Error ${response.status}: ${response.statusText}`;
-                throw new Error(msg);
-            }
-
-            const data = await response.json();
-            return data.choices[0].message.content;
-
-        } catch (error) {
-            console.error("Azure Service Error:", error);
-            throw error;
+        } catch {
+            throw new AiProxyError('network', 'Sin conexión con el asistente.');
+        } finally {
+            clearTimeout(timer);
         }
-    }
+
+        let data = null;
+        try {
+            data = await response.json();
+        } catch {
+            data = null;
+        }
+
+        if (response.ok) {
+            if (!data?.reply) throw new AiProxyError('unavailable', 'Respuesta vacía del asistente.');
+            return data.reply;
+        }
+        if (response.status === 401) {
+            throw new AiProxyError('unauthenticated', data?.message || 'Sesión expirada.');
+        }
+        if (response.status === 429) {
+            throw new AiProxyError('limit', data?.message || 'Límite de uso alcanzado.', data?.retryAfterSeconds);
+        }
+        throw new AiProxyError('unavailable', data?.message || 'El asistente no está disponible.');
+    },
 };

@@ -20,6 +20,7 @@ export const LinternaMechanic = ({ onComplete }) => {
       setTimeout(onComplete, 1500);
     }
     return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- onComplete del padre no estable; el temporizador solo depende de score
   }, [score]);
 
   const handleHit = () => setScore(s => s + 1);

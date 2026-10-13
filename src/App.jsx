@@ -192,7 +192,6 @@ const DAILY_TIPS = [
 
 
 function App() {
-  const { t } = useLanguage();
   const { can } = usePlan();
   const [user, setUser] = useState(null); // Auth State
   const [step, setStep] = useState('splash');
@@ -200,7 +199,6 @@ function App() {
   const [activeSection, setActiveSection] = useState('dashboard'); // SPA view switcher instead of modals stack
   const [matchedFrequency, setMatchedFrequency] = useState(null);
   const [lastTHI, setLastTHI] = useState(null);
-  const [showGuide, setShowGuide] = useState(true);
 
 
 
@@ -215,7 +213,6 @@ function App() {
   }, [darkMode]);
 
   // Reminder banner
-  const [reminderDismissed, setReminderDismissed] = useState(false);
 
   // Rotating tip: changes every 4 hours
   const [tipIndex, setTipIndex] = useState(0);
@@ -235,7 +232,7 @@ function App() {
 
   // Streak from Firestore
   const [streak, setStreak] = useState(0);
-  const [streakData, setStreakData] = useState(null);
+  const [, setStreakData] = useState(null);
 
   // Weekly progress (real data from daily logs)
   const [weeklyLogs, setWeeklyLogs] = useState([]);
@@ -273,8 +270,7 @@ function App() {
       await FirestoreService.saveUserMetadata(userData.uid, {
         email: userData.email,
         displayName: userData.displayName,
-        photoURL: userData.photoURL || null,
-        role: userData.role || 'user'
+        photoURL: userData.photoURL || null
       });
     } catch (e) {
       console.error("Error saving root user metadata:", e);
@@ -293,8 +289,7 @@ function App() {
         await FirestoreService.saveUserMetadata(userData.uid, {
           email: userData.email,
           displayName: userData.displayName,
-          photoURL: userData.photoURL || null,
-          role: backendRole
+          photoURL: userData.photoURL || null
         });
       }
     } catch (e) {
@@ -394,22 +389,6 @@ function App() {
     }
   };
 
-  const handleRecoverStreak = async () => {
-    if (!user) return;
-    if (confirm('¿Recuperar tu racha anterior? Esto es una sola vez.')) {
-      try {
-        const result = await FirestoreService.recoverStreak(user.uid);
-        if (result) {
-          setStreakData(result);
-          setStreak(result.count || 0);
-          alert('¡Racha recuperada!');
-        }
-      } catch (e) {
-        console.error('Error recovering streak:', e);
-      }
-    }
-  };
-
   const exportPDF = async () => {
     if (!user) return;
     try {
@@ -488,7 +467,6 @@ function App() {
         <THIQuestionnaire
           onClose={() => setActiveSection('dashboard')}
           onComplete={handleCompleteTHI}
-          previousTHI={lastTHI}
           matchedFrequency={matchedFrequency}
         />
       )}
@@ -658,7 +636,6 @@ function App() {
       {activeSection === 'guided_sessions' && (
         <GuidedSessions
           onClose={() => setActiveSection('dashboard')}
-          openBreathing={() => setActiveSection('breathing')}
         />
       )}
 

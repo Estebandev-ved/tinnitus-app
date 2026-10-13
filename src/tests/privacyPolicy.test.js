@@ -1,0 +1,33 @@
+import { describe, it, expect } from 'vitest';
+import html from '../../public/privacy.html?raw';
+import { PRIVACY_CONTENT, PRIVACY_PLACEHOLDERS } from '../data/privacyPolicyContent';
+
+const flat = (s) => [s.title, ...(s.paragraphs || []), ...(s.after || []), ...(s.items || []).flat()].join(' ');
+const decode = (s) => s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+
+describe('privacy policy content (CMP-08)', () => {
+  it('has the same section ids in ES and EN', () => {
+    expect(PRIVACY_CONTENT.en.sections.map((s) => s.id)).toEqual(PRIVACY_CONTENT.es.sections.map((s) => s.id));
+  });
+
+  it('keeps public/privacy.html in sync with the content module', () => {
+    const decoded = decode(html);
+    ['es', 'en'].forEach((lang) => {
+      PRIVACY_CONTENT[lang].sections.forEach((s) => {
+        expect(decoded).toContain(s.title);
+        (s.paragraphs || []).forEach((p) => expect(decoded).toContain(p));
+      });
+    });
+  });
+
+  it('uses placeholders instead of invented contact data and never claims certifications', () => {
+    const all = JSON.stringify(PRIVACY_CONTENT) + html;
+    expect(all).toContain(PRIVACY_PLACEHOLDERS.contactEmail);
+    expect(all).not.toMatch(/@tinnitoff\.app/);
+    ['es', 'en'].forEach((lang) => {
+      const text = PRIVACY_CONTENT[lang].sections.map(flat).join(' ');
+      expect(text).not.toMatch(/certificad[oa] (HIPAA|GDPR)|HIPAA[- ]compliant|GDPR[- ]compliant/i);
+      expect(text).not.toMatch(/\bcura\b|\bcures?\b/i);
+    });
+  });
+});

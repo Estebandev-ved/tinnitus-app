@@ -11,7 +11,7 @@ const FacialMonitor = ({ onClose, onDetectTension }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [error, setError] = useState(null);
     const [tensionLevel, setTensionLevel] = useState(0); // 0 to 100
-    const [isActive, setIsActive] = useState(false);
+    const [, setIsActive] = useState(false);
     const tensionHistory = useRef([]); // To smooth out predictions
 
     useEffect(() => {
@@ -54,7 +54,6 @@ const FacialMonitor = ({ onClose, onDetectTension }) => {
                     ).withFaceExpressions();
 
                     if (detections) {
-                        const resizedDetections = faceapi.resizeResults(detections, displaySize);
                         const canvas = canvasRef.current;
                         if (canvas) {
                             const ctx = canvas.getContext('2d');
@@ -82,7 +81,6 @@ const FacialMonitor = ({ onClose, onDetectTension }) => {
                         }
 
                         const avgTension = tensionHistory.current.reduce((a, b) => a + b, 0) / tensionHistory.current.length;
-                        const tensionPercent = Math.min(100, Math.round(avgTension * 100)); // Mult by 100 
                         // Because raw is 0..1, avgTension might be small. Let's amplify it slightly.
                         const amplifiedTension = Math.min(100, Math.round(avgTension * 150));
 
@@ -100,8 +98,9 @@ const FacialMonitor = ({ onClose, onDetectTension }) => {
             }
         };
 
-        if (videoRef.current) {
-            videoRef.current.addEventListener('play', handlePlay);
+        const videoEl = videoRef.current;
+        if (videoEl) {
+            videoEl.addEventListener('play', handlePlay);
         }
 
         loadModelsAndStart();
@@ -111,10 +110,9 @@ const FacialMonitor = ({ onClose, onDetectTension }) => {
             if (stream) {
                 stream.getTracks().forEach(track => track.stop());
             }
-            if (videoRef.current) {
-                videoRef.current.removeEventListener('play', handlePlay);
-            }
+            videoEl?.removeEventListener('play', handlePlay);
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- el ciclo de camara/modelos debe montarse una sola vez; onDetectTension/tensionLevel cambian a menudo
     }, []);
 
     const getTensionStatus = () => {

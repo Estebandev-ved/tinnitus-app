@@ -210,3 +210,13 @@
 .prank-info { display: flex; flex-direction: column; gap: 4px; }
 .pr-rank { font-weight: 700; color: var(--text-main); font-size: 1.1rem; }
 .pr-sub { color: var(--text-secondary); font-size: 0.85rem; }
+/* CMP-03 moderation */
+.mod-btn { opacity: 0.85; }
+.mod-blocked { padding: 0 4px 8px; }
+.mod-blocked-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13px; color: var(--text-secondary); }
+.mod-blocked-list li { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.mod-toast {
+  position: absolute; left: 16px; right: 16px; bottom: 16px; z-index: 120;
+  padding: 14px 16px; border-radius: 12px; font-size: 14px;
+  background: #064E3B; border: 1px solid #34D399; color: #F1F5F9;
+}

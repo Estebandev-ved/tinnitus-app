@@ -1,5 +1,5 @@
 import { db } from '../firebase';
-import { collection, addDoc, query, where, getDocs, orderBy, limit, Timestamp, doc, setDoc, getDoc, deleteDoc, updateDoc, arrayUnion, increment } from 'firebase/firestore';
+import { collection, addDoc, query, getDocs, orderBy, limit, Timestamp, doc, setDoc, getDoc, deleteDoc, updateDoc, arrayUnion, increment } from 'firebase/firestore';
 import { PLAN_FREE, TRIAL_PLAN, TRIAL_DAYS } from '../config/plans';
 
 // Collection References
@@ -396,6 +396,46 @@ export const FirestoreService = {
         }
     },
 
+    // --- Community moderation (CMP-03) ---
+
+    // Sends a report (create-only collection, not readable by clients) and hides the content
+    // for the reporter via users/{uid}/hiddenContent.
+    async reportContent(reporterId, { postId, targetType, targetAuthorId, replyKey: rKey, reason, hideKey }) {
+        const payload = {
+            reporterId,
+            postId,
+            targetType,
+            targetAuthorId: targetAuthorId || '',
+            reason,
+            createdAt: Timestamp.now()
+        };
+        if (rKey) payload.replyKey = rKey;
+        await addDoc(collection(db, 'content_reports'), payload);
+        await setDoc(doc(db, USERS_COLLECTION, reporterId, 'hiddenContent', hideKey), { createdAt: Timestamp.now() });
+    },
+
+    async blockUser(userId, blockedId) {
+        await setDoc(doc(db, USERS_COLLECTION, userId, 'blockedUsers', blockedId), { createdAt: Timestamp.now() });
+    },
+
+    async unblockUser(userId, blockedId) {
+        await deleteDoc(doc(db, USERS_COLLECTION, userId, 'blockedUsers', blockedId));
+    },
+
+    // Returns { blockedIds: string[], hiddenKeys: string[] } for the viewer.
+    async getModerationState(userId) {
+        try {
+            const [b, h] = await Promise.all([
+                getDocs(collection(db, USERS_COLLECTION, userId, 'blockedUsers')),
+                getDocs(collection(db, USERS_COLLECTION, userId, 'hiddenContent'))
+            ]);
+            return { blockedIds: b.docs.map(d => d.id), hiddenKeys: h.docs.map(d => d.id) };
+        } catch (e) {
+            console.error('Error loading moderation state:', e);
+            return { blockedIds: [], hiddenKeys: [] };
+        }
+    },
+
     // --- AI Chat History (Memory) ---
 
     async saveChatHistory(userId, messages) {
@@ -495,6 +535,7 @@ export const FirestoreService = {
 
     // --- User Root Metadata ---
     // Propósito: Almacena de manera segura los datos raíz del usuario en 'users/{userId}' para asegurar que exista físicamente para el panel de administración.
+    // SEC-11: el cliente NUNCA envia `role` (lo fija solo el backend/consola; las reglas lo protegen).
     // Medidas de Seguridad: Saneamiento y mapeo seguro de campos con prevención de sobreescritura destructiva usando merge: true.
     async saveUserMetadata(userId, data) {
         try {
@@ -503,7 +544,6 @@ export const FirestoreService = {
                 email: data.email || null,
                 displayName: data.displayName || null,
                 photoURL: data.photoURL || null,
-                role: data.role || 'user',
                 lastActive: Timestamp.now()
             }, { merge: true });
             return true;
@@ -539,14 +579,14 @@ export const ExtendedFirestoreService = {
         const q = query(collection(db, USERS_COLLECTION, userId, 'voice_diary'), orderBy('createdAt', 'desc'), limit(limitNum));
         const s = await getDocs(q);
         return s.docs.map(d => ({id: d.id, ...d.data()}));
-    } catch (e) { return []; }
+    } catch { return []; }
   },
   // Agent 3
   async getUserAchievements(userId) {
     try {
         const d = await getDoc(doc(db, USERS_COLLECTION, userId, 'meta', 'achievements'));
         return d.exists() ? d.data() : { unlockedIds: [], unlockedDates: {} };
-    } catch (e) { return null; }
+    } catch { return null; }
   },
   async unlockAchievement(userId, achievementId, rewardEcos) {
     try {
@@ -566,12 +606,12 @@ export const ExtendedFirestoreService = {
     } catch (e) { console.error(e); return false; }
   },
   // Agent 4
-  async generateCaregiverCode(userId) { return Math.random().toString(36).substring(2, 8).toUpperCase(); },
-  async getCaregiverLinks(userId) { return []; },
-  async getCaregiverPatients(caregiverUid) { return []; },
+  async generateCaregiverCode() { return Math.random().toString(36).substring(2, 8).toUpperCase(); },
+  async getCaregiverLinks() { return []; },
+  async getCaregiverPatients() { return []; },
   // Agent 5
   async savePrediction(userId, data) {
-      try { await addDoc(collection(db, USERS_COLLECTION, userId, 'predictions'), {...data, createdAt: Timestamp.now()}); } catch (e) { /* ignore */ }
+      try { await addDoc(collection(db, USERS_COLLECTION, userId, 'predictions'), {...data, createdAt: Timestamp.now()}); } catch { /* ignore */ }
   },
   // Agent 6
   async saveSessionProgress(userId, day, steps, xp) {
@@ -609,7 +649,7 @@ export const ExtendedFirestoreService = {
         };
       }
       return { completedDays: [], totalXp: 0, lastCompletedDate: null };
-    } catch (e) {
+    } catch {
       return { completedDays: [], totalXp: 0, lastCompletedDate: null };
     }
   },
@@ -641,8 +681,8 @@ export const ExtendedFirestoreService = {
       const logsRef = collection(db, 'download_logs');
       await addDoc(logsRef, {
         referrer: sanitizedReferrer,
-        userAgent: userAgent || 'unknown',
-        platform: platform || 'unknown',
+        userAgent: (userAgent || 'unknown').substring(0, 300),
+        platform: (platform || 'unknown').substring(0, 100),
         timestamp: Timestamp.now()
       });
 

@@ -8,7 +8,6 @@ export const MezcladorMechanic = ({ onComplete, onClose }) => {
   const [bgVol, setBgVol] = useState(0);
   const [isMixed, setIsMixed] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [showSleepTimer, setShowSleepTimer] = useState(false);
   const [sleepTimer, setSleepTimer] = useState(null);
   const [sleepInterval, setSleepInterval] = useState(null);
   const [showTimerPicker, setShowTimerPicker] = useState(false);
@@ -32,6 +31,7 @@ export const MezcladorMechanic = ({ onComplete, onClose }) => {
     setIsMixed(false);
     completedRef.current = false;
     cancelSleepTimer();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- cancelSleepTimer se declara despues; stopAll debe ser estable
   }, []);
 
   const formatTime = (seconds) => {

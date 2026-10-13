@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&family=Public+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
   /* ═══════════════════════════════════════════════════
@@ -100,6 +100,72 @@
   font-weight: 400;
   color: var(--text-main);
   background-color: var(--background);
+}
+
+/* ═══════════════════════════════════════════════════
+   Stitch "TinnitOff Calm Dark" tokens (S2C-01)
+   Namespaced --ds-* : no sobrescriben los tokens existentes.
+   Fuente: mobile-design-system.md + pantallas Stitch (Lumi).
+═══════════════════════════════════════════════════ */
+:root {
+  /* Paleta */
+  --ds-primary:        #4A90D9;
+  --ds-secondary:      #6EC6A0;
+  --ds-accent:         #A78BFA;
+  --ds-accent-soft:    #C4B5FD;
+  --ds-success:        #34D399;
+  --ds-warning:        #FBBF24;
+  --ds-danger:         #F87171;
+  --ds-bg:             #0F172A;
+  --ds-surface:        #1E293B;
+  --ds-border:         #334155;
+  --ds-text:           #F1F5F9;
+  --ds-text-secondary: #94A3B8;
+  --ds-text-disabled:  #475569;
+  --ds-glow-primary:   rgba(74, 144, 217, 0.28);
+  --ds-glow-accent:    rgba(167, 139, 250, 0.4);
+  --ds-glow-secondary: rgba(110, 198, 160, 0.35);
+  --ds-glow-success:   rgba(52, 211, 153, 0.35);
+
+  /* Gradientes */
+  --ds-gradient-hero:    linear-gradient(135deg, #4A90D9 0%, #A78BFA 100%);
+  --ds-gradient-card:    linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+  --ds-gradient-success: linear-gradient(135deg, #6EC6A0 0%, #34D399 100%);
+  --ds-gradient-warm:    linear-gradient(135deg, #FBBF24 0%, #F87171 100%);
+
+  /* Tipografía */
+  --ds-font-body:    'Inter', system-ui, sans-serif;
+  --ds-font-display: 'Public Sans', 'Outfit', sans-serif;
+  --ds-font-mono:    'JetBrains Mono', ui-monospace, monospace;
+
+  /* Radios (16 tarjetas / 12 botones / 10 inputs / pill) */
+  --ds-radius-card:   16px;
+  --ds-radius-button: 12px;
+  --ds-radius-input:  10px;
+  --ds-radius-pill:   999px;
+
+  /* Espaciado 8pt */
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 20px;
+  --ds-space-6: 24px;
+  --ds-space-8: 32px;
+  --ds-space-12: 48px;
+  --ds-screen-margin: 20px;
+  --ds-touch-min: 44px;
+
+  /* Movimiento (ambiente >= 4 s; micro 150-200 ms) */
+  --ds-dur-micro: 150ms;
+  --ds-dur-fast: 200ms;
+  --ds-dur-screen: 350ms;
+  --ds-dur-float: 5s;
+  --ds-dur-glow: 4s;
+  --ds-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Sombra tarjeta dark */
+  --ds-shadow-card: 0 4px 24px rgba(0, 0, 0, 0.25);
 }
 
 /* Dark Mode — identical to root (app is always dark by design) */

@@ -12,7 +12,7 @@ const DEFAULT_PHASES = [
 const BreathingGuide = ({ onClose }) => {
     const [isRunning, setIsRunning] = useState(false);
     const [currentPhaseIndex, setCurrentPhaseIndex] = useState(null);
-    const [phases, setPhases] = useState(DEFAULT_PHASES); // Optional: could be dynamically changed
+    const [phases] = useState(DEFAULT_PHASES);
     const timerRef = useRef(null);
 
     function stopMeditation() {

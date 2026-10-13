@@ -3,6 +3,9 @@ import { motion } from 'framer-motion';
 import { ShieldAlert, MessageSquare, Headphones, Sliders, Calendar, Wind, Cpu, Trophy, User, Sun, Moon, Sparkles, ClipboardList, Play, CheckCircle2, Flame, Siren, BookOpen } from 'lucide-react';
 import { useWeeklyPlan } from '../contexts/WeeklyPlanContext';
 import QuickStartGuide from './QuickStartGuide';
+import DashboardToday from './DashboardToday';
+import { useLanguage } from '../contexts/LanguageContext';
+import CrisisHelpButton from './CrisisHelpButton';
 import { contentService } from '../services/backend/contentService';
 import './DashboardHome.css';
 
@@ -17,12 +20,17 @@ const TYPE_LABEL = {
 const DashboardHome = ({ user, streak, dailyTip, matchedFrequency, lastTHI, onNavigate, darkMode, setDarkMode }) => {
     const { activePlan, getWeekProgress } = useWeeklyPlan();
     const [content, setContent] = useState([]);
+    const [contentLoading, setContentLoading] = useState(true);
+    const { t } = useLanguage();
+    const hour = new Date().getHours();
+    const isNight = hour >= 22 || hour < 6;
 
     useEffect(() => {
         let mounted = true;
         contentService.list({ lang: 'es' })
             .then((data) => { if (mounted) setContent(Array.isArray(data) ? data : []); })
-            .catch(() => { if (mounted) setContent([]); });
+            .catch(() => { if (mounted) setContent([]); })
+            .finally(() => { if (mounted) setContentLoading(false); });
         return () => { mounted = false; };
     }, []);
 
@@ -97,9 +105,9 @@ const DashboardHome = ({ user, streak, dailyTip, matchedFrequency, lastTHI, onNa
 
     const getGreeting = () => {
         const hour = new Date().getHours();
-        if (hour < 12) return 'Buenos días';
-        if (hour < 18) return 'Buenas tardes';
-        return 'Buenas noches';
+        if (hour < 12) return t('home_greeting_morning');
+        if (hour < 18) return t('home_greeting_afternoon');
+        return t('home_greeting_evening');
     };
 
     const containerVariants = {
@@ -154,34 +162,38 @@ const DashboardHome = ({ user, streak, dailyTip, matchedFrequency, lastTHI, onNa
             {/* Header de bienvenida premium */}
             <motion.header className="dh-header" variants={itemVariants}>
                 <div className="dh-profile-info">
-                    <motion.div
+                    <motion.button
+                        type="button"
                         className="dh-avatar"
+                        aria-label={t('home_open_profile')}
                         onClick={() => onNavigate('profile')}
                         whileHover={{ scale: 1.08 }}
                         whileTap={{ scale: 0.94 }}
                     >
                         {user?.displayName ? user.displayName[0].toUpperCase() : 'U'}
-                    </motion.div>
+                    </motion.button>
                     <div className="dh-greeting-text">
                         <span className="dh-greeting-sub">{getGreeting()},</span>
-                        <h2 className="dh-username">{user?.displayName || 'Usuario'}</h2>
+                        <h2 className="dh-username">{user?.displayName || t('home_default_user')}</h2>
                     </div>
                 </div>
 
                 <div className="dh-header-actions">
-                    <motion.div
+                    <motion.button
+                        type="button"
                         className="dh-streak-badge"
+                        aria-label={t('home_open_streak', { n: streak })}
                         onClick={() => onNavigate('achievements')}
                         whileHover={{ scale: 1.05, y: -1 }}
                         whileTap={{ scale: 0.95 }}
                     >
                         <Flame size={15} className="dh-flame" />
                         <span className="dh-streak-count">{streak}</span>
-                    </motion.div>
+                    </motion.button>
                     <motion.button
                         className="dh-theme-toggle"
                         onClick={() => setDarkMode(!darkMode)}
-                        aria-label="Cambiar tema"
+                        aria-label={t('home_toggle_theme')}
                         whileTap={{ scale: 0.9, rotate: 90 }}
                     >
                         {darkMode ? <Sun size={20} /> : <Moon size={20} />}
@@ -189,15 +201,15 @@ const DashboardHome = ({ user, streak, dailyTip, matchedFrequency, lastTHI, onNa
                 </div>
             </motion.header>
 
-            {/* Banner de Tip del día */}
-            <motion.div className="dh-tip-banner" variants={itemVariants}>
-                <div className="dh-tip-icon">
-                    <Sparkles size={16} />
-                </div>
-                <div className="dh-tip-body">
-                    <strong>Consejo diario:</strong>
-                    <p>{dailyTip}</p>
-                </div>
+            {/* Lumi + Tu día + acciones (Stitch Inicio) */}
+            <motion.div variants={itemVariants}>
+                <DashboardToday
+                    streak={streak}
+                    matchedFrequency={matchedFrequency}
+                    dailyTip={dailyTip}
+                    isNight={isNight}
+                    onNavigate={onNavigate}
+                />
             </motion.div>
 
             {/* Guía de Inicio Rápido (solo muestra pasos pendientes) */}
@@ -250,6 +262,17 @@ const DashboardHome = ({ user, streak, dailyTip, matchedFrequency, lastTHI, onNa
                     </div>
                 </motion.div>
             </motion.section>
+
+            <div className="dh-crisis-help">
+                <CrisisHelpButton variant="card" />
+            </div>
+
+            {contentLoading && (
+                <div className="dh-skeleton-list" role="status" aria-label={t('home_content_loading')}>
+                    <div className="dh-skeleton" />
+                    <div className="dh-skeleton" />
+                </div>
+            )}
 
             {/* Sección de contenido publicado (visible para todos los usuarios) */}
             {feedItems.length > 0 && (

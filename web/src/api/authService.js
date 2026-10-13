@@ -16,11 +16,11 @@ export const authService = {
     if (data && data.token) setToken(data.token);
     return data;
   },
-  async firebaseLogin(uid, email, displayName) {
+  // El backend verifica el ID token de Firebase; uid/email se toman solo del token.
+  async firebaseLogin(idToken) {
     const res = await fetch(`${getBaseUrl()}/api/v1/auth/firebase-login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ uid, email, displayName }),
+      headers: { Authorization: `Bearer ${idToken}` },
     });
     const text = await res.text();
     const data = text ? JSON.parse(text) : null;

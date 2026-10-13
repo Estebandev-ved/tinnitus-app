@@ -162,6 +162,7 @@ export default function AdminDashboard({ onClose }) {
     fetchAdminData();
     fetchAppRelease();
     fetchContent();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga inicial una sola vez; las funciones se redefinen en cada render
   }, []);
 
   const fetchContent = async () => {

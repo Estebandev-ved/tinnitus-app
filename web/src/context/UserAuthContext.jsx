@@ -25,13 +25,9 @@ export function UserAuthProvider({ children }) {
     const syncBackendRole = useCallback(async (firebaseUser) => {
         if (!firebaseUser) { setBackendRole(null); return; }
         try {
-            const data = await authService.firebaseLogin(
-                firebaseUser.uid,
-                firebaseUser.email,
-                firebaseUser.displayName
-            );
+            const data = await authService.firebaseLogin(await firebaseUser.getIdToken());
             const role = data.role === 'ROLE_ADMIN' ? 'admin' : 'user';
-            console.log('Backend sync OK — role:', role, 'email:', firebaseUser.email);
+            console.log('Backend sync OK — role:', role);
             setBackendRole(role);
             return role;
         } catch (e) {

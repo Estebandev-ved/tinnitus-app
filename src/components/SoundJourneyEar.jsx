@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -170,7 +170,7 @@ function randomOnSphere(radius) {
 
 function EarRig({ stateRef }) {
   const { camera } = useThree();
-  const built = useMemo(buildParts, []);
+  const built = useMemo(() => buildParts(), []);
   const groupRef = useRef();
   const solidRefs = useRef([]);
   const wireRefs = useRef([]);
@@ -235,6 +235,8 @@ function EarRig({ stateRef }) {
     const aEase = 1 - Math.pow(1 - aT, 3);
 
     const posAttr = particleGeo.attributes.position;
+    // three.js buffer attributes are mutated imperatively per frame by design
+    /* eslint-disable react-hooks/immutability */
     for (let i = 0; i < built.assemblyTargets.length; i++) {
       const target = built.assemblyTargets[i];
       const start = startPositions[i];
@@ -243,6 +245,7 @@ function EarRig({ stateRef }) {
         start.y + (target.y - start.y) * aEase + (aT >= 1 ? Math.sin(elapsed * 0.6 + i) * 0.01 : 0);
       posAttr.array[i * 3 + 2] = start.z + (target.z - start.z) * aEase;
     }
+    /* eslint-enable react-hooks/immutability */
     posAttr.needsUpdate = true;
     if (particlesRef.current) particlesRef.current.material.opacity = 0.9 * (1 - aEase * 0.85);
 
@@ -375,11 +378,14 @@ function EarRig({ stateRef }) {
  * @param {{ stateRef: React.MutableRefObject<{camPos:number[], camLook:number[], style:number}> }} props
  */
 export default function SoundJourneyEar({ stateRef }) {
+  // Initial camera only; per-frame updates are driven from stateRef inside useFrame
+  // eslint-disable-next-line react-hooks/refs
+  const [initialCamPos] = useState(() => stateRef.current.camPos);
   return (
     <Canvas
       dpr={[1, 2]}
       gl={{ antialias: true, alpha: true }}
-      camera={{ fov: 45, near: 0.1, far: 100, position: stateRef.current.camPos }}
+      camera={{ fov: 45, near: 0.1, far: 100, position: initialCamPos }}
       style={{ width: '100%', height: '100%', display: 'block' }}
     >
       <EarRig stateRef={stateRef} />

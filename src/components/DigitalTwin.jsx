@@ -8,7 +8,7 @@ import './DigitalTwin.css';
 const DigitalTwin = ({ onClose, onActionSelect }) => {
     const { currentUser } = useAuth();
     const [loading, setLoading] = useState(true);
-    const [logs, setLogs] = useState([]);
+    const [, setLogs] = useState([]);
     const [analysis, setAnalysis] = useState(null);
 
     useEffect(() => {
@@ -26,6 +26,7 @@ const DigitalTwin = ({ onClose, onActionSelect }) => {
             }
         };
         loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- calculatePrediction se redefine por render; recargar solo al cambiar el usuario
     }, [currentUser]);
 
     const calculatePrediction = (recentLogs) => {

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, User, Phone, Calendar, Mail, Camera, LogOut, FileText, ChevronRight, Shield, Crown } from 'lucide-react';
+import { Trash2, X, User, Phone, Calendar, Mail, Camera, LogOut, FileText, ChevronRight, Shield, Crown } from 'lucide-react';
 import PrivacyPolicy from './PrivacyPolicy';
+import DeleteAccountModal from './DeleteAccountModal';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { usePlan } from '../contexts/PlanContext';
 import { PLANS } from '../config/plans';
@@ -12,9 +14,11 @@ import './UserProfile.css';
 
 const UserProfile = ({ onClose, onOpenDoctorReport, onOpenMedical, onOpenPlans }) => {
     const { currentUser, logout } = useAuth();
+    const { t } = useLanguage();
+    const [showDelete, setShowDelete] = useState(false);
     const { effectivePlan, trialActive, trialDaysLeft } = usePlan();
     const planInfo = PLANS[effectivePlan] || PLANS.free;
-    const [loading, setLoading] = useState(true);
+    const [, setLoading] = useState(true);
     const [showPrivacy, setShowPrivacy] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -31,6 +35,7 @@ const UserProfile = ({ onClose, onOpenDoctorReport, onOpenMedical, onOpenPlans }
 
     useEffect(() => {
         loadProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadProfile se redefine por render; recargar solo al cambiar el usuario
     }, [currentUser]);
 
     const loadProfile = async () => {
@@ -238,10 +243,17 @@ const UserProfile = ({ onClose, onOpenDoctorReport, onOpenMedical, onOpenPlans }
                                 <span>Cerrar Sesión</span>
                             </div>
                         </button>
+                        <button className="action-row logout" onClick={() => setShowDelete(true)}>
+                            <div className="row-left">
+                                <div className="icon-bg red"><Trash2 size={20} color="#FF3B30" /></div>
+                                <span>{t('delete_account_row')}</span>
+                            </div>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
+        {showDelete && <DeleteAccountModal onClose={() => setShowDelete(false)} onDeleted={onClose} />}
         {showPrivacy && <PrivacyPolicy onClose={() => setShowPrivacy(false)} />}
         </>
     );

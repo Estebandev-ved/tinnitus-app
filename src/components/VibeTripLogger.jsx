@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Globe, MapPin, Calendar, Clock, Star, Camera, Sparkles, Heart,
@@ -100,7 +100,7 @@ const SAMPLE_TRIPS = [
   },
 ];
 
-const VibeTripLogger = ({ onClose, onBack }) => {
+const VibeTripLogger = ({ onClose }) => {
   const [activeView, setActiveView] = useState('dashboard');
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [filter, setFilter] = useState('all');
@@ -611,7 +611,7 @@ const VibeTripLogger = ({ onClose, onBack }) => {
 
       {/* Trip Cards */}
       <motion.section className="vtl-journal-list" variants={containerVariants}>
-        {filteredTrips.map((trip, i) => {
+        {filteredTrips.map((trip) => {
           const vibe = VIBES.find(v => v.id === trip.vibe);
           return (
             <motion.div

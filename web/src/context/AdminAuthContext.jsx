@@ -13,7 +13,7 @@ export function AdminAuthProvider({ children }) {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user && !authService.getToken()) {
         try {
-          const data = await authService.firebaseLogin(user.uid, user.email, user.displayName);
+          const data = await authService.firebaseLogin(await user.getIdToken());
           setTokenState(data.token);
         } catch (e) {
           console.warn('AdminAutoSync: no se pudo obtener JWT', e.message);

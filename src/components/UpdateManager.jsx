@@ -111,7 +111,7 @@ export default function UpdateManager({ children }) {
                   cleanUrl = download_url;
                 }
               }
-            } catch (e) {
+            } catch {
               console.error('URL de descarga no válida en Firestore. Usando URL por defecto segura.');
             }
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { FirestoreService } from '../services/firestoreService';
 import { Lock, Mail, AlertTriangle, User, Phone, Calendar, Eye, EyeOff } from 'lucide-react';
+import CrisisHelpButton from './CrisisHelpButton';
 import './Login.css';
 
 /* ──────────────────────────────────────────────
@@ -350,6 +351,9 @@ const Login = ({ onLoginSuccess }) => {
                         {isLogin ? 'Regístrate' : 'Inicia sesión'}
                     </button>
                 </p>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <CrisisHelpButton variant="link" />
+                </div>
             </div>
         </div>
     );

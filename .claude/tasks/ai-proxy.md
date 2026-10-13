@@ -1,0 +1,19 @@
+# Tareas – ai-proxy-agent
+
+## Pendientes
+- [x] AI-05 · P1 · Revisar system prompt (`DELIVERABLES/System_Prompts/`): no diagnosticar ni recetar, tono calmado, derivar a profesional, y respuesta de crisis con recursos de ayuda. (hecho 2026-10-12: prompt endurecido en AiPromptBuilder, DELIVERABLES sincronizado, AiPromptBuilderTest 4 tests)
+
+- [ ] AI-09 · P0 🧑 · Desplegar el backend con HTTPS y configurar `AZURE_OPENAI_*`, `FIREBASE_SA`, `VITE_BACKEND_URL` (ver DEPLOYMENT.md, sección IA). Rotar la clave de Azure que estuvo en dispositivos.
+- [x] AI-10 · P0 · (hecho 2026-09-29 como SEC-15 por security-agent) Handoff a security-agent: `POST /api/v1/auth/firebase-login` acepta `uid`/`email` sin verificar ningún token de Firebase y da rol ADMIN si el email coincide con `app.admin.email` → cualquiera puede obtener un JWT de admin. Debe recibir y verificar el ID token con Firebase Admin.
+- [x] AI-11 · P1 · (hecho 2026-10-12 vía CMP-08) Handoff a compliance: actualizar PrivacyPolicy (datos enviados a la IA: agregados, sin identificadores; procesador Azure). Tests del backend `contextLoads`/integración fallan por `ADMIN_PASSWORD` sin valor en el entorno de test (no es de IA).
+
+## Hechas
+- [x] AI-01 · P0 · Arquitectura: **endpoint Spring Boot** (`POST /api/v1/ai/chat`). (hecho 2026-09-29)
+  Justificación: (1) el backend ya tiene `firebase-admin` + `FirebaseConfig` (cuenta de servicio), filtro de rate limit, Docker/Nginx/Postgres y las propiedades `azure.openai.*`; no hay carpeta `functions/` ni `.firebaserc`, y `firebase.json` solo usa Hosting+Firestore. (2) Cloud Functions exige plan Blaze (tarjeta) y un stack nuevo (Node, deploy, secretos) que hoy no existe; no se pudo comprobar el plan sin acceso a la consola. (3) Costo: el backend ya se pagará por otros motivos (admin, releases); la función sería casi gratis en Blaze pero añade un segundo sitio de secretos. (4) Riesgo/honestidad: hoy `VITE_BACKEND_URL` apunta a localhost, es decir, el backend NO está desplegado con HTTPS; hasta desplegarlo el chat funciona en modo básico (degradación elegante). Alternativa si el usuario prefiere no operar un servidor: Cloud Function con `verifyIdToken` + el mismo contrato (`AiChatRequest`), reutilizando `azureService.js` sin cambios.
+  Autenticación: el endpoint verifica el **ID token de Firebase** directamente (Firebase Admin), sin depender de `/auth/firebase-login` (ver handoff SEC abajo).
+- [x] AI-02 · P0 · Proxy autenticado: `backend/.../controller/AiController.java`, `ai/{AiChatRequest,AiPromptBuilder,AiUsageLimiter,AzureChatClient,FirebaseTokenVerifier}.java`. Clave/endpoint/deployment solo en env del servidor; el system prompt vive en el servidor (el cliente no puede inyectarlo); logs sin contenido de usuario. (hecho 2026-09-29)
+- [x] AI-03 · P0 · `AIChat.jsx` ya no maneja clave: eliminados `azureConfig`, `saveConfig`, campos endpoint/key/deployment y `localStorage tinnitus_azure_config` (se borra el valor heredado al montar). `azureService.js` es ahora cliente del proxy (Bearer ID token de Firebase). (hecho 2026-09-29)
+- [x] AI-04 · P1 · Límites por uid: 6/min, 40 mensajes/día y 60k tokens/día (configurables por env), 429 con `retryAfterSeconds`; mensaje amable en el chat. Mensaje reservado se devuelve si Azure falla. En memoria (una instancia). (hecho 2026-09-29)
+- [x] AI-06 · P1 · Estado degradado: 401/429/5xx/red/no configurado → mensaje claro + respuesta básica local, sin romper la pantalla; badge cambia a "Modo: Básico". (hecho 2026-09-29)
+- [x] AI-07 · P2 · Minimización: el cliente solo envía promedios, frecuencia, años y oído afectado (`buildMinimalContext`); ya no viajan nombre de médico, medicamentos, notas personales ni notas del diario; el servidor ignora cualquier otro campo. Falta reflejarlo en la política de privacidad (handoff compliance). (hecho 2026-09-29)
+- [x] AI-08 · P2 · `src/tests/azureService.test.js` (3 tests, fetch mockeado) + `AiUsageLimiterTest` (Java, 3 tests). (hecho 2026-09-29)

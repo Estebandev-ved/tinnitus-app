@@ -45,3 +45,7 @@ backups/
 nginx/ssl/*.pem
 nginx/ssl/*.key
 
+
+# Firebase emulator logs
+firestore-debug.log
+ui-debug.log

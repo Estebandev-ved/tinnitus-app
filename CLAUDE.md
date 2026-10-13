@@ -144,3 +144,11 @@ Ver `.env.example` para la lista completa. Las variables críticas incluyen:
 3. El backend debe tener endpoints documentados en Swagger (`/swagger-ui/index.html`)
 4. Los componentes React nuevos deben tener PropTypes definidos
 5. Ver `.claude/rules/` para reglas específicas por área
+
+---
+
+## Sistema de Agentes (automatización desde el chat)
+
+- Agentes en `.claude/agents/`, tareas independientes por agente en `.claude/tasks/`, bitácora en `.claude/daily_log.md`.
+- Reglas de delegación y registro: `.claude/rules/agent-workflow.md`. Comando `/daily` ejecuta una jornada completa.
+- Todo lo que se haga (chat o agentes) se anota en `.claude/daily_log.md`. Sin commits/deploys sin confirmación.

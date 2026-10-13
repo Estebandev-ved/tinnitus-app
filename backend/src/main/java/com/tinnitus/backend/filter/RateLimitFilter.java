@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,13 +21,21 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     private static final int MAX_REQUESTS = 100;
     private static final long WINDOW_MS = 60_000; // 1 minuto
+    /**
+     * Detras de un proxy (Railway) getRemoteAddr() es la IP del proxy, y todos los clientes compartirian un
+     * mismo cupo. Con app.trust-forwarded-for=true (solo perfil prod) se usa la ULTIMA IP de X-Forwarded-For,
+     * la que anade el proxy de confianza (las anteriores las puede falsificar el cliente).
+     */
+    @Value("${app.trust-forwarded-for:false}")
+    private boolean trustForwardedFor;
+
     private final ConcurrentHashMap<String, LinkedList<Long>> requests = new ConcurrentHashMap<>();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String ip = request.getRemoteAddr();
+        String ip = clientIp(request.getRemoteAddr(), request.getHeader("X-Forwarded-For"), trustForwardedFor);
 
         // Bypass rate limit for localhost (migration scripts, admin)
         if ("127.0.0.1".equals(ip) || "0:0:0:0:0:0:0:1".equals(ip) || "localhost".equals(ip)) {
@@ -50,5 +59,16 @@ public class RateLimitFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    static String clientIp(String remoteAddr, String forwardedFor, boolean trustForwardedFor) {
+        if (trustForwardedFor && forwardedFor != null && !forwardedFor.isBlank()) {
+            String[] parts = forwardedFor.split(",");
+            String last = parts[parts.length - 1].trim();
+            if (!last.isEmpty()) {
+                return last;
+            }
+        }
+        return remoteAddr;
     }
 }

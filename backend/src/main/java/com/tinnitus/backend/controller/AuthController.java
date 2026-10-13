@@ -1,5 +1,6 @@
 package com.tinnitus.backend.controller;
 
+import com.tinnitus.backend.ai.FirebaseTokenVerifier;
 import com.tinnitus.backend.dto.RegisterRequest;
 import com.tinnitus.backend.dto.UserResponse;
 import com.tinnitus.backend.model.dto.AuthResponse;
@@ -30,6 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -38,6 +40,7 @@ public class AuthController {
 
     private static final String REFRESH_COOKIE_NAME = "refreshToken";
     private static final String REFRESH_COOKIE_PATH = "/api/v1/auth";
+    private static final String FIREBASE_USER_PREFIX = "fb_";
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
@@ -47,6 +50,7 @@ public class AuthController {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FirebaseTokenVerifier firebaseVerifier;
 
     @Value("${app.admin.email:grubiano23@gmail.com}")
     private String adminEmail;
@@ -64,7 +68,8 @@ public class AuthController {
                           AccountLockoutService lockoutService,
                           UserRepository userRepository,
                           RoleRepository roleRepository,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder,
+                          FirebaseTokenVerifier firebaseVerifier) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -73,6 +78,7 @@ public class AuthController {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.firebaseVerifier = firebaseVerifier;
     }
 
     @PostMapping("/register")
@@ -88,6 +94,10 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestParam String username,
                                    @RequestParam String password,
                                    HttpServletResponse response) {
+        // Las cuentas creadas vía Firebase no tienen contraseña utilizable: solo entran con ID token.
+        if (username != null && username.startsWith(FIREBASE_USER_PREFIX)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Credenciales inválidas"));
+        }
         if (lockoutService.isLocked(username)) {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                     .body(Map.of("error", "Cuenta bloqueada temporalmente. Intenta de nuevo en 15 minutos.",
@@ -180,30 +190,58 @@ public class AuthController {
     }
 
     @PostMapping("/firebase-login")
-    @Operation(summary = "Login vía Firebase — crea/actualiza usuario en backend y retorna JWT")
-    public ResponseEntity<?> firebaseLogin(@RequestBody Map<String, String> body, HttpServletResponse response) {
-        String uid = body.get("uid");
-        String email = body.get("email");
-        String displayName = body.get("displayName");
+    @Operation(summary = "Login vía Firebase — verifica el ID token (Authorization: Bearer) con Firebase Admin, " +
+            "crea/actualiza el usuario en backend y retorna JWT. uid/email se toman SOLO del token verificado.")
+    public ResponseEntity<?> firebaseLogin(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            HttpServletResponse response) {
 
-        if (uid == null || email == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "uid y email son requeridos"));
+        if (authorization == null || !authorization.startsWith("Bearer ") || authorization.length() < 8) {
+            return unauthenticated();
+        }
+        if (!firebaseVerifier.isAvailable()) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body(Map.of("error", "SERVICE_UNAVAILABLE"));
+        }
+        FirebaseTokenVerifier.VerifiedUser fb = firebaseVerifier.verifyClaims(authorization.substring(7).trim())
+                .orElse(null);
+        if (fb == null || fb.uid() == null || fb.email() == null || fb.email().isBlank()) {
+            return unauthenticated();
         }
 
-        User user = userRepository.findByUsername("fb_" + uid)
-                .orElseGet(() -> userRepository.findByEmail(email).orElse(null));
+        String uid = fb.uid();
+        String email = fb.email();
+        String username = FIREBASE_USER_PREFIX + uid;
+        boolean grantAdmin = fb.emailVerified() && email.equalsIgnoreCase(adminEmail);
+
+        User user = userRepository.findByUsername(username).orElse(null);
+        if (user == null && grantAdmin) {
+            // Único enlace por email permitido: la cuenta admin sembrada (DataInitializer), con email verificado.
+            user = userRepository.findByEmail(email).orElse(null);
+        }
 
         if (user == null) {
+            if (userRepository.findByEmail(email).isPresent()) {
+                // Email ya usado por otra cuenta no vinculada: no se enlaza automáticamente.
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "ACCOUNT_UNAVAILABLE"));
+            }
             user = new User();
-            user.setUsername("fb_" + uid);
+            user.setUsername(username);
             user.setEmail(email);
-            user.setPassword(passwordEncoder.encode(uid));
+            user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
             user.setEnabled(true);
-        } else {
-            if (!email.equals(user.getEmail())) user.setEmail(email);
+        } else if (username.equals(user.getUsername())) {
+            // Cuentas legadas tenían password = uid (público en Firestore): se rota a un valor aleatorio.
+            if (passwordEncoder.matches(uid, user.getPassword())) {
+                user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
+            }
+            if (fb.emailVerified() && !email.equals(user.getEmail())
+                    && userRepository.findByEmail(email).isEmpty()) {
+                user.setEmail(email);
+            }
         }
 
-        if (email.equalsIgnoreCase(adminEmail)) {
+        if (grantAdmin) {
             Role adminRole = roleRepository.findByName("ROLE_ADMIN").orElseGet(() -> {
                 Role r = new Role();
                 r.setName("ROLE_ADMIN");
@@ -228,6 +266,10 @@ public class AuthController {
         String role = user.getRole() != null ? user.getRole().getName() : "ROLE_USER";
 
         return ResponseEntity.ok(new AuthResponse(token, user.getUsername(), role));
+    }
+
+    private ResponseEntity<Map<String, String>> unauthenticated() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "UNAUTHENTICATED"));
     }
 
     // ---------- Cookie helpers ----------

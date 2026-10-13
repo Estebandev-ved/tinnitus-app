@@ -13,3 +13,8 @@ scripts
 .vscode
 .idea
 *.md
+
+uploads
+output.txt
+.mvn/wrapper/maven-wrapper.jar
+railway.json

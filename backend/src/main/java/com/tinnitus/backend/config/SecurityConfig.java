@@ -81,6 +81,8 @@ public class SecurityConfig {
                     "/api/v1/clinical/**",
                     "/api/v1/telemetry/**",
                     "/api/v1/content/**",
+                    // AiController verifica por sí mismo el ID token de Firebase (Firebase Admin)
+                    "/api/v1/ai/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/webjars/**",

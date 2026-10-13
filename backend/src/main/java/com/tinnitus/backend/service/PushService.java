@@ -96,7 +96,7 @@ public class PushService {
      */
     public Map<String, Object> sendToSegment(String segment, String title, String body) {
         if (!firebaseConfig.isInitialized()) {
-            return Map.of("ok", false, "message", "Firebase no configurado (define FIREBASE_SA).");
+            return Map.of("ok", false, "message", "Firebase no configurado (define FIREBASE_SA_JSON o FIREBASE_SA).");
         }
         String topic = "segment:" + (segment == null || segment.isBlank() ? "all" : segment);
         int count = countBySegment(segment);

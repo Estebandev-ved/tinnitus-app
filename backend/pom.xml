@@ -92,6 +92,13 @@
 			<version>${jjwt.version}</version>
 		</dependency>
 
+		<!-- JSON console encoder used by logback-spring.xml in the prod profile -->
+		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+			<version>7.4</version>
+		</dependency>
+
 		<!-- Firebase Admin (FCM push) -->
 		<dependency>
 			<groupId>com.google.firebase</groupId>

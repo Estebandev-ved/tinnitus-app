@@ -170,12 +170,17 @@ environment:
 - [ ] CORS restricted to production domain
 - [ ] Firebase service account not in git
 
-## Asistente de IA (proxy Azure OpenAI)
+## Asistente de IA (proxy: Anthropic por defecto, Azure OpenAI como alternativa)
 
-El chat de IA pasa por el backend (`POST /api/v1/ai/chat`). La clave de Azure vive solo en el servidor.
+El chat de IA pasa por el backend (`POST /api/v1/ai/chat`). Las claves viven solo en el servidor.
 
-1. En `.env` del servidor: `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT`
-   (opcionales: `AI_LIMIT_PER_MINUTE`, `AI_LIMIT_PER_DAY`, `AI_LIMIT_TOKENS_PER_DAY`).
+1. En `.env` del servidor: `ANTHROPIC_API_KEY` (opcionales: `ANTHROPIC_MODEL`, por defecto `claude-haiku-4-5`;
+   `ANTHROPIC_MAX_TOKENS`, por defecto 500; `AI_PROVIDER` = `anthropic` | `azure`).
+   Si `AI_PROVIDER` esta vacio se usa Anthropic cuando hay `ANTHROPIC_API_KEY`, si no Azure cuando estan
+   `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT` y `AZURE_OPENAI_DEPLOYMENT` (alternativa). Sin ninguno: 503.
+   Limites opcionales: `AI_LIMIT_PER_MINUTE`, `AI_LIMIT_PER_DAY`, `AI_LIMIT_TOKENS_PER_DAY`.
+   Si pones `ANTHROPIC_MODEL=claude-sonnet-5-5` el backend desactiva su razonamiento por defecto (`between_tools`);
+   con otros modelos que razonan por defecto sube `ANTHROPIC_MAX_TOKENS`, porque el razonamiento consume ese tope.
 2. El backend necesita `FIREBASE_SA` (cuenta de servicio, montada como `/app/serviceAccount.json`) para
    verificar los ID tokens de Firebase. Sin ella el endpoint responde 503 y la app cae al modo básico.
 3. El backend debe ser accesible por HTTPS público. Al construir el frontend, `VITE_BACKEND_URL=https://api.tu-dominio`
@@ -213,9 +218,13 @@ Crea estas variables en el servicio del backend (los **valores los pones tú**; 
 | `ADMIN_USERNAME` | opcional | Por defecto `admin` |
 | `CORS_ORIGINS` | recomendada | Lista separada por comas, sin espacios. Ver sección CORS más abajo |
 | `FIREBASE_SA_JSON` | sí para el chat IA y push | Contenido del JSON de la cuenta de servicio de Firebase (pegado tal cual) **o** ese JSON en base64. Sin ella el chat IA responde 503 y la app usa el modo básico |
-| `AZURE_OPENAI_API_KEY` | para el chat IA | Solo en el servidor |
-| `AZURE_OPENAI_ENDPOINT` | para el chat IA | |
-| `AZURE_OPENAI_DEPLOYMENT` | para el chat IA | |
+| `ANTHROPIC_API_KEY` | para el chat IA | Solo en el servidor. Proveedor por defecto |
+| `ANTHROPIC_MODEL` | opcional | Por defecto `claude-haiku-4-5` |
+| `ANTHROPIC_MAX_TOKENS` | opcional | Por defecto 500 |
+| `AI_PROVIDER` | opcional | `anthropic` o `azure`; vacio = automatico |
+| `AZURE_OPENAI_API_KEY` | alternativa | Solo si usas Azure en vez de Anthropic |
+| `AZURE_OPENAI_ENDPOINT` | alternativa | |
+| `AZURE_OPENAI_DEPLOYMENT` | alternativa | |
 | `AI_LIMIT_PER_MINUTE` | opcional | Por defecto 6 |
 | `AI_LIMIT_PER_DAY` | opcional | Por defecto 40 |
 | `AI_LIMIT_TOKENS_PER_DAY` | opcional | Por defecto 60000 |

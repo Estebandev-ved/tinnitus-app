@@ -13,10 +13,7 @@ import java.util.Map;
 
 /** Llamada a Azure OpenAI. La clave sale de variables de entorno del servidor. */
 @Component
-public class AzureChatClient {
-
-    public record Completion(String text, long totalTokens) {
-    }
+public class AzureChatClient implements AiChatClient {
 
     private final String apiKey;
     private final String endpoint;
@@ -38,10 +35,12 @@ public class AzureChatClient {
         this.http = RestClient.builder().requestFactory(factory).build();
     }
 
+    @Override
     public boolean isConfigured() {
         return !apiKey.isBlank() && !endpoint.isBlank() && !deployment.isBlank();
     }
 
+    @Override
     public Completion complete(String systemPrompt, List<Map<String, String>> turns) {
         List<Map<String, String>> messages = new ArrayList<>();
         messages.add(Map.of("role", "system", "content", systemPrompt));

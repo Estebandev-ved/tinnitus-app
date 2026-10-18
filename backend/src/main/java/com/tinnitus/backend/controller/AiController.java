@@ -4,7 +4,9 @@ import com.tinnitus.backend.ai.AiChatRequest;
 import com.tinnitus.backend.ai.AiConversationSanitizer;
 import com.tinnitus.backend.ai.AiPromptBuilder;
 import com.tinnitus.backend.ai.AiUsageLimiter;
-import com.tinnitus.backend.ai.AzureChatClient;
+import com.tinnitus.backend.ai.AiChatClient;
+import com.tinnitus.backend.ai.AiProviderSelector;
+import com.tinnitus.backend.ai.AiUpstreamException;
 import com.tinnitus.backend.ai.FirebaseTokenVerifier;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,7 +32,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/v1/ai")
-@Tag(name = "AI", description = "Proxy del asistente de IA (Azure OpenAI)")
+@Tag(name = "AI", description = "Proxy del asistente de IA (Anthropic o Azure OpenAI)")
 public class AiController {
 
     private static final Logger log = LoggerFactory.getLogger(AiController.class);
@@ -38,14 +40,14 @@ public class AiController {
     private final FirebaseTokenVerifier verifier;
     private final AiUsageLimiter limiter;
     private final AiPromptBuilder promptBuilder;
-    private final AzureChatClient azure;
+    private final AiProviderSelector providers;
 
     public AiController(FirebaseTokenVerifier verifier, AiUsageLimiter limiter,
-                        AiPromptBuilder promptBuilder, AzureChatClient azure) {
+                        AiPromptBuilder promptBuilder, AiProviderSelector providers) {
         this.verifier = verifier;
         this.limiter = limiter;
         this.promptBuilder = promptBuilder;
-        this.azure = azure;
+        this.providers = providers;
     }
 
     @PostMapping("/chat")
@@ -57,7 +59,8 @@ public class AiController {
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             return error(HttpStatus.UNAUTHORIZED, "UNAUTHENTICATED", "Inicia sesión para usar el asistente.");
         }
-        if (!azure.isConfigured() || !verifier.isAvailable()) {
+        AiChatClient client = providers.active();
+        if (client == null || !verifier.isAvailable()) {
             return error(HttpStatus.SERVICE_UNAVAILABLE, "AI_UNAVAILABLE", "El asistente no está disponible ahora.");
         }
         String uid = verifier.verify(authorization.substring(7)).orElse(null);
@@ -86,7 +89,7 @@ public class AiController {
         }
 
         try {
-            AzureChatClient.Completion c = azure.complete(promptBuilder.build(request.context()), turns);
+            AiChatClient.Completion c = client.complete(promptBuilder.build(request.context()), turns);
             if (c.text().isBlank()) {
                 limiter.release(uid);
                 return error(HttpStatus.BAD_GATEWAY, "AI_EMPTY", "El asistente no pudo responder. Inténtalo de nuevo.");
@@ -99,7 +102,15 @@ public class AiController {
         } catch (RuntimeException e) {
             limiter.release(uid);
             // Sin contenido del usuario ni detalles del proveedor en el log.
-            log.warn("AI upstream failure: {}", e.getClass().getSimpleName());
+            if (e instanceof AiUpstreamException u) {
+                log.warn("AI upstream failure: {}", u.kind());
+                if (u.isServiceUnavailable()) {
+                    return error(HttpStatus.SERVICE_UNAVAILABLE, "AI_UNAVAILABLE",
+                            "El asistente no está disponible ahora.");
+                }
+            } else {
+                log.warn("AI upstream failure: {}", e.getClass().getSimpleName());
+            }
             return error(HttpStatus.BAD_GATEWAY, "AI_UPSTREAM_ERROR", "El asistente no está disponible ahora.");
         }
     }

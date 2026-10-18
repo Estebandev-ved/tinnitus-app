@@ -1,6 +1,10 @@
 # Tareas – ai-proxy-agent
 
 ## Pendientes
+- [x] AI-12 · P0 · Proveedor Anthropic (Claude) para el chat IA; Azure queda como alternativa. (hecho 2026-10-18)
+  `ai/AnthropicChatClient` (Messages API: x-api-key, anthropic-version 2023-06-01, `system` aparte, max_tokens, historial normalizado user-first/alternado), `ai/AiChatClient` (interfaz comun con Azure), `ai/AiProviderSelector` (AI_PROVIDER=anthropic|azure; vacio -> anthropic si hay ANTHROPIC_API_KEY, si no azure, si no 503), `ai/AiUpstreamException`. AiController usa el selector; 401/403/429 del proveedor -> 503 AI_UNAVAILABLE, 5xx/timeout/otros -> 502 AI_UPSTREAM_ERROR; tokens reales de `usage` al limitador.
+  Modelo por defecto `claude-haiku-4-5` (barato: $1/$5 por MTok, rapido, sin razonamiento por defecto, asi los ~500 tokens son respuesta; suficiente para chat de bienestar con prompt acotado). Configurable con ANTHROPIC_MODEL; con `claude-sonnet-5-5` se envia thinking `between_tools` para que el razonamiento no consuma max_tokens. Existe `claude-haiku-5-5` (aun mas barato) pero razona por defecto; no se eligio sin pruebas. 11 tests unitarios (AnthropicChatClientTest).
+- [x] AI-13 · P1 · (hecho 2026-10-18 por compliance-agent) Handoff a compliance-agent: la politica de privacidad (`src/data/privacyPolicyContent.js`, `public/privacy.html`) nombra a Azure como procesador de la IA; actualizar a Anthropic cuando el proveedor activo cambie (antes de activar ANTHROPIC_API_KEY en produccion). Datos enviados: sin cambios (agregados + mensaje/historial).
 - [x] AI-05 · P1 · Revisar system prompt (`DELIVERABLES/System_Prompts/`): no diagnosticar ni recetar, tono calmado, derivar a profesional, y respuesta de crisis con recursos de ayuda. (hecho 2026-10-12: prompt endurecido en AiPromptBuilder, DELIVERABLES sincronizado, AiPromptBuilderTest 4 tests)
 
 - [ ] AI-09 · P0 🧑 · Desplegar el backend con HTTPS y configurar `AZURE_OPENAI_*`, `FIREBASE_SA`, `VITE_BACKEND_URL` (ver DEPLOYMENT.md, sección IA). Rotar la clave de Azure que estuvo en dispositivos.

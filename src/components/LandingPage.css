@@ -334,3 +334,18 @@
 @media (min-width: 901px) {
   .landing-header { width: min(calc(100% - 48px), 960px); }
 }
+
+/* ---------- Desktop split: copy left, 3D ear right ---------- */
+@media (min-width: 901px) {
+  .landing-page-container .hero-section {
+    align-items: flex-start; text-align: left; max-width: 1200px; margin: 0 auto;
+  }
+  .landing-page-container .hero-section > * { max-width: 560px; }
+  .landing-page-container .hero-section .hero-sub { max-width: 520px; }
+  .landing-page-container .hero-stats { justify-content: flex-start; }
+  .landing-page-container .stop { justify-content: flex-start; }
+  .landing-page-container .stop-panel { max-width: 460px; }
+}
+@media (min-width: 901px) {
+  .landing-page-container .hero-section { width: 100%; }
+}

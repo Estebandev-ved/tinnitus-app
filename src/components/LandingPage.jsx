@@ -18,7 +18,7 @@ import './LandingPage.css';
  * consumed by SoundJourneyEar. Presets 0..6 = hero + the 6 stops.
  * ------------------------------------------------------------------ */
 const CAMERA_PRESETS = [
-  { pos: [-0.35, 0.4, 7.4], look: [-0.55, -0.05, 0.05], style: 0.05 }, // hero
+  { pos: [-0.35, 0.4, 7.8], look: [-0.55, -0.05, 0.05], style: 0.05 }, // hero
   { pos: [1.7, -0.15, 3.05], look: [0.65, -0.35, 0.15], style: 0.18 }, // pabellón
   { pos: [-0.25, 0.4, 2.0], look: [-0.6, -0.07, 0.2], style: 0.38 }, // canal
   { pos: [-1.1, 0.35, 1.15], look: [-1.1, -0.05, 0.08], style: 0.55 }, // tímpano
@@ -356,9 +356,11 @@ export default function LandingPage({ onGoToApp }) {
   useEffect(() => {
     let breakpoints = [];
     const computeBreakpoints = () => {
-      const heroTop = heroRef.current ? heroRef.current.offsetTop : 0;
-      const stopTops = stopRefs.current.map((el) => (el ? el.offsetTop : 0));
-      const pillarsTop = pillarsRef.current ? pillarsRef.current.offsetTop : heroTop + 1;
+      // Document-relative tops (offsetTop is relative to different offsetParents)
+      const docTop = (el) => (el ? el.getBoundingClientRect().top + window.scrollY : 0);
+      const heroTop = docTop(heroRef.current);
+      const stopTops = stopRefs.current.map(docTop);
+      const pillarsTop = pillarsRef.current ? docTop(pillarsRef.current) : heroTop + 1;
       breakpoints = [heroTop, ...stopTops, pillarsTop];
     };
     computeBreakpoints();

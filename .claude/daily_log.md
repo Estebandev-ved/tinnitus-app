@@ -154,3 +154,7 @@ Formato de cada entrada:
 - Stitch dio timeout 3 veces; se construyo directo en React.
 - Nuevo: src/components/LandingSections.jsx/.css (telefono con 6 pestanas, selector de zumbido, progreso de ejemplo, respiracion, pasos, privacidad, FAQ). LandingPage.jsx integra todo; se quito el stat "94% habituacion" (sin respaldo); #root sin max-width en landing.
 - Anadido .claude/launch.json (dev server). Sin commit.
+
+## 2026-10-19 · Chat · Mejora del 3D del hero
+- SoundJourneyEar: silueta rellena del pabellon, anillos de sonido, pulsos viajando por la ruta del sonido, Bloom; oido desplazado a la derecha en escritorio (proporcional a la distancia de camara).
+- LandingPage: breakpoints de scroll con getBoundingClientRect (el hero nunca usaba su preset); hero en 2 columnas en escritorio. Sin commit.

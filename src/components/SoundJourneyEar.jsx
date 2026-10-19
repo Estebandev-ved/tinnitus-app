@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 
 /**
@@ -158,6 +159,36 @@ function buildParts() {
   return { parts, assemblyTargets };
 }
 
+
+// Filled outer-ear silhouette (gives the ear a readable shape behind the thin tubes).
+const PINNA_SILHOUETTE_POINTS = PINNA_HELIX_POINTS.map((p) => [p[0], p[1]]).concat([
+  [-0.45, 0.9], [-0.42, 0.3], [-0.38, -0.4], [-0.22, -1.0], [-0.02, -1.5],
+]);
+
+function buildPinnaGeometry() {
+  const curve = new THREE.CatmullRomCurve3(
+    PINNA_SILHOUETTE_POINTS.map((p) => new THREE.Vector3(p[0], p[1], 0)),
+    true
+  );
+  const shape = new THREE.Shape(curve.getPoints(90).map((v) => new THREE.Vector2(v.x, v.y)));
+  return new THREE.ShapeGeometry(shape, 24);
+}
+
+// Full sound path: pinna -> canal -> eardrum -> ossicles -> cochlea -> auditory nerve.
+function buildSoundPath() {
+  const pts = [
+    [1.6, -0.3, 0.9], [0.9, -0.25, 0.55],
+    ...EAR_CANAL_POINTS, ...MALLEUS_POINTS, ...INCUS_POINTS, ...STAPES_POINTS,
+    ...buildCochleaPoints(), ...AUDITORY_NERVE_POINTS,
+  ];
+  return new THREE.CatmullRomCurve3(pts.map((p) => new THREE.Vector3(p[0], p[1], p[2])));
+}
+
+const PULSE_COUNT = 4;
+const RING_COUNT = 3;
+// On wide screens the ear is shifted to the right so copy can sit on the left.
+const DESKTOP_SHIFT_RATIO = 0.27;
+
 function randomOnSphere(radius) {
   const th = Math.random() * Math.PI * 2;
   const ph = Math.acos(2 * Math.random() - 1);
@@ -169,7 +200,7 @@ function randomOnSphere(radius) {
 }
 
 function EarRig({ stateRef }) {
-  const { camera } = useThree();
+  const { camera, size } = useThree();
   const built = useMemo(() => buildParts(), []);
   const groupRef = useRef();
   const solidRefs = useRef([]);
@@ -177,6 +208,11 @@ function EarRig({ stateRef }) {
   const glowRefs = useRef([]);
   const particlesRef = useRef();
   const warmLightRef = useRef();
+  const silhouetteMat = useRef();
+  const ringRefs = useRef([]);
+  const pulseRefs = useRef([]);
+  const pinnaGeo = useMemo(() => buildPinnaGeometry(), []);
+  const soundPath = useMemo(() => buildSoundPath(), []);
   const coolLightRef = useRef();
 
   const reducedMotion = useMemo(
@@ -255,20 +291,47 @@ function EarRig({ stateRef }) {
     camLookCur.current.lerp(new THREE.Vector3().fromArray(st.camLook), damp);
     styleCur.current += (st.style - styleCur.current) * damp;
 
-    camera.position.copy(camPosCur.current);
+    // Desktop: push the ear to the right half of the screen (camera moves left).
+    // Shift scales with camera distance so close-up stops keep the part in frame.
+    const dist = camPosCur.current.distanceTo(camLookCur.current);
+    const shiftX = size.width / size.height > 1.2 ? dist * DESKTOP_SHIFT_RATIO : 0;
+    camera.position.set(camPosCur.current.x - shiftX, camPosCur.current.y, camPosCur.current.z);
+    camLookCur.current.x -= shiftX;
     camera.lookAt(camLookCur.current);
+    camLookCur.current.x += shiftX;
 
     const journeyEnter = Math.min(1, Math.max(0, (styleCur.current - 0.05) / 0.13));
-    const wobble = reducedMotion ? 0 : Math.sin(elapsed * 0.15) * 0.16 * (1 - journeyEnter);
+    const wobble = reducedMotion ? 0 : Math.sin(elapsed * 0.35) * 0.34 * (1 - journeyEnter);
     if (groupRef.current) groupRef.current.rotation.y = wobble;
 
+    // Never fully "organic": keep a hint of neon glow even in the hero.
+    const vis = Math.max(styleCur.current, 0.34);
     built.parts.forEach((p, i) => {
       const solid = solidRefs.current[i];
       const wire = wireRefs.current[i];
       const glow = glowRefs.current[i];
-      if (solid) solid.opacity = p.baseSolid * (1 - styleCur.current) * aEase;
-      if (wire) wire.opacity = p.baseWire * styleCur.current * aEase;
-      if (glow) glow.opacity = p.baseGlow * styleCur.current * aEase;
+      if (solid) solid.opacity = p.baseSolid * (1 - vis) * aEase;
+      if (wire) wire.opacity = p.baseWire * vis * aEase;
+      if (glow) glow.opacity = p.baseGlow * vis * aEase;
+    });
+
+    if (silhouetteMat.current) {
+      silhouetteMat.current.opacity = 0.16 * aEase * (1 - journeyEnter * 0.85);
+    }
+
+    ringRefs.current.forEach((ring, k) => {
+      if (!ring) return;
+      const ph = reducedMotion ? 0.4 : ((elapsed / 3.2 + k / RING_COUNT) % 1);
+      const sc = 0.3 + ph * 1.3;
+      ring.scale.set(sc, sc, sc);
+      ring.material.opacity = 0.55 * (1 - ph) * aEase * (1 - journeyEnter);
+    });
+
+    pulseRefs.current.forEach((pulse, k) => {
+      if (!pulse) return;
+      const t = reducedMotion ? k / PULSE_COUNT : ((elapsed * 0.07 + k / PULSE_COUNT) % 1);
+      pulse.position.copy(soundPath.getPointAt(t));
+      pulse.visible = aT >= 1;
     });
 
     if (warmLightRef.current) warmLightRef.current.intensity = 1.1 * (1 - styleCur.current) + 0.35;
@@ -282,6 +345,45 @@ function EarRig({ stateRef }) {
       <pointLight ref={coolLightRef} color="#00e8ff" position={[-4, -2, 3]} intensity={0.2} />
 
       <group ref={groupRef}>
+        <mesh geometry={pinnaGeo} position={[0, 0, 0.03]}>
+          <meshBasicMaterial
+            ref={silhouetteMat}
+            color="#8fa8ff"
+            transparent
+            opacity={0}
+            side={THREE.DoubleSide}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+          />
+        </mesh>
+
+        {Array.from({ length: RING_COUNT }, (_, k) => (
+          <mesh key={`ring-${k}`} ref={(el) => (ringRefs.current[k] = el)} position={[1.5, -0.2, 0.9]}>
+            <ringGeometry args={[0.94, 1.0, 64]} />
+            <meshBasicMaterial
+              color="#c3b7ea"
+              transparent
+              opacity={0}
+              side={THREE.DoubleSide}
+              blending={THREE.AdditiveBlending}
+              depthWrite={false}
+            />
+          </mesh>
+        ))}
+
+        {Array.from({ length: PULSE_COUNT }, (_, k) => (
+          <group key={`pulse-${k}`} ref={(el) => (pulseRefs.current[k] = el)} visible={false}>
+            <mesh>
+              <sphereGeometry args={[0.035, 16, 16]} />
+              <meshBasicMaterial color="#ffffff" />
+            </mesh>
+            <mesh>
+              <sphereGeometry args={[0.1, 16, 16]} />
+              <meshBasicMaterial color="#00e8ff" transparent opacity={0.3} blending={THREE.AdditiveBlending} depthWrite={false} />
+            </mesh>
+          </group>
+        ))}
+
         {built.parts.map((part, i) =>
           part.kind === 'tube' ? (
             <group key={i}>
@@ -389,6 +491,9 @@ export default function SoundJourneyEar({ stateRef }) {
       style={{ width: '100%', height: '100%', display: 'block' }}
     >
       <EarRig stateRef={stateRef} />
+      <EffectComposer multisampling={0}>
+        <Bloom intensity={0.45} luminanceThreshold={0.55} luminanceSmoothing={0.4} mipmapBlur />
+      </EffectComposer>
     </Canvas>
   );
 }

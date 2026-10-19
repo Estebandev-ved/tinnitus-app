@@ -7,6 +7,9 @@ import {
   CheckCircle, ArrowRight, Moon, LineChart, Users,
 } from 'lucide-react';
 import SoundJourneyEar from './SoundJourneyEar';
+import {
+  PhoneShowcase, BuzzPicker, TryItSection, StepsSection, PrivacySection, FaqSection, Reveal,
+} from './LandingSections';
 import './LandingPage.css';
 
 /* ------------------------------------------------------------------
@@ -524,16 +527,16 @@ export default function LandingPage({ onGoToApp }) {
 
           <div className="hero-stats animate-fade" ref={statRef}>
             <div className="stat">
-              <span className="stat-num">{statAnimated ? '94%' : '0%'}</span>
-              <span className="stat-label">Habituación rápida</span>
+              <span className="stat-num">{statAnimated ? '10' : '0'}</span>
+              <span className="stat-label">Módulos de terapia</span>
             </div>
             <div className="stat">
               <span className="stat-num">3D</span>
               <span className="stat-label">Sonido binaural</span>
             </div>
             <div className="stat">
-              <span className="stat-num">IA</span>
-              <span className="stat-label">Filtro adaptativo</span>
+              <span className="stat-num">100%</span>
+              <span className="stat-label">Audio local y privado</span>
             </div>
           </div>
 
@@ -605,7 +608,11 @@ export default function LandingPage({ onGoToApp }) {
           </div>
         </section>
 
-        <section className="demo-section">
+        <PhoneShowcase />
+        <BuzzPicker />
+        <TryItSection />
+
+        <section className="demo-section" id="demo">
           <div className="section-head">
             <span className="eyebrow"><Shield size={14} /> Demo en vivo</span>
             <h2>Sácalo de tu cabeza.</h2>
@@ -630,14 +637,21 @@ export default function LandingPage({ onGoToApp }) {
           </div>
         </section>
 
-        <section className="final-cta-section">
-          <span className="eyebrow" style={{ margin: '0 auto 20px' }}>Fin del recorrido</span>
-          <h2>Esto es solo el mapa.<br />La app ya hace el viaje.</h2>
-          <p>TinnitOff acompaña cada tramo que acabas de ver: captura, conducción, cóclea y habituación.</p>
-          <button className="final-btn" onClick={handleDownloadClick} disabled={downloading}>
-            <Download size={18} /> {downloading ? 'Generando enlace seguro...' : 'Descargar TinnitOff APK'}
-          </button>
-        </section>
+        <StepsSection />
+        <PrivacySection />
+        <FaqSection />
+
+        <Reveal>
+          <section className="final-cta-section final-cta-premium">
+            <span className="eyebrow" style={{ margin: '0 auto 20px' }}>Tu momento de calma</span>
+            <h2>Esto es solo el mapa.<br />La app ya hace el viaje.</h2>
+            <p>TinnitOff acompaña cada tramo que acabas de ver: captura, conducción, cóclea y habituación.</p>
+            <button className="final-btn" onClick={handleDownloadClick} disabled={downloading}>
+              <Download size={18} /> {downloading ? 'Generando enlace seguro...' : 'Descargar TinnitOff APK'}
+            </button>
+            <small className="download-notice">Versión v{appVersion} · Android</small>
+          </section>
+        </Reveal>
       </main>
 
       <footer className="landing-footer">

@@ -145,3 +145,12 @@ Formato de cada entrada:
 - [--:--] **compliance-agent** · AI-13 privacidad: proveedor de IA Anthropic (P1) · ✅ con 🧑 · `src/data/privacyPolicyContent.js`, `public/privacy.html` (regenerado), `scripts/generate-privacy-html.mjs` (nuevo), `src/tests/privacyPolicy.test.js`, `.claude/tasks/{ai-proxy,compliance}.md` ·
   Secciones 4 y 8 (ES/EN): Claude (Anthropic) procesa el texto del chat; Azure OpenAI solo si se configura como alternativa. Verificado en backend/ai: se envian system prompt con agregados (promedios estres/tinnitus/sueno, racha, total registros, frecuencia, anos, oido), mensaje e historial (max 20, 2000 chars) en `messages`; sin nombre/email/medico/medicamentos/notas; llamada desde el servidor (`api.anthropic.com/v1/messages`), token Firebase verificado antes (`FirebaseTokenVerifier`); autolesion filtrada en cliente. Sin plazos ni politicas de Anthropic inventados: marcador [REVISAR retencion y uso de datos segun los terminos vigentes de Anthropic para API comerciales]. Generador recreado en el repo: `node scripts/generate-privacy-html.mjs` (reemplaza solo el cuerpo entre container y footer). Test nuevo (Anthropic + marcador). vitest 58/58, eslint limpio en lo tocado (scripts/ esta en ignore), build OK. Sin commits ni deploys; no se toco backend/.
   🧑 Confirmar retencion/uso de datos de Anthropic (y de Azure si se activa) en documentacion oficial; revision legal de la politica.
+
+## 2026-10-18 · Chat · Landing premium en Stitch
+- Creado proyecto Stitch "TinnitOff Landing Premium" (id 13515121237319694998) y design system "TinnitOff Calma Premium" (assets/2432459647122972432).
+- generate_screen_from_text dio timeout 2 veces (prompt largo y compacto); sin pantallas aún. Pendiente: reintentar por secciones o construir directo en React.
+
+## 2026-10-18 · Chat · Landing premium en React
+- Stitch dio timeout 3 veces; se construyo directo en React.
+- Nuevo: src/components/LandingSections.jsx/.css (telefono con 6 pestanas, selector de zumbido, progreso de ejemplo, respiracion, pasos, privacidad, FAQ). LandingPage.jsx integra todo; se quito el stat "94% habituacion" (sin respaldo); #root sin max-width en landing.
+- Anadido .claude/launch.json (dev server). Sin commit.

@@ -158,3 +158,8 @@ Formato de cada entrada:
 ## 2026-10-19 · Chat · Mejora del 3D del hero
 - SoundJourneyEar: silueta rellena del pabellon, anillos de sonido, pulsos viajando por la ruta del sonido, Bloom; oido desplazado a la derecha en escritorio (proporcional a la distancia de camara).
 - LandingPage: breakpoints de scroll con getBoundingClientRect (el hero nunca usaba su preset); hero en 2 columnas en escritorio. Sin commit.
+
+- 2026-10-20 · chat: creado docs/requisitos-google-play.md (requisitos de publicación para socios).
+
+## 2026-10-20 · Chat · Landing en movil
+- Encuadre vertical del 3D (oido arriba, texto abajo), cabecera compacta, paneles del recorrido abajo, objetivos tactiles >=44px. Sin desborde horizontal a 375px. Sin commit.

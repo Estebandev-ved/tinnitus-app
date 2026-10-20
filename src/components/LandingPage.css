@@ -349,3 +349,31 @@
 @media (min-width: 901px) {
   .landing-page-container .hero-section { width: 100%; }
 }
+
+/* ---------- Phones: ear on top, copy below; nothing clipped ---------- */
+.btn-app-access { white-space: nowrap; }
+@media (max-width: 900px) {
+  .landing-page-container .hero-section {
+    justify-content: flex-end; padding: 46vh 0 56px; min-height: 100svh;
+  }
+  .landing-page-container .stop { align-items: flex-end; padding-bottom: 28px; min-height: 100svh; }
+}
+@media (max-width: 520px) {
+  .landing-header { padding: 10px 14px; border-radius: 16px; }
+  .landing-logo .logo-text { font-size: 18px; }
+  .landing-logo .logo-icon { width: 22px; height: 22px; }
+  .btn-app-access { padding: 8px 12px; font-size: 12px; }
+  .hide-sm { display: none; }
+  .hero-title { font-size: clamp(30px, 9vw, 40px); }
+  .hero-sub { font-size: 14.5px; margin-bottom: 28px; }
+  .download-cta-box { padding: 20px; border-radius: 20px; margin-bottom: 28px; }
+  .cta-header { gap: 12px; }
+  .hero-stats { gap: 18px; margin-bottom: 36px; }
+  .stop-panel { padding: 20px; }
+  .final-btn, .btn-main-download { width: 100%; justify-content: center; }
+}
+
+/* Touch targets >= 44px */
+.btn-app-access { min-height: 44px; }
+.footer-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 8px; }
+.ph-range { min-height: 44px; }

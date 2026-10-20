@@ -292,13 +292,27 @@ function EarRig({ stateRef }) {
     styleCur.current += (st.style - styleCur.current) * damp;
 
     // Desktop: push the ear to the right half of the screen (camera moves left).
-    // Shift scales with camera distance so close-up stops keep the part in frame.
-    const dist = camPosCur.current.distanceTo(camLookCur.current);
-    const shiftX = size.width / size.height > 1.2 ? dist * DESKTOP_SHIFT_RATIO : 0;
-    camera.position.set(camPosCur.current.x - shiftX, camPosCur.current.y, camPosCur.current.z);
-    camLookCur.current.x -= shiftX;
-    camera.lookAt(camLookCur.current);
-    camLookCur.current.x += shiftX;
+    // Framing: wide screens push the ear to the right (copy on the left); portrait phones
+    // zoom out and lift the ear to the top (copy below). Offsets scale with camera distance
+    // so close-up journey stops keep their part in frame.
+    const pos = camPosCur.current;
+    const look = camLookCur.current;
+    const aspect = size.width / size.height;
+    const portrait = aspect < 0.9;
+    const zoom = portrait ? 1.9 : 1;
+    const dist = pos.distanceTo(look) * zoom;
+    const shiftX = aspect > 1.2 ? dist * DESKTOP_SHIFT_RATIO : 0;
+    const shiftY = portrait ? dist * 0.17 : 0;
+    camera.position.set(
+      look.x + (pos.x - look.x) * zoom - shiftX,
+      look.y + (pos.y - look.y) * zoom - shiftY,
+      look.z + (pos.z - look.z) * zoom
+    );
+    look.x -= shiftX;
+    look.y -= shiftY;
+    camera.lookAt(look);
+    look.x += shiftX;
+    look.y += shiftY;
 
     const journeyEnter = Math.min(1, Math.max(0, (styleCur.current - 0.05) / 0.13));
     const wobble = reducedMotion ? 0 : Math.sin(elapsed * 0.35) * 0.34 * (1 - journeyEnter);

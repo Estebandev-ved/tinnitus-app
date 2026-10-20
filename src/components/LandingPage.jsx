@@ -476,7 +476,7 @@ export default function LandingPage({ onGoToApp }) {
           <span className="logo-text">Tinnit<span>Off</span></span>
         </div>
         <button className="btn-app-access glass" onClick={onGoToApp}>
-          Acceder a la Web App <ArrowRight size={16} />
+          <span className="hide-sm">Acceder a la </span>Web App <ArrowRight size={16} />
         </button>
       </header>
 

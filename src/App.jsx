@@ -225,7 +225,16 @@ function App() {
   // URL Redirection to Landing Page / Download Tracker
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.has('ref') || params.has('download')) {
+    const isNative = !!window.Capacitor?.isNativePlatform?.();
+    let enteredApp = false;
+    try {
+      enteredApp = sessionStorage.getItem('tinnitoff_enter_app') === '1';
+    } catch {
+      /* storage unavailable */
+    }
+    // Web visitors at the site root see the landing; the native app and "enter app" skip it.
+    const webRoot = !isNative && !enteredApp && window.location.pathname === '/';
+    if (params.has('ref') || params.has('download') || webRoot) {
       setStep('landing');
     }
   }, []);
@@ -405,6 +414,11 @@ function App() {
     return <LandingPage onGoToApp={() => {
       // Clear URL params so reload doesn't trigger landing page again
       window.history.replaceState({}, document.title, window.location.pathname);
+      try {
+        sessionStorage.setItem('tinnitoff_enter_app', '1');
+      } catch {
+        /* storage unavailable */
+      }
       setStep('splash');
     }} />;
   }

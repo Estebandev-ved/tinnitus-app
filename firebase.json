@@ -10,13 +10,6 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "redirects": [
-      {
-        "source": "/",
-        "destination": "/?download=1",
-        "type": 302
-      }
-    ],
     "rewrites": [
       {
         "source": "/privacy",
@@ -30,7 +23,6 @@
         "source": "/admin",
         "destination": "/admin.html"
       },
-
       {
         "source": "**",
         "destination": "/index.html"
@@ -38,7 +30,11 @@
     ]
   },
   "emulators": {
-    "firestore": { "port": 8089 },
-    "ui": { "enabled": false }
+    "firestore": {
+      "port": 8089
+    },
+    "ui": {
+      "enabled": false
+    }
   }
 }

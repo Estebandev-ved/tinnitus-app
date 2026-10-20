@@ -841,3 +841,12 @@ a { color: inherit; text-decoration: none; }
 [data-theme="dark"] .assistant-input input { background: var(--bg); color: #e6edf6; border-color: rgba(255,255,255,.15); }
 [data-theme="dark"] .assistant-settings { background: var(--bg-alt); color: #e6edf6; }
 
+
+/* Dark theme: the base variables were never redefined, which left dark text on dark surfaces. */
+[data-theme="dark"] {
+  --ink: #e6edf6;
+  --ink-soft: #9fb2c8;
+  --surface: #14203a;
+  --surface-2: #0b1220;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}

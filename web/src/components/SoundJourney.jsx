@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import SoundJourneyEar from './SoundJourneyEar';
 import './SoundJourney.css';
@@ -204,6 +205,15 @@ export default function SoundJourney() {
                   Desliza para recorrer tu oído tramo a tramo, desde el pabellón hasta el nervio
                   auditivo, y descubre dónde actúa cada terapia de Tinnitoff.
                 </p>
+                <div className="sj-cta">
+                  <Link to="/descargas" className="sj-btn sj-btn--primary">Descargar la app</Link>
+                  <a href="#app-por-dentro" className="sj-btn sj-btn--ghost">Ver la app por dentro</a>
+                </div>
+                <ul className="sj-trust" aria-label="Garantías">
+                  <li>Privado por diseño</li>
+                  <li>Volumen seguro</li>
+                  <li>Sin anuncios</li>
+                </ul>
               </motion.div>
             )}
           </AnimatePresence>

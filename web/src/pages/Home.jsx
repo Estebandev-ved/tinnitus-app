@@ -8,6 +8,7 @@ import {
 import Reveal from '../components/Reveal';
 import Testimonials from '../components/Testimonials';
 import SoundJourney from '../components/SoundJourney';
+import AppTour from '../components/AppTour';
 
 const features = [
   { icon: Target, title: 'Matcher de frecuencia', text: 'Identifica la frecuencia de tu zumbido para generar sonidos de enmascaramiento a medida.' },
@@ -72,6 +73,7 @@ export default function Home() {
   return (
     <div className="home">
       <SoundJourney />
+      <AppTour />
 
       {/* QUÉ ES */}
       <section className="section" id="que-es">

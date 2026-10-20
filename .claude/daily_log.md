@@ -163,3 +163,8 @@ Formato de cada entrada:
 
 ## 2026-10-20 · Chat · Landing en movil
 - Encuadre vertical del 3D (oido arriba, texto abajo), cabecera compacta, paneles del recorrido abajo, objetivos tactiles >=44px. Sin desborde horizontal a 375px. Sin commit.
+
+- [--:--] **claude (chat)** · /daily 2026-10-20: revisión de tareas P0; no hay P0 libre (todas 🧑 o bloqueadas: SEC-10, AI-09, QA-02, REL-01/02/03/11/13). No se lanzaron agentes. · ✅ · `.claude/daily_log.md`
+
+## 2026-10-20 · Chat · Sitio web/ (Vercel)
+- Descubierto: Vercel publica web/ (no src/). Portado: 3D mejorado (silueta, anillos, pulsos, encuadre desktop/movil), CTA en hero, AppTour (telefono interactivo, selector de zumbido, progreso, respiracion, privacidad) y variables de tema oscuro que faltaban. Build y 18 tests OK.

@@ -121,3 +121,37 @@
   .sj-copy { max-width: calc(100% - 40px); bottom: 110px; }
   .sj-progress { flex-direction: row; right: 50%; transform: translateX(50%); top: auto; bottom: 66px; }
 }
+
+/* ---------- Hero CTA + trust chips ---------- */
+.sj-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; pointer-events: auto; }
+.sj-btn {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 22px;
+  border-radius: 12px; font-size: 14.5px; font-weight: 700; text-decoration: none; cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.sj-btn:active { transform: scale(0.97); }
+.sj-btn--primary {
+  color: #07060d; background: linear-gradient(120deg, #c3b7ea 0%, #00e8ff 100%);
+  box-shadow: 0 10px 28px rgba(0, 232, 255, 0.28);
+}
+.sj-btn--primary:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(0, 232, 255, 0.42); }
+.sj-btn--ghost { color: #f5f3fa; border: 1.5px solid rgba(195, 183, 234, 0.5); background: rgba(255, 255, 255, 0.04); }
+.sj-btn--ghost:hover { background: rgba(195, 183, 234, 0.14); }
+.sj-trust { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; padding: 0; }
+.sj-trust li {
+  font-size: 11.5px; padding: 6px 12px; border-radius: 999px; color: #c9c4de;
+  background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+}
+@media (max-width: 720px) {
+  .sj-copy { bottom: 96px; }
+  .sj-cta { margin-top: 16px; }
+  .sj-btn { flex: 1 1 100%; }
+  .sj-trust { display: none; }
+}
+
+/* Phones: ear sits on top, so the scrim darkens from the bottom (under the copy) instead of the left. */
+@media (max-width: 720px) {
+  .sj-scrim {
+    background: linear-gradient(0deg, rgba(7, 6, 13, 0.92) 0%, rgba(7, 6, 13, 0.6) 38%, transparent 66%);
+  }
+}

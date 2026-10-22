@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   Radio, Headphones, TrendingUp, MessageCircle, Wind, Users,
@@ -18,11 +17,6 @@ export function SectionHead({ eyebrow, title, text }) {
   );
 }
 
-SectionHead.propTypes = {
-  eyebrow: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  text: PropTypes.string,
-};
 
 /* Tinnitus level -> color + label (matches the in-app indicator scale) */
 function levelInfo(level) {
